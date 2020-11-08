@@ -1,9 +1,9 @@
 import React from "react";
 import "./App.css";
-// import { withRouter } from "react-router-dom";
-import LoginForm from "./components/LoginPage";
+import LoginPage from "./components/LoginPage";
 import { AuthContext } from "./auth/AuthContext";
 import { USERS } from "./data/fakeUsers";
+import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 
 class App extends React.Component {
   constructor(props) {
@@ -18,6 +18,7 @@ class App extends React.Component {
       if (e.role === role && e.email === username && e.pass === password) {
         return console.log("find");
       }
+      return true;
     });
   };
 
@@ -30,11 +31,14 @@ class App extends React.Component {
     };
     return (
       <AuthContext.Provider value={value}>
-        <div className="App">
-          <LoginForm />
-        </div>
+        <Switch>
+          <Route path="/login" component={LoginPage}></Route>
+          {/* <Route path="/teacher" component={Teacher}></Route> */}
+          {/* <Route path="/student" component={Teacher}></Route> */}
+          <Redirect from="/" exact to="login" />
+        </Switch>
       </AuthContext.Provider>
     );
   }
 }
-export default App;
+export default withRouter(App);
