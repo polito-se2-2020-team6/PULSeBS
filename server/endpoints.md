@@ -4,8 +4,10 @@
     - username: string
     - password: string
   - *response body*
-	- userId: int
-	- name: string
+    - success : bool
+	  - userId: int
+	  - name: string
+  - The endpoint will also set a cookie with a string used to authentication
 
 # Check login
 - **GET** /api/logged
@@ -32,8 +34,8 @@ Requires login as student
       - lectureId: int
       - courseId: int
       - courseName: string
-      - startTS: Date
-      - endTS: Date
+      - startTS: int
+      - endTS: int
       - online: bool
       - teacherName: string
       - roomName: string
@@ -57,6 +59,7 @@ Requires login as teacher
   - *request params*
     - empty
   - *response body*
+    - success: bool
     - students: [object]
       - studentId: int
       - studentName: string
@@ -84,3 +87,6 @@ Requires login as teacher
 If an error occurs, the *response body* is
 - success: bool
 - reason: string
+
+If the user is not authenticated and tries to use an endpoint that require authentication,
+the HTTP response will be 403
