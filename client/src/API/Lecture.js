@@ -10,7 +10,7 @@ class Lecture {
       this.roomName = roomName;
       this.bookedSeats = bookedSeats;
       this.totalSeats = totalSeats;
-      this.bookedSeats = bookedSeats;
+      this.bookedSelf = bookedSelf;
     }
   
     /**
