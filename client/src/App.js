@@ -14,11 +14,10 @@ class App extends React.Component {
       users: USERS,
     };
   }
-  login = (username, password, role) => {
-    console.log(username, password, role);
+  login = (username, password) => {
     this.state.users.map((e) => {
-      if (e.role === role && e.email === username && e.pass === password) {
-        return console.log("find");
+      if (e.email === username && e.pass === password) {
+        this.props.history.push("/teacher");
       }
       return true;
     });
