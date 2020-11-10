@@ -1,8 +1,11 @@
 import React from "react";
 import "./App.css";
 import LoginPage from "./components/LoginPage";
+
+
 import Teacher from "./components/Teacher";
 import Nav from "./components/nav";
+
 import { AuthContext } from "./auth/AuthContext";
 import { USERS } from "./data/fakeUsers";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
@@ -31,12 +34,15 @@ class App extends React.Component {
       logoutUser: this.logout,
     };
     return (
+      
       <AuthContext.Provider value={value}>
+
         <Nav />
         <Switch>
           <Route path="/login" component={LoginPage}></Route>
           <Route path="/teacher" component={Teacher}></Route>
           {/* <Route path="/student" component={Teacher}></Route> */}
+
           <Redirect from="/" exact to="login" />
         </Switch>
       </AuthContext.Provider>
