@@ -49,8 +49,8 @@ Requires login
       - lectureId: int
       - courseId: int
       - courseName: string
-      - startTS: int
-      - endTS: int
+      - startTS: int *(GMT timezone)*
+      - endTS: int *(GMT timezone)*
       - online: bool
       - teacherName: string
       - roomName: string
