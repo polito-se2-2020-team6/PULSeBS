@@ -7,6 +7,7 @@ import Nav from "./components/Nav";
 import { AuthContext } from "./auth/AuthContext";
 import { USERS } from "./data/fakeUsers";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
+import Student from "./components/Student";
 
 class App extends React.Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class App extends React.Component {
         <Switch>
           <Route path="/login" component={LoginPage}></Route>
           <Route path="/teacher" component={Teacher}></Route>
-          {/* <Route path="/student" component={Teacher}></Route> */}
+          <Route path="/student" component={Student}></Route>
 
           <Redirect from="/" exact to="login" />
         </Switch>

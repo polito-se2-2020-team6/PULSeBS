@@ -40,9 +40,7 @@ class Student extends Component {
         <button type="button" class="btn btn-success">
           Upcoming Lectures
         </button>
-        {this.state.lectures.map((lecture) => (
-                    <h1>{lecture.courseName}</h1>
-                  ))}
+        
       </>
     );
   }

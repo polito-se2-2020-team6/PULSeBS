@@ -19,7 +19,7 @@ class Lecture {
      * @return  lecture} the newly created lecture object
      */
     static from(json) {
-      const l = Object.assign(new lecture(), json);
+      const l = Object.assign(new Lecture(), json);
       return l;
     }
   }
