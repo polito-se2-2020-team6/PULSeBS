@@ -46,7 +46,7 @@ class LoginForm extends React.Component {
           <Container fluid className="center center mt-5">
             <Row>
               <Col md={{ span: 4, offset: 4 }}>
-                <h3> Select your Role: </h3>
+                <h3> Select Your Role: </h3>
 
                 <Form
                   method="POST"
