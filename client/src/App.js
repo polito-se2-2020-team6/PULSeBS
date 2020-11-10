@@ -3,6 +3,7 @@ import "./App.css";
 import LoginPage from "./components/LoginPage";
 import Student from './components/Student'
 import Nav from './components/Nav'
+import API from './API/API';
 import { AuthContext } from "./auth/AuthContext";
 import { USERS } from "./data/fakeUsers";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
