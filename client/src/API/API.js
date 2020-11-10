@@ -1,7 +1,7 @@
 import Lecture from './Lecture';
 const baseURL = "/api";
 
-//return list of lectures based on the userId
+//return list of lectures based on the userId **GET** /api/users/{userId}/lectures
 async function getLectures(userId) {
     let url = `/users/${userId}/lectures`;
     const response = await fetch(baseURL + url);
@@ -16,6 +16,34 @@ async function getLectures(userId) {
       throw err; // An object with the error coming from the server
     }
   }
+
+  //return list of lectures based on the userId with time filter **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
+
+
+
+
+  //# Book a lecture /api/users/{userId}/book
+
+
+
+  //# Cancel a booking **DELETE** /api/users/{userId}/book
+
+
+  // Cancel a lecture **DELETE** /api/lectures/{lectureId}
+
+
+  //Login **POST** /api/login
+
+
+  //Meaning of field type **GET** /api/types
+
+
+  //Check login **GET** /api/logged
+
+
+  //Logout **POST** /api/logout
+
+
 
 
 
