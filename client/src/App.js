@@ -1,10 +1,8 @@
 import React from "react";
 import "./App.css";
 import LoginPage from "./components/LoginPage";
-
-
 import Teacher from "./components/Teacher";
-import Nav from "./components/nav";
+import Nav from "./components/Nav";
 
 import { AuthContext } from "./auth/AuthContext";
 import { USERS } from "./data/fakeUsers";

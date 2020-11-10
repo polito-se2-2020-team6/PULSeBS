@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
-import { Navbar, Nav, Form, FormControl, Button } from 'react-bootstrap';
+import Navbar from "react-bootstrap/Navbar";
+import Nav from 'react-bootstrap/Nav';
 import { Link } from "react-router-dom";
 
 class Navigation extends Component {
@@ -7,17 +8,15 @@ class Navigation extends Component {
   render() {
     return (
       <Fragment>
-        <Navbar bg="primary" variant="dark">
-    <Navbar.Brand href="#home">PULSeBS</Navbar.Brand>
-    {/*  <Nav className="mr-auto">
-      <Nav.Link href="#home">Home</Nav.Link>
-      <Nav.Link href="#features">Features</Nav.Link>
-      <Nav.Link href="#pricing">Pricing</Nav.Link>
-    </Nav>
-    <Form inline>
-      <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-      <Button variant="outline-light">Search</Button>
-    </Form>  */}
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+          <Navbar.Brand href="/">PULSEBS</Navbar.Brand>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link href="/student">Student</Nav.Link>
+              <Nav.Link href="/teacher">Teacher</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
         </Navbar>
       </Fragment>
     );
