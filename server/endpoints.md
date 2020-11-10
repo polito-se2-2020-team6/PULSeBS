@@ -8,9 +8,7 @@ Will set a cookie with a string used to authentication
   - *response body*
     - success: bool
     - userId: int
-    - name: string
     - type: int
-    - email: string
 
 # Meaning of field type
 - **GET** /api/types
@@ -36,6 +34,21 @@ Will set a cookie with a string used to authentication
     - empty
   - *response body*
     - success: bool
+
+# Current user
+Requires login
+
+- **GET** /api/user/me
+  - *request params*
+    - empty
+  - *response body*
+    - success: bool
+    - userId: int
+    - type: int
+    - username: string
+    - email: string
+    - firstname: string
+    - lastname: string
 
 # All lectures of a user
 Requires login
