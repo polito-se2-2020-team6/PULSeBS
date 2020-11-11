@@ -28,6 +28,7 @@ async function getLectures(userId) {
 //Login **POST** /api/login
 
 async function userLogin(username, password) {
+  console.log("SSSS");
   return new Promise((resolve, reject) => {
     fetch(baseURL + "/login", {
       method: "POST",
