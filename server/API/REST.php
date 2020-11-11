@@ -109,7 +109,7 @@ if(!function_exists('do_logout')){
 
 /*Constants to define option for the routes*/
 
-define("NEED_AUTH", 0); //if set, the rout needs $_SESSION['nonce'] to be set and valid
+define("NEED_AUTH", 0); //if set, the route needs $_SESSION['nonce'] to be set and valid
 
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
