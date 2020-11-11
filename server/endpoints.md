@@ -27,6 +27,7 @@ Will set a cookie with a string used to authentication
   - *response body*
     - success: bool
     - loggedIn: bool
+  - *if not logged the response code will be 403*
 
 # Logout
 - **POST** /api/logout

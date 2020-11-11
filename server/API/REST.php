@@ -85,11 +85,36 @@ if(!function_exists("do_login")){
 	}
 }
 
+if(!function_exists('am_i_logged')){
+	function am_i_logged(){
+		if(!check_login()){
+			http_response_code(403);
+			echo json_encode(array('success' => true, 'loggedIn' => false));
+		}
+		else
+			echo json_encode(array('success' => true, 'loggedIn' => true));
+	}
+}
+
+if(!function_exists('do_logout')){
+	function do_logout($vars){
+		unset($_SESSION['nonce']);
+		unset($_SESSION['user_id']);
+
+		echo json_encode(array('success' => true));
+	}
+}
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
+
+/*Constants to define option for the routes*/
+
+define("NEED_AUTH", 0); //if set, the rout needs $_SESSION['nonce'] to be set and valid
 
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
+	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
@@ -113,9 +138,31 @@ switch ($routeInfo[0]) {
 		// ... 405 Method Not Allowed
 		break;
 	case FastRoute\Dispatcher::FOUND:
-		$handler = $routeInfo[1];
-		$vars = $routeInfo[2];
-		$handler($vars);
+		if(!is_array($routeInfo[1])){
+			$handler = $routeInfo[1];
+			$vars = $routeInfo[2];
+			$handler($vars);
+		}
+		else{
+			$ok = true;
+			for($i = 1; $i < count($routeInfo[1]); $i++){
+				switch($routeInfo[1][$i]){
+					case NEED_AUTH:
+						if(!check_login()){
+							$ok = false;
+							http_response_code(403);
+						}
+					break;
+					default:
+					break;
+				}
+				if(!$ok) break;
+			}
+
+			$handler = $routeInfo[1][0];
+			$vars = $routeInfo[2];
+			$handler($vars);
+		}
 		break;
 	default:
 		http_response_code(404);
