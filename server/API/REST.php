@@ -114,7 +114,7 @@ define("NEED_AUTH", 0); //if set, the route needs $_SESSION['nonce'] to be set a
 //define the routes
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
-	$r->addRoute(''GET', API_PATH . '/logged', 'am_i_logged');
+	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
 	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
 });
 
