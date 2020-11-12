@@ -9,6 +9,11 @@ header("Content-Type: application/json");
 
 define("API_PATH", $_SERVER["SCRIPT_NAME"]."/api");
 
+/* Constant defining */
+
+define("USER_TYPE_STUDENT", 0);
+define("USER_TYPE_TEACHER", 1);
+
 /* Turning warning and notices into exceptions */
 
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
@@ -31,8 +36,12 @@ if(!function_exists("check_login")){
 	function check_login(){
 			$pdo = new PDO("sqlite:../db.sqlite");
 
+			if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+				return false;
+			}
+
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $_SESSION["user_id"]);
+			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
 			if(!$stmt->execute()){
 				throw new Error($stmt->errorInfo(), $stmt->errorCode());
@@ -40,7 +49,7 @@ if(!function_exists("check_login")){
 
 			$user_data = $stmt->fetch();
 
-			return $_SESSION["nonce"] == md5(serialize($user_data));
+			return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
 	}
 }
 
@@ -105,6 +114,44 @@ if(!function_exists('do_logout')){
 	}
 }
 
+if(!function_exists('print_types')){
+	function print_types($vars){
+		echo json_encode(array('success' => true, 'list' => array(
+			array("typeId" => USER_TYPE_STUDENT, 'typeDesc' => 'student'),
+			array("typeId" => USER_TYPE_TEACHER, 'typeDesc' => 'teacher')
+		)));
+	}
+}
+
+if(!function_exists('print_myself')){
+	function print_myself($vars){
+		try{
+			$pdo = new PDO("sqlite:../db.sqlite");
+
+			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
+			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
+
+			if(!$stmt->execute()){
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+
+			$user_data = $stmt->fetch();
+
+			echo json_encode(array('success' => true,
+				'userId' => intval($user_data['ID']),
+				'type' => intval($user_data['type']),
+				'username' => $user_data['username'],
+				'email' => $user_data['email'],
+				'firstname' => $user_data['firstname'],
+				'lastname' => $user_data['lastname'],
+			));
+		}
+		catch(Exception $e){
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 /*Constants to define option for the routes*/
@@ -116,6 +163,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
 	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
 	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
+	$r->addRoute('GET', API_PATH."/types", "print_types");
+
+	/* users route */
+	$r->addRoute('GET', API_PATH.'/user/me', ['print_myself', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
