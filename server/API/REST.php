@@ -109,15 +109,8 @@ if (!function_exists('do_logout')) {
 if (!function_exists('list_lectures')) {
 
 	function list_lectures($vars) {
-		var_dump($vars);
 
-		if (!check_login()) {
-			http_response_code(403);
-			echo json_encode(array('success' => false));
-			return;
-		}
-
-		$userId = $vars['userId'];
+		$userId = intval($vars['userId']);
 		$pdo = new PDO("sqlite:../db.sqlite");
 
 		// Get type of user
@@ -135,7 +128,7 @@ if (!function_exists('list_lectures')) {
 			return;
 		}
 
-		$userType = $userData['type'];
+		$userType = intval($userData['type']);
 
 		$query = 'SELECT * FROM lectures L';
 
@@ -153,8 +146,6 @@ if (!function_exists('list_lectures')) {
 		// Add optional ranges to query
 		if (isset($_GET['startDate'])) {
 			$query .= ' AND start_ts >= :startDate';
-			$Ymd = explode('-', $_GET['startDate']);
-			mktime(0, 0, 0, $Ymd[2], $Ymd[1], $Ymd[0]);
 		}
 		if (isset($_GET['endDate'])) {
 			$query .= ' AND start_ts <= :endDate';
@@ -163,15 +154,16 @@ if (!function_exists('list_lectures')) {
 		// Get list of lectures, ordered
 		$query .= ' ORDER BY start_ts, ID ASC';
 		$stmt = $pdo->prepare($query);
-		$stmt->bindValue(':userId', $userData['ID'], PDO::PARAM_INT);
+		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+
 		if (isset($_GET['startDate'])) {
 			$Ymd = explode('-', $_GET['startDate']);
-			$ts = mktime(0, 0, 0, $Ymd[2], $Ymd[1], $Ymd[0]);
+			$ts = mktime(0, 0, 0, intval($Ymd[2]), intval($Ymd[1]), intval($Ymd[0]));
 			$stmt->bindValue(':startDate', $ts, PDO::PARAM_INT);
 		}
 		if (isset($_GET['endDate'])) {
 			$Ymd = explode('-', $_GET['endDate']);
-			$ts = mktime(59, 59, 23, $Ymd[2], $Ymd[1], $Ymd[0]);
+			$ts = mktime(59, 59, 23, intval($Ymd[2]), intval($Ymd[1]), intval($Ymd[0]));
 			$stmt->bindValue(':endDate', $ts, PDO::PARAM_INT);
 		}
 
@@ -182,16 +174,16 @@ if (!function_exists('list_lectures')) {
 		$lectures = array();
 		while ($l = $stmt->fetch()) {
 			$lecture = array(
-				'lectureId' => $l['ID'],
-				'courseId' => $l['course_id'],
-				'startTS' => $l['start_ts'],
-				'endTS' => $l['end_ts'],
+				'lectureId' => intval($l['ID']),
+				'courseId' => intval($l['course_id']),
+				'startTS' => intval($l['start_ts']),
+				'endTS' => intval($l['end_ts']),
 				'online' => boolval($l['settings'] & LECTURE_REMOTE),
 			);
 
 			// Get roomName, totalSeats
 			$stmt_inner = $pdo->prepare('SELECT * FROM rooms WHERE ID = :roomId');
-			$stmt_inner->bindValue(':roomId', $l['room_id'], PDO::PARAM_INT);
+			$stmt_inner->bindValue(':roomId', intval($l['room_id']), PDO::PARAM_INT);
 
 			if (!$stmt_inner->execute()) {
 				throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
@@ -205,11 +197,11 @@ if (!function_exists('list_lectures')) {
 			}
 
 			$lecture['roomName'] = $room['name'];
-			$lecture['totalSeats'] = $room['seats'];
+			$lecture['totalSeats'] = intval($room['seats']);
 
 			// Compute bookedSeats
 			$stmt_inner = $pdo->prepare('SELECT COUNT(*) AS n_bookings FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL');
-			$stmt_inner->bindValue(':lectureId', $l['ID'], PDO::PARAM_INT);
+			$stmt_inner->bindValue(':lectureId', $lecture['lectureId'], PDO::PARAM_INT);
 
 			if (!$stmt_inner->execute()) {
 				throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
@@ -222,7 +214,7 @@ if (!function_exists('list_lectures')) {
 				return;
 			}
 
-			$lecture['bookedSeats'] = $bookedSeats['n_bookings'];
+			$lecture['bookedSeats'] = intval($bookedSeats['n_bookings']);
 
 			// Get courseName, teacherName
 			if ($userType == 1) {
@@ -230,7 +222,7 @@ if (!function_exists('list_lectures')) {
 				$lecture['teacherName'] = $userData['lastname'] . ' ' . $userData['firstname'];
 			} else {
 				$stmt_inner = $pdo->prepare('SELECT * FROM courses WHERE ID = :courseId');
-				$stmt_inner->bindValue(':courseId', $l['course_id'], PDO::PARAM_INT);
+				$stmt_inner->bindValue(':courseId', $lecture['courseId'], PDO::PARAM_INT);
 
 				if (!$stmt_inner->execute()) {
 					throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
@@ -246,14 +238,14 @@ if (!function_exists('list_lectures')) {
 				$lecture['courseName'] = $course['name'];
 
 				$stmt_inner = $pdo->prepare('SELECT * FROM users WHERE ID = :teacherId');
-				$stmt_inner->bindValue(':teacherId', $course['teacher_id'], PDO::PARAM_INT);
+				$stmt_inner->bindValue(':teacherId', intval($course['teacher_id']), PDO::PARAM_INT);
 
 				if (!$stmt_inner->execute()) {
 					throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 				}
 
 				$teacher = $stmt_inner->fetch();
-				if (!$teacher || $teacher['type'] !== 1) {
+				if (!$teacher || intval($teacher['type']) !== 1) {
 					// Teacher does not exist, or is not a teacher
 					echo json_encode(array('success' => false));
 					return;
@@ -265,14 +257,14 @@ if (!function_exists('list_lectures')) {
 					$lectures['bookedSelf'] = false;
 				} else {
 					$stmt_inner = $pdo->prepare('SELECT * FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL AND user_id == :userId');
-					$stmt_inner->bindValue(':lectureId', $l['ID'], PDO::PARAM_INT);
-					$stmt_inner->bindValue(':userId', $userData['ID'], PDO::PARAM_INT);
+					$stmt_inner->bindValue(':lectureId', $lecture['lectureId'], PDO::PARAM_INT);
+					$stmt_inner->bindValue(':userId', $userId, PDO::PARAM_INT);
 
 					if (!$stmt_inner->execute()) {
 						throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 					}
 
-					$lecture['bookedSelf'] = $stmt_inner->fetch();
+					$lecture['bookedSelf'] = boolval($stmt_inner->fetch());
 				}
 
 				$lecture['teacherName'] = $teacher['lastname'] . ' ' . $teacher['firstname'];
