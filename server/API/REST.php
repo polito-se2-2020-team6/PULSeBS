@@ -31,6 +31,10 @@ if(!function_exists("check_login")){
 	function check_login(){
 			$pdo = new PDO("sqlite:../db.sqlite");
 
+			if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+				return false;
+			}
+
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"]);
 
