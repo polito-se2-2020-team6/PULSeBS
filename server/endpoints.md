@@ -16,7 +16,7 @@ Will set a cookie with a string used to authentication
     - empty
   - *response params*
     - success: bool
-    - list: [object]
+    - list: [array(object)]
       - typeId: int
       - typeDesc: string *(student, teacher)*
 
