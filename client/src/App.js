@@ -9,6 +9,7 @@ import { AuthContext } from "./auth/AuthContext";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import Student from "./components/Student";
 import API from "./API/API";
+import { ROLES } from "./data/consts";
 
 class App extends React.Component {
   constructor(props) {
@@ -27,9 +28,15 @@ class App extends React.Component {
     // });
     return API.userLogin(username, password)
       .then((user) => {
-        if ((user.type = 1)) {
-          this.setState({ authUser: user, authErr: null });
-          this.props.history.push("/teacher");
+        switch (user.type) {
+          case ROLES.TEACHER:
+            this.setState({ authUser: user, authErr: null });
+            this.props.history.push("/teacher");
+            break;
+          case ROLES.STUDENT:
+            this.setState({ authUser: user, authErr: null });
+            this.props.history.push("/student");
+            break;
         }
       })
       .catch((errObj) => {

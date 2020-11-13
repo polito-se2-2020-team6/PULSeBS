@@ -1,5 +1,5 @@
 import Lecture from "./Lecture";
-const baseURL = "/api";
+const baseURL = "/API/REST.php/api";
 
 //return list of lectures based on the userId **GET** /api/users/{userId}/lectures
 async function getLectures(userId) {
@@ -28,42 +28,28 @@ async function getLectures(userId) {
 //Login **POST** /api/login
 
 async function userLogin(username, password) {
-  console.log("SSSS");
-  return new Promise((resolve, reject) => {
-    fetch(baseURL + "/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          response.json().then((user) => {
-            resolve(user);
-          });
-        } else {
-          // analyze the cause of error
-          response
-            .json()
-            .then((obj) => {
-              reject(obj);
-            }) // error msg in the response body
-            .catch((err) => {
-              reject({
-                errors: [
-                  { param: "Application", msg: "Cannot parse server response" },
-                ],
-              });
-            }); // something else
-        }
-      })
-      .catch((err) => {
-        reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
-      }); // connection errors
+  return new Promise(function (resolve, reject) {
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    let url = `${baseURL}/login`;
+    let data = `username=${username}&password=${password}`;
+    req.open("post", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.onload = function () {
+      if (req.status === 200) {
+        const response = req.response;
+        let user = JSON.parse(response);
+        resolve(user);
+      } else {
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
   });
 }
 
