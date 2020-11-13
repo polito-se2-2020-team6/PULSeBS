@@ -9,6 +9,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "9",
-        "guzzle/guzzle": "^3.9"
+        "guzzlehttp/guzzle": "^7.2"
     }
 }
