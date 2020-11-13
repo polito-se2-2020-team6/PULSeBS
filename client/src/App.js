@@ -16,6 +16,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       // users: USERS,
+      studentsList : []
     };
   }
 
@@ -44,6 +45,30 @@ class App extends React.Component {
       });
   };
 
+  //set state from returned list of stuents booked to a lecture
+  studentsBooked = (lectureId) => {
+    API.getStudentsBooked(lectureId)
+    .then((studentsList) => {
+      this.setState({
+        studentsList: studentsList || [],
+      });
+    })
+    .catch((errorObj) => {
+      console.log(errorObj);
+    });
+  };
+
+  //delete a lecture as teacher
+  deleteLecture = (lectureId) => {
+    API.deleteLecture(lectureId)
+    .then(() => {
+      //get the update list of lectures? and set state? 
+    })
+    .catch((errorObj) => {
+      console.log(errorObj);
+    });
+  };
+
   render() {
     const value = {
       // authUser: this.state.authUser,
@@ -56,7 +81,10 @@ class App extends React.Component {
         <Navigation />
         <Switch>
           <Route path="/login" component={LoginPage}></Route>
-          <Route path="/teacher" component={Teacher}></Route>
+          <Route path="/teacher"><Teacher studentsList={this.state.studentsList}
+                                          studentsBooked={this.studentsBooked}
+                                          deleteLecture={this.deleteLecture}/>                               
+          </Route>
           <Route path="/student" component={Student}></Route>
 
           <Redirect from="/" exact to="login" />

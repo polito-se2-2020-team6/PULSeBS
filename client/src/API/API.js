@@ -23,7 +23,41 @@ async function getLectures(userId) {
 
 //# Cancel a booking **DELETE** /api/users/{userId}/book
 
-// Cancel a lecture **DELETE** /api/lectures/{lectureId}
+// Return list of students booked to a lecture **GET** /api/lectures/{lectureId}/students
+async function getStudentsBooked(lectureId) {
+  let url = "/lectures/";
+  if (lectureId) {
+    const queryParams = lectureId + "/students";
+    url += queryParams;
+  }
+  const response = await fetch(baseURL + url);
+  const studentsList = await response.json();
+  if (response.ok) {
+    return studentsList;
+  } else {
+    let err = { status: response.status, errObj: studentsList };
+    throw err; // An object with the error coming from the server
+  }
+}
+
+
+// Cancel a lecture **DELETE** /api/lectures/{lectureId} 
+async function deleteLecture(lectureId) {  // don't know if this work
+  return new Promise((resolve, reject) => {
+      fetch(baseURL + "/lectures/" + lectureId, {
+          method: 'DELETE'
+      }).then( (response) => {
+          if(response.ok) {
+              resolve(null);
+          } else {
+              // analyze the cause of error
+              response.json()
+              .then( (obj) => {reject(obj);} ) // error msg in the response body
+              .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+          }
+      }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+  });
+}
 
 //Login **POST** /api/login
 
@@ -84,5 +118,5 @@ async function userLogout() {
   });
 }
 
-const API = { getLectures, userLogin, userLogout };
+const API = { getLectures, userLogin, userLogout, getStudentsBooked, deleteLecture };
 export default API;
