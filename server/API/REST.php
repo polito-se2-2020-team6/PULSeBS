@@ -7,7 +7,7 @@ header("Access-Control-Allow-Methods: PUT, GET, POST");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header("Content-Type: application/json");
 
-define("API_PATH", $_SERVER["SCRIPT_NAME"]."/api");
+define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
 /* Constant defining */
 
@@ -16,97 +16,94 @@ define("USER_TYPE_TEACHER", 1);
 
 /* Turning warning and notices into exceptions */
 
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    // error was suppressed with the @-operator
-    if (0 === error_reporting()) {
-        return false;
-    }
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+	// error was suppressed with the @-operator
+	if (0 === error_reporting()) {
+		return false;
+	}
 
-    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+	throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 
 /* Utilities */
 
-if(!function_exists("check_login")){
+if (!function_exists("check_login")) {
 	/**
 	 * Check if a user is logged
 	 * 
 	 * @return bool true if is logged, false otherwise
 	 */
-	function check_login(){
-			$pdo = new PDO("sqlite:../db.sqlite");
+	function check_login() {
+		$pdo = new PDO("sqlite:../db.sqlite");
 
-			if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
-				return false;
-			}
+		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
+			return false;
+		}
 
-			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
+		$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
+		$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
-			if(!$stmt->execute()){
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
-			}
+		if (!$stmt->execute()) {
+			throw new Error($stmt->errorInfo(), $stmt->errorCode());
+		}
 
-			$user_data = $stmt->fetch();
+		$user_data = $stmt->fetch();
 
-			return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
+		return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
 	}
 }
 
 
 /* Functions that implements endpoints */
 
-if(!function_exists("do_login")){
-	function do_login($vars){
-		try{
+if (!function_exists("do_login")) {
+	function do_login($vars) {
+		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
 
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE username = :username");
 			$stmt->bindValue(":username", $_POST["username"]);
 
-			if(!$stmt->execute()){
+			if (!$stmt->execute()) {
 				throw new Error($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			$user_data = $stmt->fetch();
 
-			if(!password_verify($_POST["password"], $user_data["password"])){
+			if (!password_verify($_POST["password"], $user_data["password"])) {
 				http_response_code(403);
 				echo json_encode(array('success' => false));
 				return;
-			}
-			else{
+			} else {
 				//TODO da trasformare in un vero nonce da salvare nel db
 				$nonce = md5(serialize($user_data));
 
 				$_SESSION['user_id'] = $user_data["ID"];
 				$_SESSION['nonce'] = $nonce;
 
-				echo json_encode(array("success" => true, "userId" => 
+				echo json_encode(array("success" => true, "userId" =>
 				$user_data['ID'], 'type' => $user_data['type']));
 
 				return;
 			}
-		}
-		catch(Exception $e){
+		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
 	}
 }
 
-if(!function_exists('am_i_logged')){
-	function am_i_logged(){
-		if(!check_login()){
+if (!function_exists('am_i_logged')) {
+	function am_i_logged() {
+		if (!check_login()) {
 			http_response_code(403);
 			echo json_encode(array('success' => true, 'loggedIn' => false));
-		}
-		else
+		} else
 			echo json_encode(array('success' => true, 'loggedIn' => true));
 	}
 }
 
-if(!function_exists('do_logout')){
-	function do_logout($vars){
+if (!function_exists('do_logout')) {
+	function do_logout($vars) {
 		unset($_SESSION['nonce']);
 		unset($_SESSION['user_id']);
 
@@ -114,8 +111,8 @@ if(!function_exists('do_logout')){
 	}
 }
 
-if(!function_exists('print_types')){
-	function print_types($vars){
+if (!function_exists('print_types')) {
+	function print_types($vars) {
 		echo json_encode(array('success' => true, 'list' => array(
 			array("typeId" => USER_TYPE_STUDENT, 'typeDesc' => 'student'),
 			array("typeId" => USER_TYPE_TEACHER, 'typeDesc' => 'teacher')
@@ -123,21 +120,22 @@ if(!function_exists('print_types')){
 	}
 }
 
-if(!function_exists('print_myself')){
-	function print_myself($vars){
-		try{
+if (!function_exists('print_myself')) {
+	function print_myself($vars) {
+		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
 
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
-			if(!$stmt->execute()){
+			if (!$stmt->execute()) {
 				throw new Error($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			$user_data = $stmt->fetch();
 
-			echo json_encode(array('success' => true,
+			echo json_encode(array(
+				'success' => true,
 				'userId' => intval($user_data['ID']),
 				'type' => intval($user_data['type']),
 				'username' => $user_data['username'],
@@ -145,8 +143,7 @@ if(!function_exists('print_myself')){
 				'firstname' => $user_data['firstname'],
 				'lastname' => $user_data['lastname'],
 			));
-		}
-		catch(Exception $e){
+		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
 	}
@@ -163,10 +160,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
 	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
 	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
-	$r->addRoute('GET', API_PATH."/types", "print_types");
+	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
 	/* users route */
-	$r->addRoute('GET', API_PATH.'/user/me', ['print_myself', NEED_AUTH]);
+	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
@@ -190,25 +187,24 @@ switch ($routeInfo[0]) {
 		// ... 405 Method Not Allowed
 		break;
 	case FastRoute\Dispatcher::FOUND:
-		if(!is_array($routeInfo[1])){
+		if (!is_array($routeInfo[1])) {
 			$handler = $routeInfo[1];
 			$vars = $routeInfo[2];
 			$handler($vars);
-		}
-		else{
+		} else {
 			$ok = true;
-			for($i = 1; $i < count($routeInfo[1]); $i++){
-				switch($routeInfo[1][$i]){
+			for ($i = 1; $i < count($routeInfo[1]); $i++) {
+				switch ($routeInfo[1][$i]) {
 					case NEED_AUTH:
-						if(!check_login()){
+						if (!check_login()) {
 							$ok = false;
 							http_response_code(403);
 						}
-					break;
+						break;
 					default:
-					break;
+						break;
 				}
-				if(!$ok) break;
+				if (!$ok) break;
 			}
 
 			$handler = $routeInfo[1][0];

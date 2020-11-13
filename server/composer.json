@@ -1,5 +1,14 @@
 {
+    "autoload": {
+        "classmap": [
+            "API/"
+        ]
+    },
     "require": {
         "nikic/fast-route": "^1.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9",
+        "guzzle/guzzle": "^3.9"
     }
 }
