@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
-import Navigation from "./components/nav";
+import Navigation from "./components/Nav";
 
 import { AuthContext } from "./auth/AuthContext";
 // import { USERS } from "./data/fakeUsers";
@@ -16,7 +16,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       // users: USERS,
-      studentsList : []
+      studentsList: [],
     };
   }
 
@@ -45,34 +45,41 @@ class App extends React.Component {
       });
   };
 
+  logout = () => {
+    return API.userLogout().then(() => {
+      this.setState({ authUser: null, authErr: null });
+      this.props.history.push("/login");
+    });
+  };
+
   //set state from returned list of stuents booked to a lecture
   studentsBooked = (lectureId) => {
     API.getStudentsBooked(lectureId)
-    .then((studentsList) => {
-      this.setState({
-        studentsList: studentsList || [],
+      .then((studentsList) => {
+        this.setState({
+          studentsList: studentsList || [],
+        });
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
       });
-    })
-    .catch((errorObj) => {
-      console.log(errorObj);
-    });
   };
 
   //delete a lecture as teacher
   deleteLecture = (lectureId) => {
     API.deleteLecture(lectureId)
-    .then(() => {
-      //get the update list of lectures? and set state? 
-    })
-    .catch((errorObj) => {
-      console.log(errorObj);
-    });
+      .then(() => {
+        //get the update list of lectures? and set state?
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });
   };
 
   render() {
     const value = {
-      // authUser: this.state.authUser,
-      // authErr: this.state.authErr,
+      authUser: this.state.authUser,
+      authErr: this.state.authErr,
       loginUser: this.login,
       logoutUser: this.logout,
     };
@@ -81,9 +88,12 @@ class App extends React.Component {
         <Navigation />
         <Switch>
           <Route path="/login" component={LoginPage}></Route>
-          <Route path="/teacher"><Teacher studentsList={this.state.studentsList}
-                                          studentsBooked={this.studentsBooked}
-                                          deleteLecture={this.deleteLecture}/>                               
+          <Route path="/teacher">
+            <Teacher
+              studentsList={this.state.studentsList}
+              studentsBooked={this.studentsBooked}
+              deleteLecture={this.deleteLecture}
+            />
           </Route>
           <Route path="/student" component={Student}></Route>
 
