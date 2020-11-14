@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
-import Navigation from "./components/Nav";
+import Navigation from "./components/nav";
 
 import { AuthContext } from "./auth/AuthContext";
 // import { USERS } from "./data/fakeUsers";

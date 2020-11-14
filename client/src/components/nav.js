@@ -16,7 +16,7 @@ class Navigation extends Component {
             {context.authUser ? (
               <>
                 <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-                  <Navbar.Brand href="/">PULSEBS</Navbar.Brand>
+                  <Navbar.Brand>PULSEBS</Navbar.Brand>
                   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                   <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="container-fluid">
