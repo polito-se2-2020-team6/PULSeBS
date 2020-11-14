@@ -54,7 +54,7 @@ class Teacher extends React.Component {
     }
 
     deleteLecture(lecture){
-        this.setState({totalLectures : this.state.totalLectures.filter(c => c.corso !== lecture)})
+        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lezione !== lecture)})
         //collega all'API
 
     };
@@ -83,7 +83,7 @@ class Teacher extends React.Component {
                                                             onClick={()=> this.setState({students: c.studenti, course: c.corso, lecture: c.lezione})}>
                                                             {c.lezione} 
                                                             
-                                                            <button type="button" class="close" aria-label="Close" onClick={this.deleteLecture.bind(this, c.corso)}>
+                                                            <button type="button" class="close" aria-label="Close" onClick={this.deleteLecture.bind(this, c.lezione)}>
                                                                 <span aria-hidden="true">&times;</span>
                                                             </button>
                                                         </ListGroup.Item>
