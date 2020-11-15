@@ -1,5 +1,6 @@
 import React from "react";
 import { Col, Container, Row, Tabs, Tab, ListGroup } from "react-bootstrap";
+import { AuthContext } from "../auth/AuthContext";
 
 /*  listaLezione -> getLectures 
     corso -> courseId
@@ -60,9 +61,13 @@ class Teacher extends React.Component {
     };
     
     render() {
-        
         const corsi =this.state.totalLectures.map((item) => item.corso ).filter((v,i,s)=> s.indexOf(v) === i ) ;
-        return (<>
+        return (
+            <AuthContext.Consumer>
+            {(context) => (
+              <>
+                {context.authUser ? (
+                  <>
             <Container fluid className="mt-5 "> 
             
                 <Row className="justify-content-md-center" >
@@ -114,7 +119,13 @@ class Teacher extends React.Component {
                     )}
                 </Tabs>
             </Container>
-        </>);
+            </>
+            ) : (
+              <></>
+            )}
+          </>
+        )}
+      </AuthContext.Consumer>);
     }
 }
 
