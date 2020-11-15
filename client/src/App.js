@@ -1,16 +1,15 @@
 import React from "react";
 import "./App.css";
+import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
+import Calender from "./components/Calender";
 import Navigation from "./components/nav";
+import Student from "./components/Student";
 
 import { AuthContext } from "./auth/AuthContext";
-// import { USERS } from "./data/fakeUsers";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
-import Student from "./components/Student";
-import API from "./API/API";
 import { ROLES } from "./data/consts";
-import Calender from "./components/Calender";
 
 class App extends React.Component {
   componentDidMount() {
