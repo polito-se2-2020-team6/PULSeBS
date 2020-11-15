@@ -103,6 +103,17 @@ async function userLogin(username, password) {
 //Meaning of field type **GET** /api/types
 
 //Check login **GET** /api/logged
+async function isLogged() {
+  const response = await fetch(`${baseURL}/logged`);
+  const userJson = await response.json();
+  console.log(userJson.user.loggedIn);
+  if (response.ok) {
+    return userJson;
+  } else {
+    let err = { status: response.status, errObj: userJson };
+    throw err; // An object with the error coming from the server
+  }
+}
 
 //Logout **POST** /api/logout
 async function userLogout() {
@@ -135,6 +146,7 @@ const API = {
   getLectures,
   userLogin,
   userLogout,
+  isLogged,
   getStudentsBooked,
   deleteLecture,
 };

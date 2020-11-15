@@ -10,8 +10,20 @@ import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import Student from "./components/Student";
 import API from "./API/API";
 import { ROLES } from "./data/consts";
+import Calender from "./components/Calender";
 
 class App extends React.Component {
+  componentDidMount() {
+    API.isLogged()
+      .then((user) => {
+        this.setState({ authUser: user });
+      })
+      .catch((err) => {
+        this.props.history.push("/login");
+        this.setState({ authErr: err.errorObj });
+      });
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -32,11 +44,11 @@ class App extends React.Component {
         switch (user.type) {
           case ROLES.TEACHER:
             this.setState({ authUser: user, authErr: null });
-            this.props.history.push("/teacher");
+            this.props.history.push("/teacher/home");
             break;
           case ROLES.STUDENT:
             this.setState({ authUser: user, authErr: null });
-            this.props.history.push("/student");
+            this.props.history.push("/student/home");
             break;
         }
       })
@@ -86,17 +98,22 @@ class App extends React.Component {
     return (
       <AuthContext.Provider value={value}>
         <Navigation />
+
         <Switch>
           <Route path="/login" component={LoginPage}></Route>
-          <Route path="/teacher">
+          <Route path="/teacher/home">
             <Teacher
               studentsList={this.state.studentsList}
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
             />
           </Route>
-          <Route path="/student" component={Student}></Route>
-
+          <Route path="/student/calender">
+            <Calender />
+          </Route>
+          <Route path="/student/home">
+            <Student />
+          </Route>
           <Redirect from="/" exact to="login" />
         </Switch>
       </AuthContext.Provider>
