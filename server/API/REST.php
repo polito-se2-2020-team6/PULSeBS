@@ -9,15 +9,13 @@ header("Content-Type: application/json");
 
 define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
-define('LECTURE_PRESENCE', 0x0);
-define('LECTURE_REMOTE', 0x1);
-
 /* Constant defining */
 
 define("USER_TYPE_STUDENT", 0);
 define("USER_TYPE_TEACHER", 1);
 
-
+define('LECTURE_PRESENCE', 0x0);
+define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
 
 /* Turning warning and notices into exceptions */
@@ -289,6 +287,7 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
+
 if (!function_exists('print_types')) {
 	function print_types($vars) {
 		echo json_encode(array('success' => true, 'list' => array(
@@ -454,18 +453,101 @@ if (!function_exists('booked_students')) {
 	}
 }
 
+if (!function_exists('book_lecture')) {
+	function book_lecture($vars) {
+		$userId = intval($vars['userId']);
 
+		try {
+			if (!isset($_POST['lectureId'])) {
+				throw new Error('Expected lectureId parameter.');
+			}
 
+			$lectureId = intval($_POST['lectureId']);
+			$pdo = new PDO("sqlite:../db.sqlite");
 
+			// Check user exists and is student
+			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :student');
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			if (!$stmt->fetch()) {
+				throw new Error('Student ' . $userId . ' not found.');
+			}
 
+			// Check lecture exists and deadline for booking is not met (23.00 of day before)
+			$stmt = $pdo->prepare('SELECT *
+								   FROM lectures
+								   WHERE ID = :lectureId 
+										AND settings & :cancelled = 0');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			$lecture = $stmt->fetch();
+			if (!$lecture) {
+				throw new Error('Lecture ' . $userId . ' not found.');
+			}
 
+			// Check for timezones discrepancies
+			$bookingDeadline = new DateTime();
+			$bookingDeadline->setTimestamp(intval($lecture['start_ts']));
+			$bookingDeadline->modify('-1 day')->setTime(23, 0, 0);
+			$now = time();
 
+			if ($now >= $bookingDeadline) {
+				throw new Error('Booking s for lecture ' . $lectureId . ' are closed.');
+			}
 
+			// Check student is following the course of the lecture
+			$stmt = $pdo->prepare('SELECT *
+								   FROM lectures L, course_subsrciptions CS
+								   WHERE L.course_id = CS.course_id
+									   AND L.ID = :lectureId
+									   AND user_id = :userId');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			if (!$stmt->fetch()) {
+				throw new Error('Student ' . $userId . ' is not following course of lecture ' . $lectureId . '.');
+			}
 
+			// Check student is not currently booked
+			$stmt = $pdo->prepare('SELECT * 
+								   FROM bookings 
+								   WHERE user_id = :userId
+										   AND lecture_id = :lectureId
+										   AND cancellation_ts IS NULL');
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			if ($stmt->fetch()) {
+				throw new Error('Student ' . $userId . ' has already booked for lecture ' . $lectureId . '.');
+			}
 
+			// Book to lecture
+			$stmt = $pdo->prepare('INSERT INTO bookings (lecture_id, user_id, booking_ts, cancellation_ts, attended) 
+								   VALUES (:lectureId, :userId, :bookingTs, NULL, NULL)');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':bookingTs', $now, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
 
-
-
+			// Success
+			echo json_encode(array('success' => true));
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
 
 if (!function_exists('cancel_booking')) {
 	function cancel_booking($vars) {
@@ -548,6 +630,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
