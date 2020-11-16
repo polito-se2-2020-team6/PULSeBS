@@ -184,7 +184,7 @@ if (!function_exists('list_lectures')) {
 		$lectures = array();
 		while ($l = $stmt->fetch()) {
 			$lecture = array(
-				'lectureId' => intval($l['ID']),
+				'lectureId' => intval($l['0']),
 				'courseId' => intval($l['course_id']),
 				'startTS' => intval($l['start_ts']),
 				'endTS' => intval($l['end_ts']),
