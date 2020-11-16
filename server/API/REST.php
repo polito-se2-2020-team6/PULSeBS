@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 header("Access-Control-Allow-Origin: *");
@@ -29,35 +29,6 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 	throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 
-/* Utilities */
-
-if (!function_exists("check_login")) {
-	/**
-	 * Check if a user is logged
-	 * 
-	 * @return bool true if is logged, false otherwise
-	 */
-	function check_login() {
-		$pdo = new PDO("sqlite:../db.sqlite");
-
-		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
-			return false;
-		}
-
-		$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
-		$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
-
-		if (!$stmt->execute()) {
-			throw new Error($stmt->errorInfo(), $stmt->errorCode());
-		}
-
-		$user_data = $stmt->fetch();
-
-		return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
-	}
-}
-
-
 /* Functions that implements endpoints */
 
 if (!function_exists("do_login")) {
@@ -69,7 +40,7 @@ if (!function_exists("do_login")) {
 			$stmt->bindValue(":username", $_POST["username"]);
 
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			$user_data = $stmt->fetch();
@@ -127,7 +98,7 @@ if (!function_exists('list_lectures')) {
 		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 
 		if (!$stmt->execute()) {
-			throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 		}
 		$userData = $stmt->fetch();
 
@@ -177,7 +148,7 @@ if (!function_exists('list_lectures')) {
 		}
 
 		if (!$stmt->execute()) {
-			throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 		}
 
 		$lectures = array();
@@ -195,7 +166,7 @@ if (!function_exists('list_lectures')) {
 			$stmt_inner->bindValue(':roomId', intval($l['room_id']), PDO::PARAM_INT);
 
 			if (!$stmt_inner->execute()) {
-				throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 			}
 
 			$room = $stmt_inner->fetch();
@@ -213,7 +184,7 @@ if (!function_exists('list_lectures')) {
 			$stmt_inner->bindValue(':lectureId', $lecture['lectureId'], PDO::PARAM_INT);
 
 			if (!$stmt_inner->execute()) {
-				throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 			}
 
 			$bookedSeats = $stmt_inner->fetch();
@@ -234,7 +205,7 @@ if (!function_exists('list_lectures')) {
 				$stmt_inner->bindValue(':courseId', $lecture['courseId'], PDO::PARAM_INT);
 
 				if (!$stmt_inner->execute()) {
-					throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+					throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 				}
 
 				$course = $stmt_inner->fetch();
@@ -250,7 +221,7 @@ if (!function_exists('list_lectures')) {
 				$stmt_inner->bindValue(':teacherId', intval($course['teacher_id']), PDO::PARAM_INT);
 
 				if (!$stmt_inner->execute()) {
-					throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+					throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 				}
 
 				$teacher = $stmt_inner->fetch();
@@ -270,7 +241,7 @@ if (!function_exists('list_lectures')) {
 					$stmt_inner->bindValue(':userId', $userId, PDO::PARAM_INT);
 
 					if (!$stmt_inner->execute()) {
-						throw new Error($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+						throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 					}
 
 					$lecture['bookedSelf'] = boolval($stmt_inner->fetch());
@@ -306,7 +277,7 @@ if (!function_exists('print_myself')) {
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			$user_data = $stmt->fetch();
@@ -343,7 +314,7 @@ if (!function_exists('cancel_lecture')) {
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':teacher', USER_TYPE_TEACHER, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if (!$stmt->fetch()) {
 				throw new Error('Teacher ' . $userId . ' not found.');
@@ -364,10 +335,10 @@ if (!function_exists('cancel_lecture')) {
 			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
 			$stmt->bindValue(':nextHour', $nextHour->getTimestamp(), PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if (!$stmt->fetch()) {
-				throw new Error('Lecture ' . $lectureId . ' not found.');
+				throw new PDOException('Lecture ' . $lectureId . ' not found.');
 			}
 
 			// Cancel lecture
@@ -377,7 +348,7 @@ if (!function_exists('cancel_lecture')) {
 			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
 			$stmt->bindValue(':lecture', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			// Success
 			echo json_encode(array('success' => true));
@@ -399,7 +370,7 @@ if (!function_exists('booked_students')) {
 			$stmt = $pdo->prepare('SELECT type FROM users WHERE ID = :userId');
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			$user = $stmt->fetch();
 			if (!$user || $user['type'] != intval(USER_TYPE_TEACHER)) {
@@ -415,7 +386,7 @@ if (!function_exists('booked_students')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if (!$stmt->fetch()) {
 				throw new Error('Lecture' . $lectureId . ' not found.');
@@ -432,7 +403,7 @@ if (!function_exists('booked_students')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':student', intval(USER_TYPE_STUDENT), PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			$students = array();
 			while ($s = $stmt->fetch()) {
@@ -470,7 +441,7 @@ if (!function_exists('book_lecture')) {
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if (!$stmt->fetch()) {
 				throw new Error('Student ' . $userId . ' not found.');
@@ -484,7 +455,7 @@ if (!function_exists('book_lecture')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			$lecture = $stmt->fetch();
 			if (!$lecture) {
@@ -510,7 +481,7 @@ if (!function_exists('book_lecture')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if (!$stmt->fetch()) {
 				throw new Error('Student ' . $userId . ' is not following course of lecture ' . $lectureId . '.');
@@ -525,7 +496,7 @@ if (!function_exists('book_lecture')) {
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if ($stmt->fetch()) {
 				throw new Error('Student ' . $userId . ' has already booked for lecture ' . $lectureId . '.');
@@ -538,7 +509,7 @@ if (!function_exists('book_lecture')) {
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':bookingTs', $now, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			// Success
@@ -566,7 +537,7 @@ if (!function_exists('cancel_booking')) {
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 			if (!$stmt->fetch()) {
 				throw new Error('Student ' . $userId . ' not found.');
@@ -593,7 +564,7 @@ if (!function_exists('cancel_booking')) {
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
-				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+				throw new PDOException($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			// Success
