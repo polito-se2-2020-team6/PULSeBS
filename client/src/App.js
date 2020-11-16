@@ -28,6 +28,7 @@ class App extends React.Component {
     this.state = {
       // users: USERS,
       studentsList: [],
+      lectureList: [],
     };
   }
 
@@ -76,6 +77,19 @@ class App extends React.Component {
       });
   };
 
+
+  getLectures = (userId) => {
+    API.getLectures(userId)
+      .then((lectureList) => {
+        this.setState({
+          lectureList: lectureList || [],
+        });
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });
+  };
+
   //delete a lecture as teacher
   deleteLecture = (lectureId) => {
     API.deleteLecture(lectureId)
@@ -105,6 +119,7 @@ class App extends React.Component {
               studentsList={this.state.studentsList}
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
+              getLectures={this.getLectures}
             />
           </Route>
           <Route path="/student/calender">
