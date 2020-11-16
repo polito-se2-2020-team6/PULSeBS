@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 use GuzzleHttp\Client;
 
-class UnitTest extends TestCase {
+class LoginTest extends TestCase {
 
 	public function testLogin() {
 		// create our http client (Guzzle)
