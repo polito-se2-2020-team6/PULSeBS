@@ -12,6 +12,7 @@ define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 define('LECTURE_PRESENCE', 0x0);
 define('LECTURE_REMOTE', 0x1);
 
+
 /* Constant defining */
 
 define("USER_TYPE_STUDENT", 0);
@@ -55,7 +56,10 @@ if (!function_exists("check_login")) {
 
 		$user_data = $stmt->fetch();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> PULSEBS-39
 		return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
 	}
 }
@@ -328,9 +332,6 @@ if (!function_exists('print_myself')) {
 	}
 }
 
-
-
-
 if (!function_exists('cancel_lecture')) {
 	function cancel_lecture($vars) {
 		$lectureId = intval($vars['lectureId']);
@@ -393,6 +394,67 @@ if (!function_exists('cancel_lecture')) {
 	}
 }
 
+if (!function_exists('cancel_booking')) {
+	function cancel_booking($vars) {
+		$userId = intval($vars['userId']);
+
+		try {
+			if (!isset($_POST['lectureId'])) {
+				throw new Error('Expected lectureId parameter.');
+			}
+
+			$lectureId = intval($_POST['lectureId']);
+			$pdo = new PDO('../db.sqlite');
+
+			// Check user exists and is student
+			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :student');
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			if (!$stmt->fetch()) {
+				throw new Error('Student ' . $userId . ' not found.');
+			}
+
+			// Check lecture exists, is in future and is booked by student
+			$now = time();
+			$stmt = $pdo->prepare('SELECT * 
+								   FROM lectures L, bookings B
+								   WHERE L.ID = N.lecture_id
+									   AND L.ID = :lectureId
+									   AND L.start_ts > :currentTs
+									   AND B.user_id = :userId
+									   AND calcellation_ts IS NULL');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':currentTs', $now, PDO::PARAM_INT);	// Check for timezones discrepancies
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			// Delete (via update)
+			$stmt = $pdo->prepare('UPDATE bookings 
+								   SET cancellation_ts = :currentTs 
+								   WHERE user_id = :userId 
+									   AND lecture_id = :lectureId');
+			$stmt->bindValue(':currentTs', $now, PDO::PARAM_INT);
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+
+			// Success
+			echo json_encode(array('success' => true));
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
+
+
+
+
+
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 /*Constants to define option for the routes*/
@@ -411,6 +473,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/lectures', ['list_lectures', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
+	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
