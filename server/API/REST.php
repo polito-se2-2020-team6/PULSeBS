@@ -3,7 +3,7 @@ session_start();
 require_once "../vendor/autoload.php";
 
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: PUT, GET, POST");
+header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header("Content-Type: application/json");
 
@@ -16,6 +16,9 @@ define('LECTURE_REMOTE', 0x1);
 
 define("USER_TYPE_STUDENT", 0);
 define("USER_TYPE_TEACHER", 1);
+
+
+define('LECTURE_CANCELLED', 0x2);
 
 /* Turning warning and notices into exceptions */
 
@@ -39,13 +42,12 @@ if (!function_exists("check_login")) {
 	function check_login() {
 		$pdo = new PDO("sqlite:../db.sqlite");
 
-		if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
 			return false;
 		}
 
 		$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
 		$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
-
 
 		if (!$stmt->execute()) {
 			throw new Error($stmt->errorInfo(), $stmt->errorCode());
@@ -55,7 +57,6 @@ if (!function_exists("check_login")) {
 
 
 		return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
-
 	}
 }
 
@@ -289,8 +290,8 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
-if(!function_exists('print_types')){
-	function print_types($vars){
+if (!function_exists('print_types')) {
+	function print_types($vars) {
 		echo json_encode(array('success' => true, 'list' => array(
 			array("typeId" => USER_TYPE_STUDENT, 'typeDesc' => 'student'),
 			array("typeId" => USER_TYPE_TEACHER, 'typeDesc' => 'teacher')
@@ -298,21 +299,22 @@ if(!function_exists('print_types')){
 	}
 }
 
-if(!function_exists('print_myself')){
-	function print_myself($vars){
-		try{
+if (!function_exists('print_myself')) {
+	function print_myself($vars) {
+		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
 
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
-			if(!$stmt->execute()){
+			if (!$stmt->execute()) {
 				throw new Error($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			$user_data = $stmt->fetch();
 
-			echo json_encode(array('success' => true,
+			echo json_encode(array(
+				'success' => true,
 				'userId' => intval($user_data['ID']),
 				'type' => intval($user_data['type']),
 				'username' => $user_data['username'],
@@ -320,8 +322,72 @@ if(!function_exists('print_myself')){
 				'firstname' => $user_data['firstname'],
 				'lastname' => $user_data['lastname'],
 			));
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
-		catch(Exception $e){
+	}
+}
+
+
+
+
+if (!function_exists('cancel_lecture')) {
+	function cancel_lecture($vars) {
+		$lectureId = intval($vars['lectureId']);
+
+		try {
+			if (!isset($_SESSION['user_id'])) {
+				throw new Error('');
+			}
+
+			$userId = intval($_SESSION['user_id']);
+			$pdo = new PDO('../db.sqlite');
+
+			// Check user exists and is teacher
+			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':teacher', USER_TYPE_TEACHER, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			if (!$stmt->fetch()) {
+				throw new Error('Teacher ' . $userId . ' not found.');
+			}
+
+			// Check lecture exists, is assigned to teacher and > 1h to start
+			$nextHour = new DateTime();
+			$nextHour->modify('+1 hour'); // Check for timezones discrepancies
+			$stmt = $pdo->prepare('SELECT *
+								   FROM lectures L, courses C
+								   WHERE L.course_id = C.ID
+									   AND L.ID = :lectureId
+									   AND C.teacherId = :userId
+									   AND settings & :cancelled = 0
+									   AND L.start_ts > :nextHour');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
+			$stmt->bindValue(':nextHour', $nextHour->getTimestamp(), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+			if (!$stmt->fetch()) {
+				throw new Error('Lecture ' . $lectureId . ' not found.');
+			}
+
+			// Cancel lecture
+			$stmt = $pdo->prepare('UPDATE lectures
+								   SET settings = settings & :cancelled
+								   WHERE ID = :lectureId');
+			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
+			$stmt->bindValue(':lecture', $lectureId, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			}
+
+			// Success
+			echo json_encode(array('success' => true));
+		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
 	}
@@ -338,12 +404,13 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
 	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
 	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
-	$r->addRoute('GET', API_PATH."/types", "print_types");
+	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
 	/* users route */
-	$r->addRoute('GET', API_PATH.'/user/me', ['print_myself', NEED_AUTH]);
-	
+	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
+
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/lectures', ['list_lectures', NEED_AUTH]);
+	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
