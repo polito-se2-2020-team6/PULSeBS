@@ -8,16 +8,16 @@ import {
   Container,
   Row,
 } from "react-bootstrap";
-import { ROLES } from "../data/consts";
+// import { ROLES } from "../data/consts";
 import { AuthContext } from "../auth/AuthContext";
 
-class LoginForm extends React.Component {
+class LoginPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
       password: "",
-      role: ROLES.TEACHER,
+      // role: ROLES.TEACHER,
       //   submitted: false,
       //   error: "",
       //   has_error: false,
@@ -36,17 +36,17 @@ class LoginForm extends React.Component {
 
   handleSubmit = (event, onLogin) => {
     event.preventDefault();
-    onLogin(this.state.username, this.state.password, this.state.role);
+    onLogin(this.state.username, this.state.password);
   };
 
   render() {
     return (
       <AuthContext.Consumer>
         {(context) => (
-          <Container fluid className="center center mt-5">
+          <Container fluid className="center center mt-5 ">
             <Row>
-              <Col md={{ span: 4, offset: 4 }}>
-                <h3> Select your Role: </h3>
+              <Col className="center center mt-5 " md={{ span: 4, offset: 4 }}>
+                <h3 className="center mb-3"> Login </h3>
 
                 <Form
                   method="POST"
@@ -54,7 +54,7 @@ class LoginForm extends React.Component {
                     this.handleSubmit(event, context.loginUser)
                   }
                 >
-                  <FormGroup>
+                  {/* <FormGroup>
                     <select
                       className="form-control"
                       role={this.state.role}
@@ -66,7 +66,7 @@ class LoginForm extends React.Component {
                       <option value="teacher">Booking Manager</option>
                       <option value="student">Support Officer</option>
                     </select>
-                  </FormGroup>
+                  </FormGroup> */}
                   <FormGroup>
                     <FormControl
                       type="text"
@@ -92,7 +92,13 @@ class LoginForm extends React.Component {
                   </FormGroup>
 
                   <FormGroup>
-                    <Button variant="primary" type="submit" color="primary">
+                    <Button
+                      block
+                      variant="primary"
+                      type="submit"
+                      color="primary"
+                      size="sm"
+                    >
                       Login
                     </Button>
                   </FormGroup>
@@ -106,4 +112,4 @@ class LoginForm extends React.Component {
   }
 }
 
-export default LoginForm;
+export default LoginPage;
