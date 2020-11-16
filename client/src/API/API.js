@@ -7,9 +7,22 @@ async function getLectures(userId) {
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
+<<<<<<< HEAD
     return lectureJson.map((s) => new Lecture(s.lectureId, s.courseId, s.courseName, s.startTS, s.endTS, s.online, s.teacherName, s.roomName, s.bookedSeats, s.totalSeats, s.bookedSelf));
     //let lectures = new Lecture(1, 3, 'Data Science', '2020', '2021', '0', 'Hesam', '25', '12', '30', '1');
     
+=======
+<<<<<<< HEAD
+    //return lectureJson.map((s) => new Lecture(s.lectureId, s.courseId, s.courseName, s.startTS, s.endTS, s.online, s.teacherName, s.roomName, s.bookedSeats, s.totalSeats, s.bookedSelf));
+    //let lectures = new Lecture(1, 3, 'Data Science', '2020', '2021', '0', 'Hesam', '25', '12', '30', '1');
+    let lectures = "HELLLLLOOO";
+    return lectures;
+=======
+    return lectureJson.map((s) => new Lecture(s.lectureId, s.courseId, s.courseName, s.startTS, s.endTS, s.online, s.teacherName, s.roomName, s.bookedSeats, s.totalSeats, s.bookedSelf));
+    //let lectures = new Lecture(1, 3, 'Data Science', '2020', '2021', '0', 'Hesam', '25', '12', '30', '1');
+    
+>>>>>>> 82ff2d9825ecfbc4906c126487fb09b01544b6ef
+>>>>>>> bf1640da39f742f265ceebf045f69c0b30dd4d8a
   } else {
     let err = { status: response.status, errObj: lectureJson };
     throw err; // An object with the error coming from the server
