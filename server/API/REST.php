@@ -39,7 +39,7 @@ if (!function_exists("check_login")) {
 	function check_login() {
 		$pdo = new PDO("sqlite:../db.sqlite");
 
-		if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
 			return false;
 		}
 
@@ -55,7 +55,6 @@ if (!function_exists("check_login")) {
 
 
 		return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
-
 	}
 }
 
@@ -281,7 +280,7 @@ if (!function_exists('list_lectures')) {
 				$lecture['teacherName'] = $teacher['lastname'] . ' ' . $teacher['firstname'];
 			}
 
-			array_push($lectures, $l);
+			array_push($lectures, $lecture);
 		}
 
 		// Send stuff
@@ -289,8 +288,8 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
-if(!function_exists('print_types')){
-	function print_types($vars){
+if (!function_exists('print_types')) {
+	function print_types($vars) {
 		echo json_encode(array('success' => true, 'list' => array(
 			array("typeId" => USER_TYPE_STUDENT, 'typeDesc' => 'student'),
 			array("typeId" => USER_TYPE_TEACHER, 'typeDesc' => 'teacher')
@@ -298,21 +297,22 @@ if(!function_exists('print_types')){
 	}
 }
 
-if(!function_exists('print_myself')){
-	function print_myself($vars){
-		try{
+if (!function_exists('print_myself')) {
+	function print_myself($vars) {
+		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
 
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
-			if(!$stmt->execute()){
+			if (!$stmt->execute()) {
 				throw new Error($stmt->errorInfo(), $stmt->errorCode());
 			}
 
 			$user_data = $stmt->fetch();
 
-			echo json_encode(array('success' => true,
+			echo json_encode(array(
+				'success' => true,
 				'userId' => intval($user_data['ID']),
 				'type' => intval($user_data['type']),
 				'username' => $user_data['username'],
@@ -320,8 +320,7 @@ if(!function_exists('print_myself')){
 				'firstname' => $user_data['firstname'],
 				'lastname' => $user_data['lastname'],
 			));
-		}
-		catch(Exception $e){
+		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
 	}
@@ -338,11 +337,11 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
 	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
 	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
-	$r->addRoute('GET', API_PATH."/types", "print_types");
+	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
 	/* users route */
-	$r->addRoute('GET', API_PATH.'/user/me', ['print_myself', NEED_AUTH]);
-	
+	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
+
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/lectures', ['list_lectures', NEED_AUTH]);
 });
 
