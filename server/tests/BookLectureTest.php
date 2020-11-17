@@ -22,7 +22,7 @@ class BookLectureTest extends TestCase {
 		unlink('../db.sqlite.backup');
 	}
 
-	// Book one seat for online
+	// Book one seat for presence
 	public function test_book_1() {
 		$client = new Client(array('http_errors' => false));
 		$jar = new \GuzzleHttp\Cookie\CookieJar;
@@ -42,7 +42,7 @@ class BookLectureTest extends TestCase {
 		$this->assertTrue($data['success']);
 	}
 
-	// Book two seats for online
+	// Book two seats for presence
 	public function test_book_2() {
 		$client = new Client(array('http_errors' => false));
 		$jar = new \GuzzleHttp\Cookie\CookieJar;
@@ -69,7 +69,7 @@ class BookLectureTest extends TestCase {
 		$this->assertFalse($data['success']);
 	}
 
-	// Book one seat for presence
+	// Book one seat for online
 	public function test_book_3() {
 		$client = new Client(array('http_errors' => false));
 		$jar = new \GuzzleHttp\Cookie\CookieJar;
