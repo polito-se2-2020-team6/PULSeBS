@@ -30,7 +30,6 @@ class Student extends Component {
   // };
 
   componentDidMount() {
-
     //getting list of all lectures
     const studentId = this.state.user.userId ;
     API.getLectures(studentId)
