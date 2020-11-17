@@ -26,9 +26,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // users: USERS,
-      studentsList: [],
-      lectureList: [],
+      // users: USERS
     };
   }
 
@@ -63,43 +61,8 @@ class App extends React.Component {
       this.props.history.push("/login");
     });
   };
+  
 
-  //set state from returned list of stuents booked to a lecture
-  studentsBooked = (lectureId) => {
-    API.getStudentsBooked(lectureId)
-      .then((studentsList) => {
-        this.setState({
-          studentsList: studentsList || [],
-        });
-      })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
-  };
-
-
-  getLectures = (userId) => {
-    API.getLectures(userId)
-      .then((lectureList) => {
-        this.setState({
-          lectureList: lectureList || [],
-        });
-      })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
-  };
-
-  //delete a lecture as teacher
-  deleteLecture = (lectureId) => {
-    API.deleteLecture(lectureId)
-      .then(() => {
-        //get the update list of lectures? and set state?
-      })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
-  };
 
   render() {
     const value = {
