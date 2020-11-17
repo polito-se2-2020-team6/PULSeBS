@@ -27,23 +27,39 @@ const data = [
     endDate: new Date("2020-11-17T17:30:00.000Z"),
   },
 ];
-class Calender extends React.Component {
+class calendar extends React.Component {
+  componentDidMount() {
+    this.props.getCalendar(window.location.href.split("=")[1]);
+    console.log(this.props.calendar);
+  }
+  constructor(props) {
+    super(props);
+    this.state = {
+      date: this.props.calendar.map((e) => ({
+        text: e.courseName,
+        startDate: new Date(e.startTS).toISOString(),
+        endDate: new Date(e.endTS).toISOString(),
+      })),
+    };
+  }
+
   render() {
+    // const calendar = { ...this.props.calendar };
     return (
       <>
         <Row className="clear mt-5">
           <Col xs={1} md={2}></Col>
           <Col xs={4} md={8}>
             <Scheduler
-              dataSource={data}
+              dataSource={this.state.date}
               defaultCurrentDate={new Date()}
-              startDayHour={8}
+              startDayHour={6}
               endDayHour={19}
               cellDuration={60}
               firstDayOfWeek={1}
               height={750}
               editing={false}
-              endDayHour={19.5}
+              endDayHour={23}
               views={views}
               defaultCurrentView="week"
             />
@@ -55,4 +71,4 @@ class Calender extends React.Component {
   }
 }
 
-export default Calender;
+export default calendar;

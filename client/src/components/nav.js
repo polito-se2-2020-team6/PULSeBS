@@ -28,7 +28,13 @@ class Navigation extends Component {
                       )}
                       {context.authUser.type === ROLES.STUDENT && (
                         <NavItem>
-                          <NavLink className="nav-link" to="/student/calender">
+                          <NavLink
+                            className="nav-link"
+                            to={
+                              "/student/calendar?userid=" +
+                              context.authUser.userId
+                            }
+                          >
                             Calender
                           </NavLink>
                         </NavItem>
