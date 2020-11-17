@@ -143,7 +143,7 @@ if (!function_exists('list_lectures')) {
 
 		// Allow only for 0 (student) and 1 (teacher)
 		if ($userType == 0) { // Student
-			$query .= ', bookings B WHERE L.ID = B.lecture_id AND B.user_id = :userId';
+			$query .= ', course_subscriptions CS WHERE L.course_id = CS.Course_id AND CS.user_id = :userId';
 		} else if ($userType == 1) { // Teacher
 			$query .= ', courses C WHERE C.ID = L.course_id AND C.teacher_id = :userId';
 		} else { // Everyone else
@@ -183,7 +183,7 @@ if (!function_exists('list_lectures')) {
 		$lectures = array();
 		while ($l = $stmt->fetch()) {
 			$lecture = array(
-				'lectureId' => intval($l['ID']),
+				'lectureId' => intval($l['0']),
 				'courseId' => intval($l['course_id']),
 				'startTS' => intval($l['start_ts']),
 				'endTS' => intval($l['end_ts']),
@@ -279,14 +279,13 @@ if (!function_exists('list_lectures')) {
 				$lecture['teacherName'] = $teacher['lastname'] . ' ' . $teacher['firstname'];
 			}
 
-			array_push($lectures, $l);
+			array_push($lectures, $lecture);
 		}
 
 		// Send stuff
 		echo json_encode(array('success' => true, 'lectures' => $lectures));
 	}
 }
-
 
 if (!function_exists('print_types')) {
 	function print_types($vars) {
