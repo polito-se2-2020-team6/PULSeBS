@@ -21,15 +21,12 @@ class App extends React.Component {
         this.props.history.push("/login");
         this.setState({ authErr: err.errorObj });
       });
-
-    this.getCalendar();
   }
 
   constructor(props) {
     super(props);
     this.state = {
       calendar: [],
-      // users: USERS
     };
   }
 
@@ -66,16 +63,14 @@ class App extends React.Component {
   };
 
   getCalendar = (userID) => {
-    // console.log(userID);
     API.getLectures(userID)
       .then((calendar) => {
-        // console.log(calendar);
         this.setState({
           calendar: calendar,
         });
       })
       .catch((errorObj) => {
-        this.setState({});
+        console.log(errorObj);
       });
   };
 

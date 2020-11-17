@@ -31,6 +31,7 @@ class Navigation extends Component {
                           <NavLink
                             className="nav-link"
                             to={
+                              // send userID to this route for getting its date for The calendar
                               "/student/calendar?userid=" +
                               context.authUser.userId
                             }

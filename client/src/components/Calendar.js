@@ -5,32 +5,9 @@ import "devextreme/dist/css/dx.light.css";
 import Scheduler from "devextreme-react/scheduler";
 
 const views = ["day", "week"];
-const data = [
-  {
-    text: "Computer Archtecture",
-    startDate: new Date(1605426112 * 1000),
-    endDate: new Date(1605433312 * 1000),
-  },
-  {
-    text: "BigData",
-    startDate: new Date("2020-11-16T13:30:00.000Z"),
-    endDate: new Date("2020-11-16T15:30:00.000Z"),
-  },
-  {
-    text: "Software Engineering 2",
-    startDate: new Date("2020-11-17T14:00:00.000Z"),
-    endDate: new Date("2020-11-17T15:30:00.000Z"),
-  },
-  {
-    text: "Human Computer interaction",
-    startDate: new Date("2020-11-17T16:00:00.000Z"),
-    endDate: new Date("2020-11-17T17:30:00.000Z"),
-  },
-];
 class calendar extends React.Component {
   componentDidMount() {
     this.props.getCalendar(window.location.href.split("=")[1]);
-    console.log(this.props.calendar);
   }
   constructor(props) {
     super(props);
@@ -44,7 +21,6 @@ class calendar extends React.Component {
   }
 
   render() {
-    // const calendar = { ...this.props.calendar };
     return (
       <>
         <Row className="clear mt-5">
@@ -53,13 +29,13 @@ class calendar extends React.Component {
             <Scheduler
               dataSource={this.state.date}
               defaultCurrentDate={new Date()}
-              startDayHour={6}
+              startDayHour={7.5}
               endDayHour={19}
               cellDuration={60}
               firstDayOfWeek={1}
               height={750}
               editing={false}
-              endDayHour={23}
+              endDayHour={21.3}
               views={views}
               defaultCurrentView="week"
             />
