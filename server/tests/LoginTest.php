@@ -6,6 +6,22 @@ use GuzzleHttp\Client;
 
 class LoginTest extends TestCase {
 
+	public static function setUpBeforeClass(): void {
+		copy('../db.sqlite', '../db.sqlite.backup');
+	}
+
+	protected function setUp(): void {
+		copy('../testdb.sqlite', '../db.sqlite');
+	}
+
+	protected function tearDown(): void {
+	}
+
+	public static function tearDownAfterClass(): void {
+		copy('../db.sqlite.backup', '../db.sqlite');
+		unlink('../db.sqlite.backup');
+	}
+
 	public function testLogin() {
 		// create our http client (Guzzle)
 		$client = new Client();
