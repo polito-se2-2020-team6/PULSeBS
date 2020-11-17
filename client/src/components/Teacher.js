@@ -1,6 +1,8 @@
 import React from "react";
-import { Col, Container, Row, Tabs, Tab, ListGroup } from "react-bootstrap";
+import { Col, Container, Row, Tabs, Tab, ListGroup, Button } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
+import API from ".././API/API";
+import Lecture from ".././API/Lecture";
 
 /*  listaLezione -> getLectures 
     corso -> courseId
@@ -9,29 +11,29 @@ import { AuthContext } from "../auth/AuthContext";
 */
 
 var listaLezioni = [{
-    corso: "History",
-    lezione: "HY-01",
+    courseId: "History",
+    lectureId: "HY-01",
     studenti: new Array("ettore", "carlo","luca", "camarcorlo")
 }, {
-    corso: "Geometry",
-    lezione: "GY-01",
+    courseId: "Geometry",
+    lectureId: "GY-01",
     studenti: new Array("ettore", "carlo")
     
 }, {
-    corso: "History",
-    lezione: "HY-02",
+    courseId: "History",
+    lectureId: "HY-02",
     studenti: new Array("ettore", "camarcorlo")
 }, {
-    corso: "Software Engineering 2",
-    lezione: "SE2-01",
-    studenti: new Array("")
+    courseId: "Software Engineering 2",
+    lectureId: "SE2-01",
+    studenti: []
 }, {
-    corso: "Software Engineering 2",
-    lezione: "SE2-02",
+    courseId: "Software Engineering 2",
+    lectureId: "SE2-02",
     studenti: new Array("Marco","Luca")
 }, {
-    corso: "Analisi",
-    lezione: "AI-01",
+    courseId: "Analisi",
+    lectureId: "AI-01",
     studenti: new Array("ludo", "carlo","max")
 }]
 
@@ -42,55 +44,103 @@ class Teacher extends React.Component {
       super(props);
   
       this.state = {
+          lectureUpdated : true,
           totalLectures : listaLezioni,
-          course : listaLezioni[0].corso,
+          course : listaLezioni[0].courseId,
           students : listaLezioni[0].studenti,
-          lecture : listaLezioni[0].lezione,
+          lecture : listaLezioni[0].lectureId,
       };
     }
 
-    getStudentsBooked(){
-        this.props.studentsBooked();//manda parametro con lectureId
-        //setta stato studenti presenti alla lezione
+    getLectures = (userId) => {
+    
+        API.getLectures(userId)
+        .then((lectures) => {
+        
+        console.log(lectures);
+          this.setState({
+            totalLectures: lectures || [],
+          });
+        })
+        .catch((errorObj) => {
+          console.log(errorObj);
+        });
+      }
+
+    getStudentsBooked(lectureId){
+        API.getStudentsBooked(lectureId)
+        .then((students) => {
+          this.setState({
+            students: students || [],
+          });
+        })
+        .catch((errorObj) => {
+          console.log(errorObj);
+        });
     }
 
-    deleteLecture(lecture){
-        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lezione !== lecture)})
-        //collega all'API
+  //delete a lecture as teacher
+  deleteLecture(lectureId){
+    /*API.deleteLecture(lectureId)
+      .then(() => {
+        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId), lectureUpdated : true})
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });*/
+      
+  };
 
-    };
+    updateLectures(userId){
+        if (this.state.lectureUpdated){
+            this.setState({lectureUpdated : false});
+            this.getLectures(userId);
+        }
+        
+    }
+
+    clearStudentTable(){
+        
+        this.setState({students: []});
+        
+    }
     
     render() {
-        const corsi =this.state.totalLectures.map((item) => item.corso ).filter((v,i,s)=> s.indexOf(v) === i ) ;
+        const corsi =this.state.totalLectures.map((item) => item.courseId ).filter((v,i,s)=> s.indexOf(v) === i ) ;
         return (
             <AuthContext.Consumer>
             {(context) => (
               <>
-                {context.authUser ? (
-                  <>
+                {this.updateLectures(context.authUser.userId)}
+                
             <Container fluid className="mt-5 "> 
             
                 <Row className="justify-content-md-center" >
-                    <h1>Welcome back Mario</h1> 
+                    <h1>Welcome back</h1> 
                     
                 </Row>
                 
-                <Tabs defaultActiveKey={this.state.totalLectures[0].corso}  id="noanim-tab-example">
+                <Tabs defaultActiveKey={this.state.totalLectures[0].courseId}  id="noanim-tab-example" onSelect={() => this.clearStudentTable()}>
                     {corsi?.map((C_Id)=> (
-                         <Tab eventKey={C_Id} title={C_Id} >
-                             <Row className="mt-5 justify-content-md-center">
+                         <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
+                             <Row className="mt-5 ">
+                            <Col md={1}></Col>
                              <Col md={4} >
                                 <Tab.Container id="list-group-tabs-example" >
-                                    <ListGroup className="mt-5" >
+                                    <ListGroup className="mt-2" >
+                                    <ListGroup.Item as="li"  active > 
+                                        <h3>lecture</h3>
+                                    </ListGroup.Item>
+
                                         {
-                                            this.state.totalLectures.filter(l => l.corso===C_Id)?.map((c) => (
-                                                        <ListGroup.Item action active={c.lezione===this.state.lecture} 
-                                                            onClick={()=> this.setState({students: c.studenti, course: c.corso, lecture: c.lezione})}>
-                                                            {c.lezione} 
+                                            this.state.totalLectures.filter(l => l.courseId===C_Id)?.map((c) => (
+                                                        <ListGroup.Item action variant={c.lectureId===this.state.lecture? "primary": "light" } key={c.lectureId}
+                                                            onClick={()=> {this.setState({course: c.courseId, lecture: c.lectureId}); this.getStudentsBooked(c.lectureId);}}>
+                                                            {c.lectureId} 
                                                             
-                                                            <button type="button" class="close" aria-label="Close" onClick={this.deleteLecture.bind(this, c.lezione)}>
+                                                            <Button type="button" className="close" aria-label="Close" onClick={() => {this.deleteLecture(c.lectureId)}}>
                                                                 <span aria-hidden="true">&times;</span>
-                                                            </button>
+                                                            </Button>
                                                         </ListGroup.Item>
                                             ))}
                                     </ListGroup>
@@ -98,13 +148,13 @@ class Teacher extends React.Component {
                             </Col>
                             <Col md={1}></Col>
                             <Col md={4}>
-                                <ListGroup as="ul">
+                                <ListGroup as="ul" className="mt-2">
                                     <ListGroup.Item as="li" active>
                                         <h3>students booked</h3>
                                     </ListGroup.Item>
                                     
                                         {this.state.students.map((s)=> (
-                                            <ListGroup.Item as="li">{s} 
+                                            <ListGroup.Item as="li" key={s}>{s} 
                                                 
                                             </ListGroup.Item>
                                         )
@@ -119,19 +169,17 @@ class Teacher extends React.Component {
                     )}
                 </Tabs>
             </Container>
-            </>
-            ) : (
-              <></>
-            )}
+            
           </>
         )}
-      </AuthContext.Consumer>);
+      </AuthContext.Consumer>
+      );
     }
 }
 
 
-function funct_Student(corso){
-    this.setState({course : corso.corso , students : corso.studenti });
+function funct_Student(courseId){
+    this.setState({course : courseId.courseId , students : courseId.studenti });
 }
 
 export default Teacher;
