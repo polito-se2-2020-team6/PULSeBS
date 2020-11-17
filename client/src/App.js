@@ -28,10 +28,7 @@ class App extends React.Component {
     this.state = {
       // users: USERS,
       studentsList: [],
-<<<<<<< HEAD
-=======
       lectureList: [],
->>>>>>> 82ff2d9825ecfbc4906c126487fb09b01544b6ef
     };
   }
 
@@ -80,8 +77,6 @@ class App extends React.Component {
       });
   };
 
-<<<<<<< HEAD
-=======
 
   getLectures = (userId) => {
     API.getLectures(userId)
@@ -95,7 +90,6 @@ class App extends React.Component {
       });
   };
 
->>>>>>> 82ff2d9825ecfbc4906c126487fb09b01544b6ef
   //delete a lecture as teacher
   deleteLecture = (lectureId) => {
     API.deleteLecture(lectureId)
@@ -125,10 +119,7 @@ class App extends React.Component {
               studentsList={this.state.studentsList}
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
-<<<<<<< HEAD
-=======
               getLectures={this.getLectures}
->>>>>>> 82ff2d9825ecfbc4906c126487fb09b01544b6ef
             />
           </Route>
           <Route path="/student/calender">
