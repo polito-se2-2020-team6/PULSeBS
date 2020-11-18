@@ -20,6 +20,7 @@ class Student extends Component {
     API.bookLecture(lectureId, studentId)
       .then((lectures) => {
         this.setState({ bookingProgres: 0 });
+        console.log(lectures);
       })
       .catch((err) => console.log(err));
     API.getLectures(studentId)
@@ -34,12 +35,12 @@ class Student extends Component {
   cancelBooking = (lectureId) => {
     this.setState({ bookingProgres: 1 });
     const studentId = this.props.user.userId;
-    console.log(studentId);
-    console.log(lectureId)
+
     API.cancelBooking(lectureId, studentId)
       .then((lectures) => {
         this.setState({ bookingProgres: 0 });
-        console.log(lectures)
+        console.log(lectures.success);
+        this.componentDidMount();
       })
       .catch((err) => console.log(err));
   };
