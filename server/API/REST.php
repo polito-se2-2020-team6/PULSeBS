@@ -335,7 +335,7 @@ if (!function_exists('cancel_lecture')) {
 			}
 
 			$userId = intval($_SESSION['user_id']);
-			$pdo = new PDO('../db.sqlite');
+			$pdo = new PDO('sqlite:../db.sqlite');
 
 			// Check user exists and is teacher
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
