@@ -26,22 +26,22 @@ class Student extends Component {
   };
 
   componentDidMount() {
-    API.isLogged()
-      .then((user) => {
-        this.setState({ authUser: user });
-        console.log(this.state);
-      })
-      .catch((err) => {
-        this.setState({ authErr: err.errorObj });
-      });
+    // API.isLogged()
+    //   .then((user) => {
+    //     this.setState({ authUser: user });
+    //     console.log(this.state);
+    //   })
+    //   .catch((err) => {
+    //     this.setState({ authErr: err.errorObj });
+    //   });
 
     //getting list of all lectures
-    // const studentId = this.state.authUser.userId;
-    // API.getLectures(studentId)
-    //   .then((lectures) => {
-    //     this.setState({ lectures: lectures });
-    //   })
-    //   .catch((err) => console.log(err));
+    const studentId = this.props.user.userId;
+    API.getLectures(studentId)
+      .then((lectures) => {
+        this.setState({ lectures: lectures });
+      })
+      .catch((err) => console.log(err));
   }
 
   render() {

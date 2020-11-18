@@ -16,7 +16,7 @@ class Lecture {
       const unixTimestamp = ts;
       const milliseconds = unixTimestamp * 1000; // 1575909015000
       const dateObject = new Date(milliseconds);
-      const humanDateFormat = dateObject.toLocaleString("en-US", {day: "numeric",month: "numeric",hour: "numeric",minute: "numeric"}); //2019-12-9 10:30:15
+      const humanDateFormat = dateObject.toLocaleString("en-US", {day: "numeric",month: "numeric", year:"numeric" ,hour: "numeric",minute: "numeric"}); //2019-12-9 10:30:15
       return (humanDateFormat);
     };
 
