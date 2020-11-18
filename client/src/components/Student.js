@@ -8,35 +8,40 @@ class Student extends Component {
   constructor(props) {
     super(props);
     this.state = {
-    user : this.props.user ,  
-    lectures: [],
-    bookingProgres: 0
-    }
+      lectures: [],
+      bookingProgres: 0,
+    };
   }
 
-  // bookSeat = (lectureId) => {
-  //   let lectures = this.state.lectures;
-  //   this.setState({ bookingProgres: 1 });
-  //   setTimeout(() => {
-  //     const index = lectures.findIndex((l, index) => {
-  //       if (l.lectureId === lectureId) {
-  //         return index;
-  //       }
-  //     });
-  //     lectures[index].bookedSelf = 1;
-  //     this.setState({ lectures: lectures });
-  //     this.setState({ bookingProgres: 0 });
-  //   }, 1500);
-  // };
-
-  componentDidMount() {
-    //getting list of all lectures
-    const studentId = this.state.user.userId ;
-    API.getLectures(studentId)
+  bookSeat = (lectureId) => {
+    this.setState({ bookingProgres: 1 });
+    const id = [...this.state.authUser];
+    console.log(id);
+    const studentId = id.userId;
+    API.bookLecture(lectureId, studentId)
       .then((lectures) => {
-        this.setState({ lectures: lectures });
+        this.setState({ bookingProgres: 0 });
       })
       .catch((err) => console.log(err));
+  };
+
+  componentDidMount() {
+    API.isLogged()
+      .then((user) => {
+        this.setState({ authUser: user });
+        console.log(this.state);
+      })
+      .catch((err) => {
+        this.setState({ authErr: err.errorObj });
+      });
+
+    //getting list of all lectures
+    // const studentId = this.state.authUser.userId;
+    // API.getLectures(studentId)
+    //   .then((lectures) => {
+    //     this.setState({ lectures: lectures });
+    //   })
+    //   .catch((err) => console.log(err));
   }
 
   render() {
@@ -45,14 +50,14 @@ class Student extends Component {
         {(context) => (
           <>
             {context.authUser ? (
-      <>
-        <h1 className="mt-5 ml-">Book Your Next Lectures</h1>
-        <LectureList
-          lectures={this.state.lectures}
-          bookSeat={this.bookSeat}
-          bookingProgres={this.state.bookingProgres}
-        />
-      </>
+              <>
+                <h1 className="mt-5 ml-">Book Your Next Lectures</h1>
+                <LectureList
+                  lectures={this.state.lectures}
+                  bookSeat={this.bookSeat}
+                  bookingProgres={this.state.bookingProgres}
+                />
+              </>
             ) : (
               <></>
             )}
