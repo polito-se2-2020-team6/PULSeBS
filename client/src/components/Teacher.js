@@ -14,7 +14,6 @@ import {
 } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from ".././API/API";
-import Lecture from ".././API/Lecture";
 
 /*  listaLezione -> getLectures
     corso -> courseId
@@ -109,7 +108,8 @@ class Teacher extends React.Component {
       .catch((errorObj) => {
         console.log(errorObj);
       });*/
-      this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)})
+      this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+      
   }
 
   updateLectures(userId) {
@@ -188,6 +188,7 @@ class Teacher extends React.Component {
                                     <span aria-hidden="true">&times;</span>
                                   </Button>
                                 </ListGroup.Item>
+                                
                               ))}
                           </ListGroup>
                         </Tab.Container>
@@ -201,7 +202,7 @@ class Teacher extends React.Component {
 
                           {this.state.students.map((s) => (
                             <ListGroup.Item as="li" key={s}>
-                              {s}
+                              {s.studentId + " - " +s.studentName}
                             </ListGroup.Item>
                           ))}
                         </ListGroup>
