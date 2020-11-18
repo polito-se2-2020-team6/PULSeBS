@@ -22,6 +22,11 @@ class Student extends Component {
         this.setState({ bookingProgres: 0 });
       })
       .catch((err) => console.log(err));
+    API.getLectures(studentId)
+      .then((lectures) => {
+        this.setState({ lectures: lectures });
+      })
+      .catch((err) => console.log(err));
   };
 
 
@@ -58,15 +63,7 @@ class Student extends Component {
       .catch((err) => console.log(err));
   }
 
-  //after booking update the state
-  componentDidUpdate() {
-    const studentId = this.props.user.userId;
-    API.getLectures(studentId)
-      .then((lectures) => {
-        this.setState({ lectures: lectures });
-      })
-      .catch((err) => console.log(err));
-  }
+  
 
   render() {
     return (
