@@ -1,4 +1,8 @@
+// filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
+// scompare la tab
+
 import React from "react";
+import  { Redirect } from 'react-router-dom'
 import {
   Col,
   Container,
@@ -16,7 +20,7 @@ import Lecture from ".././API/Lecture";
     corso -> courseId
     lezione -> lectureId
     studenti -> vector of Students
-*/
+
 
 var listaLezioni = [
   {
@@ -54,7 +58,7 @@ var listaLezioni = [
     lectureId: "AI-01",
     studenti: new Array("ludo", "carlo", "max"),
   },
-];
+]; */
 
 class Teacher extends React.Component {
   constructor(props) {
@@ -62,10 +66,10 @@ class Teacher extends React.Component {
 
     this.state = {
       lectureUpdated: true,
-      totalLectures: listaLezioni,
-      course: listaLezioni[0].courseId,
-      students: listaLezioni[0].studenti,
-      lecture: listaLezioni[0].lectureId,
+      totalLectures: [],
+      course: '',
+      students: [],
+      lecture: '',
     };
   }
 
@@ -85,11 +89,13 @@ class Teacher extends React.Component {
   getStudentsBooked(lectureId) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
+          console.log(students);
         this.setState({
-          students: students || [],
+          students: students.students || [],
         });
       })
       .catch((errorObj) => {
+        console.log('no');
         console.log(errorObj);
       });
   }
@@ -103,6 +109,7 @@ class Teacher extends React.Component {
       .catch((errorObj) => {
         console.log(errorObj);
       });*/
+      this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)})
   }
 
   updateLectures(userId) {
@@ -113,17 +120,18 @@ class Teacher extends React.Component {
   }
 
   clearStudentTable() {
-    // };
-    // clearStudentTable(){
+    this.setState({students : []})
   }
 
   render() {
     const corsi = this.state.totalLectures
-      .map((item) => item.courseId)
+      .map((item) => item.courseName)
       .filter((v, i, s) => s.indexOf(v) === i);
     return (
       <AuthContext.Consumer>
         {(context) => (
+            <>
+            {context.authUser ? (
           <>
             {this.updateLectures(context.authUser.userId)}
 
@@ -133,7 +141,7 @@ class Teacher extends React.Component {
               </Row>
 
               <Tabs
-                defaultActiveKey={this.state.totalLectures[0].courseId}
+                defaultActiveKey={this.state.totalLectures[0]?.courseId}
                 id="noanim-tab-example"
                 onSelect={() => this.clearStudentTable()}
               >
@@ -149,7 +157,7 @@ class Teacher extends React.Component {
                             </ListGroup.Item>
 
                             {this.state.totalLectures
-                              .filter((l) => l.courseId === C_Id)
+                              .filter((l) => l.courseName === C_Id)
                               ?.map((c) => (
                                 <ListGroup.Item
                                   action
@@ -167,7 +175,7 @@ class Teacher extends React.Component {
                                     this.getStudentsBooked(c.lectureId);
                                   }}
                                 >
-                                  {c.lectureId}
+                                  {c.startTS}
 
                                   <Button
                                     type="button"
@@ -204,14 +212,15 @@ class Teacher extends React.Component {
               </Tabs>
             </Container>
           </>
+          ) : (
+            <><Redirect to='/login'  /></>
+          )}
+        </>
         )}
       </AuthContext.Consumer>
     );
   }
 }
 
-function funct_Student(courseId) {
-  this.setState({ course: courseId.courseId, students: courseId.studenti });
-}
 
 export default Teacher;
