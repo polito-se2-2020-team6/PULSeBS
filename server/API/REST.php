@@ -561,7 +561,7 @@ if (!function_exists('cancel_booking')) {
 
 			$lectureId = intval($_DELETE['lectureId']);
 
-			$pdo = new PDO('../db.sqlite');
+			$pdo = new PDO('sqlite:../db.sqlite');
 
 			// Check user exists and is student
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :student');
