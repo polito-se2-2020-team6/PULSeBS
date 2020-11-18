@@ -3,7 +3,7 @@ import "./App.css";
 import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
-import Calender from "./components/Calender";
+import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
 
@@ -26,7 +26,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // users: USERS
+      calendar: [],
     };
   }
 
@@ -61,8 +61,18 @@ class App extends React.Component {
       this.props.history.push("/login");
     });
   };
-  
 
+  getCalendar = (userID) => {
+    API.getLectures(userID)
+      .then((calendar) => {
+        this.setState({
+          calendar: calendar,
+        });
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });
+  };
 
   render() {
     const value = {
@@ -85,8 +95,11 @@ class App extends React.Component {
               getLectures={this.getLectures}
             />
           </Route>
-          <Route path="/student/calender">
-            <Calender />
+          <Route path="/student/calendar/">
+            <Calendar
+              getCalendar={this.getCalendar}
+              calendar={this.state.calendar}
+            />
           </Route>
           <Route path="/student/home">
             <Student user={this.state.authUser} />
