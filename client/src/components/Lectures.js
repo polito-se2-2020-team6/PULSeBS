@@ -34,6 +34,7 @@ class LectureList extends Component {
                     key={lecture.lectureId}
                     lecture={lecture}
                     bookSeat={this.props.bookSeat}
+                    cancelBooking={this.props.cancelBooking}
                     //   onClick={this.props.onClick}
                     bookingProgres={this.props.bookingProgres}
                   />
@@ -52,6 +53,7 @@ function LectureRow(props) {
       <LectureData
         lecture={props.lecture}
         bookSeat={props.bookSeat}
+        cancelBooking={props.cancelBooking}
         bookingProgres={props.bookingProgres}
       />
     </tr>
@@ -91,7 +93,11 @@ function LectureData(props) {
           //   onClick={props.bookSeat}
           // >
 
-          <p>booked</p>
+          <Button
+          onClick={() => {
+            props.cancelBooking(props.lecture.lectureId);
+          }}
+          variant="danger">Cancel Booking</Button>
         )}
       </td>
 

@@ -8,8 +8,23 @@ async function getLectures(userId) {
   const lectureJson = await response.json();
   if (response.ok) {
     const lectures = lectureJson.lectures;
-    const final = lectures.map((l) => new Lecture(l.lectureId, l.courseId, l.startTS, l.endTS, l.online, l.roomName, l.totalSeats, l.bookedSeats, l.courseName, l.bookedSelf, l.teacherName))
-    return(final);
+    const final = lectures.map(
+      (l) =>
+        new Lecture(
+          l.lectureId,
+          l.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          l.totalSeats,
+          l.bookedSeats,
+          l.courseName,
+          l.bookedSelf,
+          l.teacherName
+        )
+    );
+    return final;
   } else {
     let err = { status: response.status, errObj: lectureJson };
     throw err; // An object with the error coming from the server
@@ -19,12 +34,12 @@ async function getLectures(userId) {
 //return list of lectures based on the userId with time filter **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
 
 //# Book a lecture /api/users/{userId}/book
-async function bookLecture(lectureId,userId) {
+async function bookLecture(lectureId, userId) {
   // return a new promise.
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
-    let url = baseURL + `users/${userId}/book`;
+    let url = baseURL + `/users/${userId}/book`;
     let data = `lectureId=${lectureId}`;
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
@@ -33,7 +48,6 @@ async function bookLecture(lectureId,userId) {
       if (req.status === 200) {
         const response = req.response;
         let obj = JSON.parse(response);
-        console.log(obj)
         resolve(obj);
       } else {
         reject(Error(req.statusText));
@@ -47,8 +61,34 @@ async function bookLecture(lectureId,userId) {
   });
 }
 
-
 //# Cancel a booking **DELETE** /api/users/{userId}/book
+async function cancelBooking(lectureId, userId) {
+  // return a new promise.
+  return new Promise(function (resolve, reject) {
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    let url = baseURL + `/users/${userId}/book`;
+    let data = `lectureId=${lectureId}`;
+    req.open("delete", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.onload = function () {
+      if (req.status === 200) {
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
+      } else {
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
+  });
+}
+
 
 // Return list of students booked to a lecture **GET** /api/lectures/{lectureId}/students
 async function getStudentsBooked(lectureId) {
@@ -176,6 +216,7 @@ const API = {
   isLogged,
   getStudentsBooked,
   deleteLecture,
-  bookLecture
+  bookLecture,
+  cancelBooking,
 };
 export default API;

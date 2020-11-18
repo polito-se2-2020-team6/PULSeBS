@@ -12,15 +12,29 @@ class Student extends Component {
       bookingProgres: 0,
     };
   }
-
+//let the student to book for a lecture
   bookSeat = (lectureId) => {
     this.setState({ bookingProgres: 1 });
-    const id = [...this.state.authUser];
-    console.log(id);
-    const studentId = id.userId;
+    const studentId = this.props.user.userId;
+    console.log(studentId);
     API.bookLecture(lectureId, studentId)
       .then((lectures) => {
         this.setState({ bookingProgres: 0 });
+      })
+      .catch((err) => console.log(err));
+  };
+
+
+  //cancel booking
+  cancelBooking = (lectureId) => {
+    this.setState({ bookingProgres: 1 });
+    const studentId = this.props.user.userId;
+    console.log(studentId);
+    console.log(lectureId)
+    API.cancelBooking(lectureId, studentId)
+      .then((lectures) => {
+        this.setState({ bookingProgres: 0 });
+        console.log(lectures)
       })
       .catch((err) => console.log(err));
   };
@@ -44,6 +58,16 @@ class Student extends Component {
       .catch((err) => console.log(err));
   }
 
+  //after booking update the state
+  componentDidUpdate() {
+    const studentId = this.props.user.userId;
+    API.getLectures(studentId)
+      .then((lectures) => {
+        this.setState({ lectures: lectures });
+      })
+      .catch((err) => console.log(err));
+  }
+
   render() {
     return (
       <AuthContext.Consumer>
@@ -56,6 +80,7 @@ class Student extends Component {
                   lectures={this.state.lectures}
                   bookSeat={this.bookSeat}
                   bookingProgres={this.state.bookingProgres}
+                  cancelBooking={this.cancelBooking}
                 />
               </>
             ) : (
