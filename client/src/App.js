@@ -10,6 +10,8 @@ import Student from "./components/Student";
 import { AuthContext } from "./auth/AuthContext";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { ROLES } from "./data/consts";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 class App extends React.Component {
   componentDidMount() {
@@ -52,6 +54,9 @@ class App extends React.Component {
         }
       })
       .catch((errObj) => {
+        toast.error("Sorry, the username or password was incorrect.", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
         console.log(errObj);
       });
   };
@@ -108,6 +113,7 @@ class App extends React.Component {
           </Route>
           <Redirect from="/" exact to="login" />
         </Switch>
+        <ToastContainer autoClose={3500} />
       </AuthContext.Provider>
     );
   }

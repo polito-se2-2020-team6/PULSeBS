@@ -89,7 +89,6 @@ async function cancelBooking(lectureId, userId) {
   });
 }
 
-
 // Return list of students booked to a lecture **GET** /api/lectures/{lectureId}/students
 async function getStudentsBooked(lectureId) {
   let url = "/lectures/";
@@ -149,12 +148,15 @@ async function userLogin(username, password) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      if (req.status === 200) {
+      const status = JSON.parse(req.response);
+      // console.log(status.success);
+      if (status.success === true) {
         const response = req.response;
         let user = JSON.parse(response);
         resolve(user);
       } else {
-        reject(Error(req.statusText));
+        console.log(status.success);
+        reject(status.success);
       }
     };
     // handle network errors
