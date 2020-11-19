@@ -443,22 +443,23 @@ if (!function_exists('book_lecture')) {
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2], $stmt->errorInfo()[0]);
 			}
-			if (!$stmt->fetch()) {
+			if (!$user_data = $stmt->fetch()) {
 				throw new PDOException('Student ' . $userId . ' not found.');
 			}
 
 			// Check lecture exists and deadline for booking is not met (23.00 of day before)
 			$stmt = $pdo->prepare('SELECT *
-								   FROM lectures
-								   WHERE ID = :lectureId 
+								   FROM lectures, courses
+								   WHERE lectures.ID = :lectureId
+								   		AND courses.course_id = lectures.ID 
 										AND settings & :cancelled = 0');
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
-			if (!$stmt->execute()) {
+			if ($stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2], $stmt->errorInfo()[0]);
 			}
 			$lecture = $stmt->fetch();
-			if (!$lecture) {
+			if (!$lecture_data = !$lecture) {
 				throw new PDOException('Lecture ' . $lectureId . ' not found.');
 			}
 
@@ -513,6 +514,8 @@ if (!function_exists('book_lecture')) {
 			}
 
 			// Success
+			//I send a confirmazion email
+			mail($user_data["email"], "Confirmation of ".$lecture_data["name"]." lecture booking", "You did a booking for the lecture of ".$lecture_data["name"].".\n\r\n\rThe booking has been successfull");
 			echo json_encode(array('success' => true));
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
