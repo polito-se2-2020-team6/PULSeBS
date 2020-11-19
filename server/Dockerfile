@@ -6,7 +6,7 @@ RUN apt-get -y install wget git zip unzip cron sqlite3 libsqlite3-dev
 RUN docker-php-ext-install pdo pdo_sqlite
 RUN wget --content-disposition https://getcomposer.org/composer-2.phar
 COPY . /var/www/html
-RUN php composer.phar install 
+RUN php composer.phar install --no-dev
 #cronjobs
 # Copy hello-cron file to the cron.d directory
 COPY scheduled/cron_table /etc/cron.d/cron_table
@@ -17,5 +17,6 @@ RUN crontab /etc/cron.d/cron_table
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+RUN chown www-data:www-data -R /var/www/html
 # Run the command on container startup
 CMD . ./initialize.sh
