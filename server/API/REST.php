@@ -443,7 +443,8 @@ if (!function_exists('book_lecture')) {
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
-			if (!$user_data = $stmt->fetch()) {
+			$user_data = $stmt->fetch();
+			if (!$user_data) {
 				throw new PDOException('Student ' . $userId . ' not found.');
 			}
 
