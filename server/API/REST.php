@@ -506,7 +506,7 @@ if (!function_exists('book_lecture')) {
 
 			// Book to lecture
 			$stmt = $pdo->prepare('INSERT INTO bookings (lecture_id, user_id, booking_ts, cancellation_ts, attended) 
-								   VALUES (:lectureId, :userId, :bookingTs, NULL, 0)');
+								   VALUES (:lectureId, :userId, :bookingTs, NULL, 0) ON CONFLICT (lecture_id, user_id) DO UPDATE SET cancellation_ts = NULL');
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
 			$stmt->bindValue(':bookingTs', $now, PDO::PARAM_INT);
