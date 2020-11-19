@@ -1,7 +1,7 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React from "react";
+import React, { useState } from "react";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -69,6 +69,7 @@ class Teacher extends React.Component {
       course: '',
       students: [],
       lecture: '',
+      studtable: true,
     };
   }
 
@@ -100,15 +101,25 @@ class Teacher extends React.Component {
   }
 
   //delete a lecture as teacher
-  deleteLecture(lectureId) {
-    /*API.deleteLecture(lectureId)
+  async deleteLecture(lectureId) {
+    API.deleteLecture(lectureId)
       .then(() => {
-        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId), lectureUpdated : true})
+        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+        //aggiunto io
+        this.setState({students : []});
+        this.setState({studtable: false});
       })
       .catch((errorObj) => {
         console.log(errorObj);
-      });*/
-      this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+      });
+      //console.log("prima");
+      //console.log(this.state.totalLectures);
+      //console.log(this.state.students);
+      await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+      await this.setState({students : []})
+      //console.log("dopo");
+      //console.log(this.state.totalLectures);
+      //console.log(this.state.students);
       
   }
 
@@ -127,6 +138,7 @@ class Teacher extends React.Component {
     const corsi = this.state.totalLectures
       .map((item) => item.courseName)
       .filter((v, i, s) => s.indexOf(v) === i);
+
     return (
       <AuthContext.Consumer>
         {(context) => (
@@ -171,6 +183,7 @@ class Teacher extends React.Component {
                                     this.setState({
                                       course: c.courseId,
                                       lecture: c.lectureId,
+                                      studtable: true,
                                     });
                                     this.getStudentsBooked(c.lectureId);
                                   }}
@@ -195,17 +208,36 @@ class Teacher extends React.Component {
                       </Col>
                       <Col md={1}></Col>
                       <Col md={4}>
+                      {this.state.studtable?
                         <ListGroup as="ul" className="mt-2">
                           <ListGroup.Item as="li" active>
                             <h3>students booked</h3>
                           </ListGroup.Item>
+                          
+                          
+                            {this.state.students.length?
+                                    <ListGroup.Item ><h5>number of students:
+                                          {" "}{this.state.students.length}</h5>
+                                      </ListGroup.Item>:
+                                      <></>
+                            }
+                            {this.state.students?.map((s) => (
+                              <ListGroup.Item as="li" key={s}>
+                                {"S"+s.studentId + " - " +s.studentName}
+                              </ListGroup.Item>
+                            ))}
+                          
 
-                          {this.state.students.map((s) => (
-                            <ListGroup.Item as="li" key={s}>
-                              {s.studentId + " - " +s.studentName}
-                            </ListGroup.Item>
-                          ))}
-                        </ListGroup>
+
+
+                        </ListGroup>:
+                        <ListGroup>
+                          <ListGroup.Item as="li" active>
+                            <h3>students booked</h3>
+                          </ListGroup.Item>
+                      </ListGroup>
+                        }
+                        
                       </Col>
                     </Row>
                   </Tab>
