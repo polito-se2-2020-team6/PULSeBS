@@ -26,7 +26,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      calendar: [],
+      // calendar: [],
     };
   }
 
@@ -46,6 +46,7 @@ class App extends React.Component {
             break;
           case ROLES.STUDENT:
             this.setState({ authUser: user, authErr: null });
+            // this.getCalendar(this.state.authUser.userId);
             this.props.history.push("/student/home");
             break;
         }
@@ -98,7 +99,8 @@ class App extends React.Component {
           <Route path="/student/calendar/">
             <Calendar
               getCalendar={this.getCalendar}
-              calendar={this.state.calendar}
+              // calendar={this.state.calendar}
+              // user={this.state.authUser}
             />
           </Route>
           <Route path="/student/home">

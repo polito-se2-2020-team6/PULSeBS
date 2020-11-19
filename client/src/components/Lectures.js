@@ -15,8 +15,6 @@ class LectureList extends Component {
             <table className="table table-hover text-center">
               <thead>
                 <tr className="">
-                  <th>Lecture Id</th>
-                  <th>Course Id</th>
                   <th>Course Name</th>
                   <th>Start</th>
                   <th>End</th>
@@ -62,8 +60,6 @@ function LectureRow(props) {
 function LectureData(props) {
   return (
     <>
-      <td>{props.lecture.lectureId}</td>
-      <td>{props.lecture.courseId}</td>
       <td>{props.lecture.courseName}</td>
       <td>{props.lecture.startTS}</td>
       <td>{props.lecture.endTS === false ? '-' : props.lecture.endTS}</td>
