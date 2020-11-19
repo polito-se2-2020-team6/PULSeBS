@@ -3,7 +3,7 @@ import "./App.css";
 import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
-import Calender from "./components/Calender";
+import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
 
@@ -26,9 +26,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // users: USERS,
-      studentsList: [],
-      lectureList: [],
+      // calendar: [],
     };
   }
 
@@ -48,6 +46,7 @@ class App extends React.Component {
             break;
           case ROLES.STUDENT:
             this.setState({ authUser: user, authErr: null });
+            // this.getCalendar(this.state.authUser.userId);
             this.props.history.push("/student/home");
             break;
         }
@@ -64,37 +63,12 @@ class App extends React.Component {
     });
   };
 
-  //set state from returned list of stuents booked to a lecture
-  studentsBooked = (lectureId) => {
-    API.getStudentsBooked(lectureId)
-      .then((studentsList) => {
+  getCalendar = (userID) => {
+    API.getLectures(userID)
+      .then((calendar) => {
         this.setState({
-          studentsList: studentsList || [],
+          calendar: calendar,
         });
-      })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
-  };
-
-
-  getLectures = (userId) => {
-    API.getLectures(userId)
-      .then((lectureList) => {
-        this.setState({
-          lectureList: lectureList || [],
-        });
-      })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
-  };
-
-  //delete a lecture as teacher
-  deleteLecture = (lectureId) => {
-    API.deleteLecture(lectureId)
-      .then(() => {
-        //get the update list of lectures? and set state?
       })
       .catch((errorObj) => {
         console.log(errorObj);
@@ -122,11 +96,15 @@ class App extends React.Component {
               getLectures={this.getLectures}
             />
           </Route>
-          <Route path="/student/calender">
-            <Calender />
+          <Route path="/student/calendar/">
+            <Calendar
+              getCalendar={this.getCalendar}
+              // calendar={this.state.calendar}
+              // user={this.state.authUser}
+            />
           </Route>
           <Route path="/student/home">
-            <Student />
+            <Student user={this.state.authUser} />
           </Route>
           <Redirect from="/" exact to="login" />
         </Switch>
