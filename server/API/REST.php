@@ -287,6 +287,7 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
+
 if (!function_exists('print_types')) {
 	function print_types($vars) {
 		echo json_encode(array('success' => true, 'list' => array(
