@@ -16,5 +16,6 @@ RUN chmod 0644 /etc/cron.d/cron_table
 RUN crontab /etc/cron.d/cron_table
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 # Run the command on container startup
 CMD . ./initialize.sh
