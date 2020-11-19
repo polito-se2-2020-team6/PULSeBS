@@ -22,7 +22,7 @@ if (!function_exists("check_login")) {
 
 
 		if (!$stmt->execute()) {
-			throw new Error($stmt->errorInfo(), $stmt->errorCode());
+			throw new PDOException($stmt->errorInfo()[2], $stmt->errorInfo()[0]);
 		}
 
 		$user_data = $stmt->fetch();
