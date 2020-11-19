@@ -1,0 +1,1 @@
+00 23 * * * php /var/www/html/scheduled/send_notifications.php send_booking_number_notifications

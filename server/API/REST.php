@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 header("Access-Control-Allow-Origin: *");
@@ -28,35 +28,6 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 
 	throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
-
-/* Utilities */
-
-if (!function_exists("check_login")) {
-	/**
-	 * Check if a user is logged
-	 * 
-	 * @return bool true if is logged, false otherwise
-	 */
-	function check_login() {
-		$pdo = new PDO("sqlite:../db.sqlite");
-
-		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
-			return false;
-		}
-
-		$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
-		$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
-
-		if (!$stmt->execute()) {
-			throw new PDOException($stmt->errorInfo()[2], $stmt->errorInfo()[0]);
-		}
-
-		$user_data = $stmt->fetch();
-
-		return $_SESSION["nonce"] == md5(serialize($user_data)) && intval($_SESSION['user_id']) == intval($user_data['ID']);
-	}
-}
-
 
 /* Functions that implements endpoints */
 
