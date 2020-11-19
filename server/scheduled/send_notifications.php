@@ -12,7 +12,7 @@ switch($argv[1]){
 		$end_time = clone $start_time;
 		$end_time->modify(("+1 day"));
 
-		$db = new PDO("../db.sqlite");
+		$db = new PDO("sqlite:../db.sqlite");
 
 		$stmt = $db->prepare("SELECT users.email, users.firstname, users.lastname, courses.name AS course_name, COUNT(*) AS booking_num FROM users, lectures, courses, bookings WHERE
 			users.id = courses.teacher_id AND courses.ID = lectures.course_id AND lectures.ID = bookings.lecture_id AND bookings.cancellation_ts IS NULL AND
