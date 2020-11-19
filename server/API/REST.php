@@ -258,6 +258,7 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
+
 if (!function_exists('print_types')) {
 	function print_types($vars) {
 		echo json_encode(array('success' => true, 'list' => array(
@@ -306,7 +307,7 @@ if (!function_exists('cancel_lecture')) {
 			}
 
 			$userId = intval($_SESSION['user_id']);
-			$pdo = new PDO('../db.sqlite');
+			$pdo = new PDO('sqlite:../db.sqlite');
 
 			// Check user exists and is teacher
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
@@ -532,7 +533,7 @@ if (!function_exists('cancel_booking')) {
 
 			$lectureId = intval($_DELETE['lectureId']);
 
-			$pdo = new PDO('../db.sqlite');
+			$pdo = new PDO('sqlite:../db.sqlite');
 
 			// Check user exists and is student
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :student');

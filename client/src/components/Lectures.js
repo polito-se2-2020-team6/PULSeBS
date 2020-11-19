@@ -9,23 +9,21 @@ class LectureList extends Component {
       <Fragment>
         <main
           role="main"
-          className="main mt-5 p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4"
+          className="main p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4"
         >
           <div className="table-responsive">
             <table className="table table-hover text-center">
               <thead>
                 <tr className="">
-                  <th>#</th>
-                  <th>courseId</th>
-                  <th>courseName</th>
-                  <th>startTs</th>
-                  <th>endTs</th>
-                  <th>online</th>
-                  <th>teacherName</th>
-                  <th>roomName</th>
-                  <th>bookedSeats</th>
-                  <th>totalSeats</th>
-                  <th>bookedSelf</th>
+                  <th>Course Name</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Online</th>
+                  <th>Teacher</th>
+                  <th>Room</th>
+                  <th>Booked Seats</th>
+                  <th>Total Seats</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -34,6 +32,7 @@ class LectureList extends Component {
                     key={lecture.lectureId}
                     lecture={lecture}
                     bookSeat={this.props.bookSeat}
+                    cancelBooking={this.props.cancelBooking}
                     //   onClick={this.props.onClick}
                     bookingProgres={this.props.bookingProgres}
                   />
@@ -52,6 +51,7 @@ function LectureRow(props) {
       <LectureData
         lecture={props.lecture}
         bookSeat={props.bookSeat}
+        cancelBooking={props.cancelBooking}
         bookingProgres={props.bookingProgres}
       />
     </tr>
@@ -60,18 +60,16 @@ function LectureRow(props) {
 function LectureData(props) {
   return (
     <>
-      <td>{props.lecture.lectureId}</td>
-      <td>{props.lecture.courseId}</td>
       <td>{props.lecture.courseName}</td>
       <td>{props.lecture.startTS}</td>
-      <td>{props.lecture.endTS}</td>
-      <td>{props.lecture.online}</td>
+      <td>{props.lecture.endTS === false ? '-' : props.lecture.endTS}</td>
+      <td>{props.lecture.online === true ? 'Online': 'In Person'}</td>
       <td>{props.lecture.teacherName}</td>
       <td>{props.lecture.roomName}</td>
       <td>{props.lecture.bookedSeats}</td>
       <td>{props.lecture.totalSeats}</td>
       <td>
-        {props.lecture.bookedSelf === 0 ? (
+        {props.lecture.bookedSelf === false ? (
           <Button
             variant="outline-success"
             onClick={() => {
@@ -91,7 +89,11 @@ function LectureData(props) {
           //   onClick={props.bookSeat}
           // >
 
-          <p>booked</p>
+          <Button
+          onClick={() => {
+            props.cancelBooking(props.lecture.lectureId);
+          }}
+          variant="danger">Cancel Booking</Button>
         )}
       </td>
 
