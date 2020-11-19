@@ -25,7 +25,9 @@ switch($argv[1]){
 		}
 
 		while($data = $stmt->fetch()){
-			mail($data["email"], "Notification of students booked for a lesson", "Good morning ".$data["firstname"]." ".$data["lastname"].",\nFor your lecture of ".$data["course_name"]." there are ".$data["booking_num"]." active bookings.\nKind Regards");
+			mail($data["email"],
+			'[' . $data['course_name'] . '] Booking Notice',
+			"Dear ".$data["lastname"]." ".$data["firstname"].",\n" . $data["booking_num"] . " have booked for the lecture of ".$data["course_name"].".\nKind Regards");
 		}
 
 	break;
