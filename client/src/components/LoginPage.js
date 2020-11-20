@@ -63,14 +63,15 @@ class LoginPage extends React.Component {
                   }
                 >
                   <AppBar position="fixed">
-                    <Toolbar >
-                      <Typography variant="h5">Pandemic University Lecture Seat Booking System (PULSeBS)</Typography>
+                    <Toolbar>
+                      <Typography variant="h5">
+                        Pandemic University Lecture Seat Booking System
+                        (PULSeBS)
+                      </Typography>
                     </Toolbar>
                   </AppBar>
-                  <Row >
-                    <Col className="mb-5"></Col>
-                  </Row>
-                  <Row >
+
+                  <Row>
                     <Col className="mb-5"></Col>
                   </Row>
                   <Typography component="h2" className="mb-3 mt-5">
