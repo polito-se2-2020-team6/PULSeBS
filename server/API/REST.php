@@ -123,6 +123,9 @@ if (!function_exists('list_lectures')) {
 			return;
 		}
 
+		// Filter out cancelled lectures
+		$query .= ' AND settings & :cancelled = 0';
+
 		// Add optional ranges to query
 		if (isset($_GET['startDate'])) {
 			$query .= ' AND start_ts >= :startDate';
@@ -135,6 +138,7 @@ if (!function_exists('list_lectures')) {
 		$query .= ' ORDER BY start_ts, ID ASC';
 		$stmt = $pdo->prepare($query);
 		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
 
 		if (isset($_GET['startDate'])) {
 			$Ymd = explode('-', $_GET['startDate']);
@@ -516,11 +520,10 @@ if (!function_exists('book_lecture')) {
 
 			// Success
 			//I send a confirmazion email
-			$mail_result = mail($user_data["email"], "Confirmation of ".$lecture["name"]." lecture booking", "You did a booking for the lecture of ".$lecture["name"].". The booking has been successfull");
-			if(!$mail_result){
+			$mail_result = mail($user_data["email"], "Confirmation of " . $lecture["name"] . " lecture booking", "You did a booking for the lecture of " . $lecture["name"] . ". The booking has been successfull");
+			if (!$mail_result) {
 				echo json_encode(array('success' => true, 'mailSent' => $mail_result, 'mailError' => error_get_last()["message"]));
-			}
-			else{
+			} else {
 				echo json_encode(array('success' => true, 'mailSent' => $mail_result));
 			}
 		} catch (Exception $e) {
