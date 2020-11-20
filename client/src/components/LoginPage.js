@@ -15,6 +15,9 @@ import {
   InputLabel,
   FormGroup,
   Button,
+  AppBar,
+  Typography,
+  Toolbar,
 } from "@material-ui/core";
 import { AuthContext } from "../auth/AuthContext";
 
@@ -59,6 +62,20 @@ class LoginPage extends React.Component {
                     this.handleSubmit(event, context.loginUser)
                   }
                 >
+                  <AppBar position="fixed">
+                    <Toolbar >
+                      <Typography variant="h5">Pandemic University Lecture Seat Booking System (PULSeBS)</Typography>
+                    </Toolbar>
+                  </AppBar>
+                  <Row >
+                    <Col className="mb-5"></Col>
+                  </Row>
+                  <Row >
+                    <Col className="mb-5"></Col>
+                  </Row>
+                  <Typography component="h2" className="mb-3 mt-5">
+                    Login
+                  </Typography>
                   <FormGroup>
                     <FormControl>
                       <InputLabel htmlFor="my-input">Username</InputLabel>
@@ -88,7 +105,6 @@ class LoginPage extends React.Component {
                         value={this.state.password}
                         onChange={this.handleInputChange}
                         required
-                        
                       />
                       {/* <FormHelperText id="my-helper-text">
                       We'll never share your email.
@@ -105,7 +121,7 @@ class LoginPage extends React.Component {
                       variant="contained"
                       className="mt-5"
                     >
-                      Login
+                      login
                     </Button>
                   </FormGroup>
                 </Form>
