@@ -77,7 +77,7 @@ function LectureData(props) {
             }}
           >
             {props.bookingProgres === 1 ? (
-              <Spinner animation="border" variant="success" />
+              <Spinner animation="border" size="sm" variant="success" />
             ) : (
               "Book a Seat"
             )}
