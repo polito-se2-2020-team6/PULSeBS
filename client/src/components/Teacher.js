@@ -188,7 +188,9 @@ class Teacher extends React.Component {
                                     this.getStudentsBooked(c.lectureId);
                                   }}
                                 >
-                                  {c.startTS}
+                                  <Row>
+                                    <Col>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                  
 
                                   <Button
                                     type="button"
@@ -200,6 +202,8 @@ class Teacher extends React.Component {
                                   >
                                     <span aria-hidden="true">&times;</span>
                                   </Button>
+                                  <Col md={1}></Col>
+                                  </Row>
                                 </ListGroup.Item>
                                 
                               ))}

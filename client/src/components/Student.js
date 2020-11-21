@@ -19,15 +19,17 @@ class Student extends Component {
     console.log(studentId);
     API.bookLecture(lectureId, studentId)
       .then((lectures) => {
+        this.componentDidMount();
         this.setState({ bookingProgres: 0 });
         console.log(lectures);
       })
       .catch((err) => console.log(err));
-    API.getLectures(studentId)
-      .then((lectures) => {
-        this.setState({ lectures: lectures });
-      })
-      .catch((err) => console.log(err));
+    // API.getLectures(studentId)
+    //   .then((lectures) => {
+    //     this.setState({ lectures: lectures });
+    //   })
+    //   .catch((err) => console.log(err));
+    
   };
 
 
@@ -38,9 +40,8 @@ class Student extends Component {
 
     API.cancelBooking(lectureId, studentId)
       .then((lectures) => {
-        this.setState({ bookingProgres: 0 });
-        console.log(lectures.success);
         this.componentDidMount();
+        this.setState({ bookingProgres: 0 });
       })
       .catch((err) => console.log(err));
   };

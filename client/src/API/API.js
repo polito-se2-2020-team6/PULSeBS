@@ -89,7 +89,6 @@ async function cancelBooking(lectureId, userId) {
   });
 }
 
-
 // Return list of students booked to a lecture **GET** /api/lectures/{lectureId}/students
 async function getStudentsBooked(lectureId) {
   let url = "/lectures/";
@@ -115,10 +114,12 @@ async function deleteLecture(lectureId) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}`;
+    let data = `lectureId=${lectureId}`;
     req.open("delete", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
+      console.log(req);
       if (req.status === 200) {
         console.log("cipolla");
         const response = req.response;
@@ -134,6 +135,7 @@ async function deleteLecture(lectureId) {
       console.log("cane");
       reject(Error("Network Error"));
     }; // make the request
+    req.send(data);
   });
 }
 
@@ -149,12 +151,15 @@ async function userLogin(username, password) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      if (req.status === 200) {
+      const status = JSON.parse(req.response);
+      // console.log(status.success);
+      if (status.success === true) {
         const response = req.response;
         let user = JSON.parse(response);
         resolve(user);
       } else {
-        reject(Error(req.statusText));
+        console.log(status.success);
+        reject(status.success);
       }
     };
     // handle network errors
