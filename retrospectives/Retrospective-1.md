@@ -37,7 +37,7 @@ sections:
 | _#7_  | 2       | 3      | 3          | 1.3          |
 | _#8_  | 1       | 2      | 0.5        | 0            |
 
-- Hours per task (average, standard deviation): 6.6h (avg), 
+- Hours per task (average, standard deviation): 7.03h (avg), 8.70h (std deviation) 
 
 - Total task estimation error ratio: sum of total hours estimation / sum of total hours spent from previous table: 0.74
 
