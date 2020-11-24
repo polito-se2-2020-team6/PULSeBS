@@ -1,41 +1,26 @@
-FROM node:latest
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-COPY . /usr/src/app/
-
-RUN npm install
-
-# ADD src /usr/src/app/src
-# ADD public /usr/src/app/public
-RUN npm build
-
-CMD ["npm","start"]
-
 # FROM node:latest
 
 # RUN mkdir -p /usr/src/app
 # WORKDIR /usr/src/app
 
-# COPY package.json /usr/src/app/
+# COPY . /usr/src/app/
 
 # RUN npm install
 
-# ADD src /usr/src/app/src
-# ADD public /usr/src/app/public
+# # ADD src /usr/src/app/src
+# # ADD public /usr/src/app/public
 # RUN npm build
 
 # CMD ["npm","start"]
 
 
-
-
-# FROM node:latest
-# WORKDIR '/client'
-
-# COPY package.json .
-# RUN npm install
-# COPY . .
-# CMD ["npm","start"]
-
+FROM node:12.18.3
+# ENV NPM_CONFIG_LOGLEVEL warn
+# ARG app_env
+# ENV APP_ENV $app_env
+RUN mkdir -p /src 
+WORKDIR /src
+COPY . /src
+RUN npm install
+RUN npm build
+CMD ["npm","start"]
