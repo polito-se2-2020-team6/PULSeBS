@@ -1,4 +1,5 @@
 export const ROLES = {
-  TEACHER: "1",
   STUDENT: "0",
+  TEACHER: "1",
+  BOOKING_MANAGER: "2",
 };
