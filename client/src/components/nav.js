@@ -6,7 +6,6 @@ import { AuthContext } from "../auth/AuthContext";
 import { ROLES } from "../data/consts";
 
 class Navigation extends Component {
-  state = {};
   render() {
     return (
       <AuthContext.Consumer>

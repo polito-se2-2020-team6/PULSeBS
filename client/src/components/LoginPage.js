@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Form,
-  // FormGroup,
-  Col,
-  // Button,
-  // FormControl,
-  Container,
-  Row,
-} from "react-bootstrap";
-import { ROLES } from "../data/consts";
+import { Form, Col, Container, Row } from "react-bootstrap";
 import {
   FormControl,
   Input,
@@ -27,10 +18,6 @@ class LoginPage extends React.Component {
     this.state = {
       username: "",
       password: "",
-      // role: ROLES.TEACHER,
-      //   submitted: false,
-      //   error: "",
-      //   has_error: false,
     };
   }
 
