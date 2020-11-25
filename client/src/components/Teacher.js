@@ -134,6 +134,11 @@ class Teacher extends React.Component {
     this.setState({students : []})
   }
 
+  turnLecture(){
+    //chiamata API per modificare stato lezione online/in presence
+
+  }
+
   render() {
     const corsi = this.state.totalLectures
       .map((item) => item.courseName)
@@ -161,7 +166,7 @@ class Teacher extends React.Component {
                   <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
                     <Row className="mt-5 ">
                       <Col md={1}></Col>
-                      <Col md={4}>
+                      <Col md={5}>
                         <Tab.Container id="list-group-tabs-example">
                           <ListGroup className="mt-2">
                             <ListGroup.Item as="li" active>
@@ -189,7 +194,14 @@ class Teacher extends React.Component {
                                   }}
                                 >
                                   <Row>
-                                    <Col>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                    <Col md={2  }>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                    <Button type="button" variant="outline-secondary" onClick={() => {
+                                      this.turnLecture();
+                                    }}>
+                                      {/*controllo va fatto su c.online*/}
+                                      turn to {c.roomName==="AULA VIRTUALE" ? "presence" : "online"}
+                                    </Button>
+                                    <Col></Col>
                                   
 
                                   <Button
