@@ -1,0 +1,15 @@
+defaults
+port {{.Env.SSMTP_PORT}}
+tls {{.Env.SSMTP_USE_TLS}}
+tls_starttls {{.Env.SSMTP_USE_STARLTLS}}
+tls_certcheck off
+
+account debugmail
+host {{.Env.SSMTP_HOST}}
+from {{.Env.SSMTP_FROM}}
+auth plain
+# Username/Password
+user {{.Env.SSMTP_AUTH_USER}}
+password {{.Env.SSMTP_AUTH_PASSWORD}}
+
+account default : debugmail
