@@ -522,12 +522,12 @@ if (!function_exists('book_lecture')) {
 			//I send a confirmazion email
 			$mail_result = mail($user_data["email"], "Confirmation of " . $lecture["name"] . " lecture booking", "You did a booking for the lecture of " . $lecture["name"] . ". The booking has been successfull");
 			if (!$mail_result) {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result, 'mailError' => error_get_last()["message"]));
+				echo json_encode(array('success' => true, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
 			} else {
 				echo json_encode(array('success' => true, 'mailSent' => $mail_result));
 			}
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
 		}
 	}
 }
