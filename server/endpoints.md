@@ -18,7 +18,7 @@ Will set a cookie with a string used to authentication
     - success: bool
     - list: [array(object)]
       - typeId: int
-      - typeDesc: string *(student, teacher)*
+      - typeDesc: string *(student, teacher, booking manager)*
 
 # Check login
 - **GET** /api/logged
@@ -52,7 +52,7 @@ Requires login
     - lastname: string
 
 # All lectures of a user
-Requires login
+Requires login as student or teacher
 
 - **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
   - *request params*
@@ -111,6 +111,38 @@ Requires login as teacher
     - empty
   - *response body*
     - success: bool
+
+# Booking statistics
+Requires login as teacher or booking manager
+
+- **GET** /api/stats?lecture=LL&course=XXX&period=PPPP&week=WW&month=MM&year=YYYY
+  - *URL params details*
+    - lecture: id of lecture
+    - course: id of course | all
+      - if lecture not present, defaults to all, ignored otherwise
+    - period: week | month | all
+      - if lecture not present, defaults to all, ignored otherwise
+    - week: 0 <= id of week <= 52
+      - mandatory if period = week, ignored otherwise
+    - month: 0 <= id of month <= 11
+      - mandatory if period = month, ignored otherwise
+    - year: year > 0
+      - mandatory if period = week | month, ignored otherwise
+  - *response body*
+    - success: bool
+    - courseId: int | null
+    - bookingsAvg: float
+    - bookingsStdDev: float
+    - totalBookings: int
+    - attendanceAvg: float
+    - attendanceStdDev: float
+    - totalAttendance: int
+    - cancellationsAvg: float
+    - cancellationsStdDev: float
+    - totalCancellations: int
+    - nLectures: int
+      - attendance statistics are not present at the moment
+      - cancellation statistics are present only for a booking manager
 
 # Error
 If an error occurs, the *response body* is
