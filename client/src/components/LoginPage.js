@@ -24,10 +24,6 @@ class LoginPage extends React.Component {
     this.state = {
       username: "",
       password: "",
-      // role: ROLES.TEACHER,
-      //   submitted: false,
-      //   error: "",
-      //   has_error: false,
     };
   }
 

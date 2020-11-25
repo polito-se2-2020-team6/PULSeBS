@@ -6,7 +6,6 @@ import { AuthContext } from "../auth/AuthContext";
 import { ROLES } from "../data/consts";
 
 class Navigation extends Component {
-  state = {};
   render() {
     return (
       <AuthContext.Consumer>
@@ -47,6 +46,17 @@ class Navigation extends Component {
                           </NavLink>
                         </NavItem>
                       )}
+                      {context.authUser.type === ROLES.BOOKING_MANAGER && (
+                        <NavItem>
+                          <NavLink
+                            className="nav-link"
+                            to="/booking-manager/home"
+                          >
+                            Booking Manager
+                          </NavLink>
+                        </NavItem>
+                      )}
+
                       <NavItem className="ml-auto">
                         <NavLink
                           className="nav-link"
