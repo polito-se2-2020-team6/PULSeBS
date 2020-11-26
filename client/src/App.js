@@ -3,6 +3,7 @@ import "./App.css";
 import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
+import HistoricalData from "./components/Teacher/HistoricalData";
 import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
@@ -95,6 +96,14 @@ class App extends React.Component {
           <Route path="/login" component={LoginPage}></Route>
           <Route path="/teacher/home">
             <Teacher
+              studentsList={this.state.studentsList}
+              studentsBooked={this.studentsBooked}
+              deleteLecture={this.deleteLecture}
+              getLectures={this.getLectures}
+            />
+          </Route>
+          <Route path="/teacher/historicaldata">
+            <HistoricalData
               studentsList={this.state.studentsList}
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}

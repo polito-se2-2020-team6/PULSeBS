@@ -42,7 +42,14 @@ class Navigation extends Component {
                       {context.authUser.type === ROLES.TEACHER && (
                         <NavItem>
                           <NavLink className="nav-link" to="/teacher/home">
-                            Teacher
+                            Courses
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      {context.authUser.type === ROLES.TEACHER && (
+                        <NavItem>
+                          <NavLink className="nav-link" to="/teacher/historicaldata">
+                            Hisotrical Data
                           </NavLink>
                         </NavItem>
                       )}

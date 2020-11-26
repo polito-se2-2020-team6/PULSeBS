@@ -59,7 +59,7 @@ var listaLezioni = [
   },
 ]; */
 
-class Prova extends React.Component {
+class HistoricalData extends React.Component {
   constructor(props) {
     super(props);
 
@@ -93,4 +93,4 @@ class Prova extends React.Component {
 }
 
 
-export default Prova;
+export default HistoricalData;
