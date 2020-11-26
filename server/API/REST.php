@@ -350,7 +350,7 @@ if (!function_exists('cancel_lecture')) {
 								   SET settings = settings | :cancelled
 								   WHERE ID = :lectureId');
 			$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
-			$stmt->bindValue(':lecture', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
