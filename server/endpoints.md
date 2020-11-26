@@ -115,7 +115,7 @@ Requires login as teacher
 # Edit a lecture online status
 Requires login as teacher
 - **PATCH** /api/lectures/{lectureId}/online
-  -*request params*
+  - *request params*
     - value: bool
   - *response body*
     - success: bool
