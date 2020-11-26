@@ -112,6 +112,14 @@ Requires login as teacher
   - *response body*
     - success: bool
 
+# Edit a lecture online status
+Requires login as teacher
+- **PATCH** /api/lectures/{lectureId}/online
+  -*request params*
+    - value: bool
+  - *response body*
+    - success: bool
+
 # Booking statistics
 Requires login as teacher or booking manager
 
