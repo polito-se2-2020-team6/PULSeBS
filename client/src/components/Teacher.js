@@ -101,10 +101,11 @@ class Teacher extends React.Component {
   }
 
   //delete a lecture as teacher
-  async deleteLecture(lectureId) {
+  deleteLecture(lectureId) {
     API.deleteLecture(lectureId)
       .then(() => {
-        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+        //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+        this.setState({lectureUpdated: true})
         //aggiunto io
         this.setState({students : []});
         this.setState({studtable: false});
@@ -115,8 +116,8 @@ class Teacher extends React.Component {
       //console.log("prima");
       //console.log(this.state.totalLectures);
       //console.log(this.state.students);
-      await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-      await this.setState({students : []})
+      //await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+      //await this.setState({students : []})
       //console.log("dopo");
       //console.log(this.state.totalLectures);
       //console.log(this.state.students);
@@ -205,16 +206,15 @@ class Teacher extends React.Component {
                                   
 
                                   <Button
-                                    type="button"
-                                    className="close"
-                                    aria-label="Close"
+                                    variant="danger"
+                                    className="mr-2"
                                     onClick={() => {
                                       this.deleteLecture(c.lectureId);
                                     }}
                                   >
-                                    <span aria-hidden="true">&times;</span>
+                                   delete
                                   </Button>
-                                  <Col md={1}></Col>
+                                  
                                   </Row>
                                 </ListGroup.Item>
                                 
