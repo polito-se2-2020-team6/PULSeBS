@@ -184,6 +184,35 @@ async function isLogged() {
     throw err; // An object with the error coming from the server
   }
 }
+async function turnLecture(lectureId){
+  console.log("lezione: ");
+  console.log(lectureId);
+  return new Promise((resolve,reject) => {
+    fetch(baseURL + `/lectures/${lectureId}/online`, {
+      method: "PATCH",
+    }).then((response) => {
+      if (response.ok) {
+        console.log("tutto a posto API");
+        resolve(null);
+      } else {
+        console.log("niente a posto API");
+        // analyze the cause of error
+        response
+          .json()
+          .then((obj) => {
+            reject(obj);
+          }) // error msg in the response body
+          .catch((err) => {
+            reject({
+              errors: [
+                { param: "Application", msg: "Cannot parse server response" },
+              ],
+            });
+          }); // something else
+      }
+    });
+  })
+}
 
 //Logout **POST** /api/logout
 async function userLogout() {
@@ -221,5 +250,6 @@ const API = {
   deleteLecture,
   bookLecture,
   cancelBooking,
+  turnLecture,
 };
 export default API;

@@ -1,7 +1,7 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { useState } from "react";
+import React, { } from "react";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -70,6 +70,7 @@ class Teacher extends React.Component {
       students: [],
       lecture: '',
       studtable: true,
+      online: false,
     };
   }
 
@@ -135,9 +136,30 @@ class Teacher extends React.Component {
     this.setState({students : []})
   }
 
-  turnLecture(){
+  turnLecture(lectureId,online_s,room){
     //chiamata API per modificare stato lezione online/in presence
-
+    /*API.turnLecture(lectureId)
+    .then(() => {
+      //andato a buon fine
+      console.log("giusto")
+      //aggiunto io
+      
+    })
+    .catch((errorObj) => {
+      console.log("errore")
+      console.log(errorObj);
+    });
+    */
+    //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
+  /*
+    if(online){
+      this.setState({online: false});
+    }
+    else{
+      this.setState({online: true});
+    }
+    */
+    
   }
 
   render() {
@@ -195,12 +217,13 @@ class Teacher extends React.Component {
                                   }}
                                 >
                                   <Row>
-                                    <Col md={2  }>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                    <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
                                     <Button type="button" variant="outline-secondary" onClick={() => {
-                                      this.turnLecture();
+                                      this.turnLecture(c.lectureId,c.online,c.roomName); 
                                     }}>
+
                                       {/*controllo va fatto su c.online*/}
-                                      turn to {c.roomName==="AULA VIRTUALE" ? "presence" : "online"}
+                                      turn to {c.online? "online" : "presence"}
                                     </Button>
                                     <Col></Col>
                                   
