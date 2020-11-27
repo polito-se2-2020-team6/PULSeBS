@@ -327,6 +327,7 @@ if (!function_exists('cancel_lecture')) {
 			// Check lecture exists, is assigned to teacher and > 1h to start
 			$nextHour = new DateTime();
 			$nextHour->modify('+1 hour'); // Check for timezones discrepancies
+			//TODO check because this method doesn't take into account legal hour shift. You should use the method setTimezone
 			$stmt = $pdo->prepare('SELECT *
 								   FROM lectures L, courses C
 								   WHERE L.course_id = C.ID
@@ -341,8 +342,30 @@ if (!function_exists('cancel_lecture')) {
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
-			if (!$stmt->fetch()) {
+			if (!$lecture = $stmt->fetch()) {
 				throw new PDOException('Lecture ' . $lectureId . ' not found.');
+			}
+
+			// Get students
+			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
+								   FROM users U, bookings B
+								   WHERE U.ID = B.user_id 
+								   		AND lecture_id = :lectureId
+								   		AND type = :student 
+										AND booking_ts IS NOT NULL
+										AND cancellation_ts IS NULL');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':student', intval(USER_TYPE_STUDENT), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			$students = array();
+			while ($s = $stmt->fetch()) {
+				$students[] = array(
+					'studentId' => intval($s['ID']),
+					'email' => $s['email'],
+					'studentName' => $s['lastname'] . ' ' . $s['firstname']
+				);
 			}
 
 			// Cancel lecture
@@ -353,6 +376,13 @@ if (!function_exists('cancel_lecture')) {
 			$stmt->bindValue(':lecture', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
+			}
+
+			//send mail notifications
+			$lecture_time = new DateTime($lecture["start_ts"], new DateTimeZone("UTC"));
+			$lecture_time->setTimezone(new DateTimeZone($server_default_timezone));
+			foreach($students as $student){
+				mail($student["email"], "Cancellation of ".$lecture['name']." lecture of ".$lecture_time->format("Y-m-d H:i"), "The lecture of the course ".$lecture['name']." that should had taken place in ".$lecture_time->format("D Y-m-d H:i"). " has been cancelled\nKind regards");
 			}
 			// Success
 			echo json_encode(array('success' => true));
@@ -395,6 +425,7 @@ if (!function_exists('booked_students')) {
 			if (!$stmt->fetch()) {
 				throw new PDOException('Lecture' . $lectureId . ' not found.');
 			}
+
 
 			// Get students
 			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
