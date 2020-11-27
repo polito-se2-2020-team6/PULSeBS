@@ -142,12 +142,12 @@ if (!function_exists('list_lectures')) {
 
 		if (isset($_GET['startDate'])) {
 			$Ymd = explode('-', $_GET['startDate']);
-			$ts = mktime(0, 0, 0, intval($Ymd[2]), intval($Ymd[1]), intval($Ymd[0]));
+			$ts = mktime(0, 0, 0, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
 			$stmt->bindValue(':startDate', $ts, PDO::PARAM_INT);
 		}
 		if (isset($_GET['endDate'])) {
 			$Ymd = explode('-', $_GET['endDate']);
-			$ts = mktime(59, 59, 23, intval($Ymd[2]), intval($Ymd[1]), intval($Ymd[0]));
+			$ts = mktime(59, 59, 23, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
 			$stmt->bindValue(':endDate', $ts, PDO::PARAM_INT);
 		}
 
