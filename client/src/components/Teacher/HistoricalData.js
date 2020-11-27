@@ -11,6 +11,8 @@ import {
   Tab,
   ListGroup,
   Button,
+  Table,
+  Dropdown
 } from "react-bootstrap";
 import { AuthContext } from "../../auth/AuthContext";
 
@@ -58,19 +60,51 @@ var listaLezioni = [
     studenti: new Array("ludo", "carlo", "max"),
   },
 ]; */
+var lecturesDetailDay = [
+  {
+    course: "History",
+    lecture: "HY-01",
+    averge: 5,
+  },
+  {
+    course: "Hello",
+    lecture: "HY-02",
+    averge: 7,
+  }];
+
+  var lecturesDetailMonth = [
+    {
+      course: "History",
+      lecture: "HY-01",
+      averge: 1,
+    },
+    {
+      course: "Hello",
+      lecture: "HY-02",
+      averge: 3,
+    }];
 
 class HistoricalData extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      lectureUpdated: true,
-      totalLectures: [],
-      course: '',
-      students: [],
-      lecture: '',
-      studtable: true,
+      lectures: lecturesDetailDay,
+      detailLevel: 'Select detail'
     };
+  }
+
+  changeValue(text) {
+    //here changes the detail,need an API call to retrieve the data
+
+    //just to try
+    if (text === 'Day'){
+      this.setState({lectures: lecturesDetailDay});
+    }else if (text === 'Month'){
+      this.setState({lectures: lecturesDetailMonth});
+    }
+    
+    this.setState({detailLevel: text})
   }
 
 
@@ -80,8 +114,41 @@ class HistoricalData extends React.Component {
 
     return (
         <>
-        <Container>
-            <Row ><Col><h2 className="text-center">Table Data</h2></Col></Row>
+        <Container className="mt-5">
+            <Row>
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                {this.state.detailLevel}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Day</Dropdown.Item>
+                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Week</Dropdown.Item>
+                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Month</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            </Row>
+            <Row>
+              <Col><h2 className="text-center">Table Data</h2></Col>
+            </Row>
+            <Table striped bordered hover size="sm" className="mt-2">
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Lecture</th>
+                  <th>Average bookings</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.state.lectures?.map((l) => (
+                <tr>
+                  <td>{l.course}</td>
+                  <td>{l.lecture}</td>
+                  <td>{l.averge}</td>
+                </tr>
+                ))}
+              </tbody>
+            </Table>
             <br></br>
             <br></br>
             <br></br>
