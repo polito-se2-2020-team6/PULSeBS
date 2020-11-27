@@ -84,7 +84,6 @@ class LoginPage extends React.Component {
                         value={this.state.password}
                         onChange={this.handleInputChange}
                         required
-                        
                       />
                       {/* <FormHelperText id="my-helper-text">
                       We'll never share your email.
@@ -100,6 +99,7 @@ class LoginPage extends React.Component {
                       size="small"
                       variant="contained"
                       className="mt-5"
+                      id="login"
                     >
                       Login
                     </Button>
