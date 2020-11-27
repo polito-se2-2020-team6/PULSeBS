@@ -24,7 +24,7 @@
   },
   "proxy": "http://localhost:8080",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts -r @cypress/instrument-cra start",
     
     "build": "react-scripts build",
     "test": "react-scripts test",

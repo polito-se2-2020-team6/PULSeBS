@@ -150,7 +150,9 @@ async function userLogin(username, password) {
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    console.log(req);
     req.onload = function () {
+      console.log(req);
       const status = JSON.parse(req.response);
       // console.log(status.success);
       if (status.success === true) {
@@ -184,10 +186,10 @@ async function isLogged() {
     throw err; // An object with the error coming from the server
   }
 }
-async function turnLecture(lectureId){
+async function turnLecture(lectureId) {
   console.log("lezione: ");
   console.log(lectureId);
-  return new Promise((resolve,reject) => {
+  return new Promise((resolve, reject) => {
     fetch(baseURL + `/lectures/${lectureId}/online`, {
       method: "PATCH",
     }).then((response) => {
@@ -211,7 +213,7 @@ async function turnLecture(lectureId){
           }); // something else
       }
     });
-  })
+  });
 }
 
 //Logout **POST** /api/logout
