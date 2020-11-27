@@ -75,7 +75,7 @@ class Teacher extends React.Component {
   }
 
   getLectures = (userId) => {
-    API.getLectures(userId)
+    API.getLecturesStartDate(userId)
       .then((lectures) => {
         console.log(lectures);
         this.setState({
@@ -138,7 +138,7 @@ class Teacher extends React.Component {
 
   turnLecture(lectureId,online_s,room){
     //chiamata API per modificare stato lezione online/in presence
-    /*API.turnLecture(lectureId)
+    API.turnLecture(lectureId)
     .then(() => {
       //andato a buon fine
       console.log("giusto")
@@ -149,7 +149,7 @@ class Teacher extends React.Component {
       console.log("errore")
       console.log(errorObj);
     });
-    */
+    
     //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
   /*
     if(online){
@@ -217,13 +217,14 @@ class Teacher extends React.Component {
                                   }}
                                 >
                                   <Row>
-                                    <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                <Col md={2}>{c.startTS}{"+++"+c.courseId}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
                                     <Button type="button" variant="outline-secondary" onClick={() => {
                                       this.turnLecture(c.lectureId,c.online,c.roomName); 
                                     }}>
 
                                       {/*controllo va fatto su c.online*/}
-                                      turn to {c.online? "online" : "presence"}
+                                      
+                                      turn to {c.online? "presence": "online"}
                                     </Button>
                                     <Col></Col>
                                   

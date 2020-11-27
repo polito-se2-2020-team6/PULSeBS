@@ -31,6 +31,42 @@ async function getLectures(userId) {
   }
 }
 
+//return list of lectures based on the userId **GET** /api/users/{userId}/lectures
+async function getLecturesStartDate(userId) {
+  let data = new Date();
+  /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
+    data.getMonth() + 1
+  }`;
+  console.log("URL startDate");
+  console.log(url);
+  const response = await fetch(baseURL + url);
+  const lectureJson = await response.json();
+  if (response.ok) {
+    const lectures = lectureJson.lectures;
+    const final = lectures.map(
+      (l) =>
+        new Lecture(
+          l.lectureId,
+          l.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          l.totalSeats,
+          l.bookedSeats,
+          l.courseName,
+          l.bookedSelf,
+          l.teacherName
+        )
+    );
+    return final;
+  } else {
+    let err = { status: response.status, errObj: lectureJson };
+    throw err; // An object with the error coming from the server
+  }
+}
+
 //return list of lectures based on the userId with time filter **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
 
 //# Book a lecture /api/users/{userId}/book
@@ -187,32 +223,32 @@ async function isLogged() {
   }
 }
 async function turnLecture(lectureId) {
-  console.log("lezione: ");
-  console.log(lectureId);
-  return new Promise((resolve, reject) => {
-    fetch(baseURL + `/lectures/${lectureId}/online`, {
-      method: "PATCH",
-    }).then((response) => {
-      if (response.ok) {
-        console.log("tutto a posto API");
-        resolve(null);
+  return new Promise(function (resolve, reject) {
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    let url = baseURL + `/lectures/${lectureId}/online`;
+    let data = `lectureId=${lectureId}`;
+    req.open("patch", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.onload = function () {
+      console.log(req);
+      if (req.status === 200) {
+        console.log("cipolla");
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
       } else {
-        console.log("niente a posto API");
-        // analyze the cause of error
-        response
-          .json()
-          .then((obj) => {
-            reject(obj);
-          }) // error msg in the response body
-          .catch((err) => {
-            reject({
-              errors: [
-                { param: "Application", msg: "Cannot parse server response" },
-              ],
-            });
-          }); // something else
+        console.log("carota");
+        reject(Error(req.statusText));
       }
-    });
+    };
+    // handle network errors
+    req.onerror = function () {
+      console.log("cane");
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
   });
 }
 
@@ -253,5 +289,6 @@ const API = {
   bookLecture,
   cancelBooking,
   turnLecture,
+  getLecturesStartDate,
 };
 export default API;

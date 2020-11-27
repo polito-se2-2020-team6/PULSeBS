@@ -53,7 +53,7 @@ class Navigation extends Component {
                             className="nav-link"
                             to="/teacher/historicaldata"
                           >
-                            Hisotrical Data
+                            Historical Data
                           </NavLink>
                         </NavItem>
                       )}
