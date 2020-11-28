@@ -1,7 +1,7 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { useState } from "react";
+import React, { } from "react";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -70,11 +70,12 @@ class Teacher extends React.Component {
       students: [],
       lecture: '',
       studtable: true,
+      online: false,
     };
   }
 
   getLectures = (userId) => {
-    API.getLectures(userId)
+    API.getLecturesStartDate(userId)
       .then((lectures) => {
         console.log(lectures);
         this.setState({
@@ -101,10 +102,11 @@ class Teacher extends React.Component {
   }
 
   //delete a lecture as teacher
-  async deleteLecture(lectureId) {
+  deleteLecture(lectureId) {
     API.deleteLecture(lectureId)
       .then(() => {
-        this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+        //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+        this.setState({lectureUpdated: true})
         //aggiunto io
         this.setState({students : []});
         this.setState({studtable: false});
@@ -115,8 +117,8 @@ class Teacher extends React.Component {
       //console.log("prima");
       //console.log(this.state.totalLectures);
       //console.log(this.state.students);
-      await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-      await this.setState({students : []})
+      //await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
+      //await this.setState({students : []})
       //console.log("dopo");
       //console.log(this.state.totalLectures);
       //console.log(this.state.students);
@@ -132,6 +134,32 @@ class Teacher extends React.Component {
 
   clearStudentTable() {
     this.setState({students : []})
+  }
+
+  turnLecture(lectureId,online_s,room){
+    //chiamata API per modificare stato lezione online/in presence
+    API.turnLecture(lectureId)
+    .then(() => {
+      //andato a buon fine
+      console.log("giusto")
+      //aggiunto io
+      
+    })
+    .catch((errorObj) => {
+      console.log("errore")
+      console.log(errorObj);
+    });
+    
+    //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
+  /*
+    if(online){
+      this.setState({online: false});
+    }
+    else{
+      this.setState({online: true});
+    }
+    */
+    
   }
 
   render() {
@@ -161,7 +189,7 @@ class Teacher extends React.Component {
                   <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
                     <Row className="mt-5 ">
                       <Col md={1}></Col>
-                      <Col md={4}>
+                      <Col md={5}>
                         <Tab.Container id="list-group-tabs-example">
                           <ListGroup className="mt-2">
                             <ListGroup.Item as="li" active>
@@ -189,20 +217,28 @@ class Teacher extends React.Component {
                                   }}
                                 >
                                   <Row>
-                                    <Col>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                <Col md={2}>{c.startTS}{"+++"+c.courseId}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                    <Button type="button" variant="outline-secondary" onClick={() => {
+                                      this.turnLecture(c.lectureId,c.online,c.roomName); 
+                                    }}>
+
+                                      {/*controllo va fatto su c.online*/}
+                                      
+                                      turn to {c.online? "presence": "online"}
+                                    </Button>
+                                    <Col></Col>
                                   
 
                                   <Button
-                                    type="button"
-                                    className="close"
-                                    aria-label="Close"
+                                    variant="danger"
+                                    className="mr-2"
                                     onClick={() => {
                                       this.deleteLecture(c.lectureId);
                                     }}
                                   >
-                                    <span aria-hidden="true">&times;</span>
+                                   delete
                                   </Button>
-                                  <Col md={1}></Col>
+                                  
                                   </Row>
                                 </ListGroup.Item>
                                 

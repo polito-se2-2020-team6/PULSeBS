@@ -3,10 +3,11 @@ import "./App.css";
 import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
+import HistoricalData from "./components/Teacher/HistoricalData";
 import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
-
+import UsageMonitor from "./components/UsageMonitor";
 import { AuthContext } from "./auth/AuthContext";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { ROLES } from "./data/consts";
@@ -101,6 +102,14 @@ class App extends React.Component {
               getLectures={this.getLectures}
             />
           </Route>
+          <Route path="/teacher/historicaldata">
+            <HistoricalData
+              studentsList={this.state.studentsList}
+              studentsBooked={this.studentsBooked}
+              deleteLecture={this.deleteLecture}
+              getLectures={this.getLectures}
+            />
+          </Route>
           <Route path="/student/calendar/">
             <Calendar
               getCalendar={this.getCalendar}
@@ -110,6 +119,9 @@ class App extends React.Component {
           </Route>
           <Route path="/student/home">
             <Student user={this.state.authUser} />
+          </Route>
+          <Route path="/booking-manager/home">
+            <UsageMonitor />
           </Route>
           <Redirect from="/" exact to="login" />
         </Switch>

@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
-
 import { AuthContext } from "../auth/AuthContext";
 import { ROLES } from "../data/consts";
 
 class Navigation extends Component {
-  state = {};
   render() {
     return (
       <AuthContext.Consumer>
@@ -30,23 +28,45 @@ class Navigation extends Component {
                         <NavItem>
                           <NavLink
                             className="nav-link"
+                            id="calendar"
                             to={
                               // send userID to this route for getting its date for The calendar
                               "/student/calendar?userid=" +
                               context.authUser.userId
                             }
                           >
-                            Calender
+                            Calendar
                           </NavLink>
                         </NavItem>
                       )}
                       {context.authUser.type === ROLES.TEACHER && (
                         <NavItem>
                           <NavLink className="nav-link" to="/teacher/home">
-                            Teacher
+                            Courses
                           </NavLink>
                         </NavItem>
                       )}
+                      {context.authUser.type === ROLES.TEACHER && (
+                        <NavItem>
+                          <NavLink
+                            className="nav-link"
+                            to="/teacher/historicaldata"
+                          >
+                            Historical Data
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      {context.authUser.type === ROLES.BOOKING_MANAGER && (
+                        <NavItem>
+                          <NavLink
+                            className="nav-link"
+                            to="/booking-manager/home"
+                          >
+                            Booking Manager
+                          </NavLink>
+                        </NavItem>
+                      )}
+
                       <NavItem className="ml-auto">
                         <NavLink
                           className="nav-link"

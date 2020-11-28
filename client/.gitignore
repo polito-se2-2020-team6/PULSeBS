@@ -10,6 +10,13 @@
 # but allow reports
 !/coverage/lcov.info
 
+# for some specific cypress folder
+cypress/videos
+cypress/screenshots
+cypress/integration/examples
+
+
+
 # production
 /build
 
