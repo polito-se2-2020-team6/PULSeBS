@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
-
 import { AuthContext } from "../auth/AuthContext";
 import { ROLES } from "../data/consts";
 
