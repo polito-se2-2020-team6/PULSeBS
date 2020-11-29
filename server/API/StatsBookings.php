@@ -70,7 +70,7 @@ if (!function_exists('stats_bookings')) {
 				}
 
 				if ($period === 'week') {
-					if ($week && $week >= 0 && $week <= 52) {
+					if (is_numeric($week) && $week >= 0 && $week <= 52) {
 						if ($year && $year > 0) {
 							$dayStart = new DateTime();
 							$dayStart = $dayStart->setISODate($year, $week + 1)->getTimestamp();
@@ -86,7 +86,7 @@ if (!function_exists('stats_bookings')) {
 						throw new Exception('Expected param 0 <= week <= 52');
 					}
 				} else if ($period === 'month') {
-					if ($month && $month >= 0 && $month <= 11) {
+					if ((is_numeric($month) && $month >= 0 && $month <= 11) {
 						if ($year && $year > 0) {
 							$dayStart = new DateTime();
 							$dayStart = $dayStart->setDate($year, $month + 1, 1)->getTimestamp();
