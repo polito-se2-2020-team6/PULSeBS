@@ -35,17 +35,6 @@ if (!function_exists('stats_bookings')) {
 			$month = isset($_GET['month']) ? intval($_GET['month']) : null;
 			$year = isset($_GET['year']) ? intval($_GET['year']) : null;
 
-			// Check period requested is past
-
-
-
-
-
-
-
-
-
-
 			// Retrieve data
 
 			$queryTop = '
@@ -110,7 +99,19 @@ if (!function_exists('stats_bookings')) {
 					} else {
 						throw new Exception('Expected param 0 <= month <= 11');
 					}
+				} else if ($period === null || $period === 'all') {
+					$queryMiddle .= ' AND end_ts <= :endDay';
 				}
+			}
+
+			// Constrain period to be in the past
+			$now = time();
+
+			if ($dayStart !== null && $dayStart > $now) {
+				$dayEnd = $dayStart - 1;
+			}
+			if (($dayEnd !== null && $dayEnd > $now) || $dayStart === null) {
+				$dayEnd = $now;
 			}
 
 			$stmt = $pdo->prepare($queryTop . $queryMiddle . $queryBottom);
@@ -121,8 +122,10 @@ if (!function_exists('stats_bookings')) {
 				if ($course !== null) {
 					$stmt->bindValue(':courseId', $course, PDO::PARAM_INT);
 				}
-				if ($period === 'week' || $period === 'month') {
+				if ($dayStart !== null) {
 					$stmt->bindValue(':startDay', $dayStart, PDO::PARAM_INT);
+				}
+				if ($dayEnd !== null) {
 					$stmt->bindValue(':endDay', $dayEnd, PDO::PARAM_INT);
 				}
 			}
