@@ -49,6 +49,7 @@ class Navigation extends Component {
                       {context.authUser.type === ROLES.TEACHER && (
                         <NavItem>
                           <NavLink
+                            id="historicaldata"
                             className="nav-link"
                             to="/teacher/historicaldata"
                           >
@@ -69,6 +70,7 @@ class Navigation extends Component {
 
                       <NavItem className="ml-auto">
                         <NavLink
+                          id="logout"
                           className="nav-link"
                           to="/logout"
                           onClick={() => context.logoutUser()}
