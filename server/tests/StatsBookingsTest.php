@@ -70,10 +70,19 @@ class StatsBookingsTest extends TestCase {
 		$data = json_decode($response->getBody(true), true);
 
 		$this->assertArrayHasKey('success', $data);
-		$this->assertFalse($data['success']);
+		$this->assertTrue($data['success']);
 
-		$this->assertArrayHasKey('reason', $data);
-		$this->assertEquals('Statistical data not found.', $data['reason']);
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 
 	// Teacher gets month stats
@@ -93,10 +102,19 @@ class StatsBookingsTest extends TestCase {
 		$data = json_decode($response->getBody(true), true);
 
 		$this->assertArrayHasKey('success', $data);
-		$this->assertFalse($data['success']);
+		$this->assertTrue($data['success']);
 
-		$this->assertArrayHasKey('reason', $data);
-		$this->assertEquals('Statistical data not found.', $data['reason']);
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 
 	// Teacher gets overall stats
@@ -116,10 +134,19 @@ class StatsBookingsTest extends TestCase {
 		$data = json_decode($response->getBody(true), true);
 
 		$this->assertArrayHasKey('success', $data);
-		$this->assertFalse($data['success']);
+		$this->assertTrue($data['success']);
 
-		$this->assertArrayHasKey('reason', $data);
-		$this->assertEquals('Statistical data not found.', $data['reason']);
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 
 	// Teacher gets wrong lecture stats
@@ -139,10 +166,19 @@ class StatsBookingsTest extends TestCase {
 		$data = json_decode($response->getBody(true), true);
 
 		$this->assertArrayHasKey('success', $data);
-		$this->assertFalse($data['success']);
+		$this->assertTrue($data['success']);
 
-		$this->assertArrayHasKey('reason', $data);
-		$this->assertEquals('Statistical data not found.', $data['reason']);
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 
 	// Teacher gets wrong course stats
@@ -162,10 +198,19 @@ class StatsBookingsTest extends TestCase {
 		$data = json_decode($response->getBody(true), true);
 
 		$this->assertArrayHasKey('success', $data);
-		$this->assertFalse($data['success']);
+		$this->assertTrue($data['success']);
 
-		$this->assertArrayHasKey('reason', $data);
-		$this->assertEquals('Statistical data not found.', $data['reason']);
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 
 	// Student gets stats

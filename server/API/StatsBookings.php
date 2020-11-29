@@ -40,21 +40,29 @@ if (!function_exists('stats_bookings')) {
 			$queryTop = '
 			SELECT
 				courseId as courseId,
-				AVG(totalBookings) as bookingsAvg,
-				AVG(totalBookings * totalBookings) - totalBookings * totalBookings  as bookingsStdDev,
+				bookingsAvg,
+				SUM((totalBookings - bookingsAvg) * (totalBookings - bookingsAvg)) / (COUNT(totalBookings) - 1) as bookingsVar,
 				SUM(totalBookings) as totalBookings,
 				COUNT(*) AS nLectures
-			FROM (SELECT 
-					L.course_id as courseId,
-					COUNT(*) as totalBookings
+			FROM (
+				SELECT 
+					lectureId, 
+					courseId, 
+					totalBookings, 
+					AVG(totalBookings) as bookingsAvg 
+				FROM (
+					SELECT 
+						lecture_id as lectureId,
+						L.course_id as courseId,
+						COUNT(*) as totalBookings
 					FROM bookings B, lectures L, courses C
 					WHERE B.lecture_id = L.ID
-					AND L.course_id = C.ID
-					AND cancellation_ts IS NULL
-					AND teacher_id = :teacherId ';
+						AND L.course_id = C.ID
+						AND cancellation_ts IS NULL
+						AND teacher_id = :teacherId ';
 
 			$queryBottom = ' GROUP BY lecture_id, course_id)
-			GROUP BY courseId';
+				GROUP BY lectureId, courseId)';
 
 			$queryMiddle = '';
 			$dayStart = null;
@@ -86,7 +94,7 @@ if (!function_exists('stats_bookings')) {
 						throw new Exception('Expected param 0 <= week <= 52');
 					}
 				} else if ($period === 'month') {
-					if ((is_numeric($month) && $month >= 0 && $month <= 11) {
+					if (is_numeric($month) && $month >= 0 && $month <= 11) {
 						if ($year && $year > 0) {
 							$dayStart = new DateTime();
 							$dayStart = $dayStart->setDate($year, $month + 1, 1)->getTimestamp();
@@ -146,7 +154,7 @@ if (!function_exists('stats_bookings')) {
 				'success' => true,
 				'courseId' => intval($stats['courseId']),
 				'bookingsAvg' => floatval($stats['bookingsAvg']),
-				'bookingsStdDev' => floatval($stats['bookingsStdDev']),
+				'bookingsStdDev' => sqrt(floatval($stats['bookingsVar'])),
 				'totalBookings' => intval($stats['totalBookings']),
 				'nLectures' => intval($stats['nLectures'])
 			]);
