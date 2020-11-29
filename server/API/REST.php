@@ -2,6 +2,8 @@
 require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
+require_once "./StatsBookings.php";
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -381,8 +383,8 @@ if (!function_exists('cancel_lecture')) {
 			//send mail notifications
 			$lecture_time = new DateTime($lecture["start_ts"], new DateTimeZone("UTC"));
 			$lecture_time->setTimezone(new DateTimeZone($server_default_timezone));
-			foreach($students as $student){
-				mail($student["email"], "Cancellation of ".$lecture['name']." lecture of ".$lecture_time->format("Y-m-d H:i"), "The lecture of the course ".$lecture['name']." that should had taken place in ".$lecture_time->format("D Y-m-d H:i"). " has been cancelled\nKind regards");
+			foreach ($students as $student) {
+				mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
 			}
 			// Success
 			echo json_encode(array('success' => true));
@@ -642,6 +644,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
+
+	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
