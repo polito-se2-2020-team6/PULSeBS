@@ -645,7 +645,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 
-	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings']);
+	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere

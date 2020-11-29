@@ -5,7 +5,7 @@ if (!function_exists('stats_bookings')) {
 	function stats_bookings($vars) {
 
 		// Get id of user
-		$userId = isset($_SESSION['user_id']) ? intval($_SESSION['user_id']) : 2;
+		$userId = intval($_SESSION['user_id']);
 
 		try {
 			$pdo = new PDO('sqlite:../db.sqlite');
@@ -24,7 +24,7 @@ if (!function_exists('stats_bookings')) {
 			}
 
 			if (intval($userData['type']) !== USER_TYPE_TEACHER) {
-				throw new Exception('Permission denied,');
+				throw new Exception('Permission denied.');
 			}
 
 			// Get URL params
@@ -57,6 +57,8 @@ if (!function_exists('stats_bookings')) {
 			GROUP BY courseId';
 
 			$queryMiddle = '';
+			$dayStart = null;
+			$dayEnd = null;
 
 			if ($lecture !== null) {
 				// Simple query, no actual need for statistics
