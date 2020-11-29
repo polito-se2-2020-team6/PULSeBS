@@ -16,7 +16,6 @@ define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 define("USER_TYPE_STUDENT", 0);
 define("USER_TYPE_TEACHER", 1);
 
-define('LECTURE_PRESENCE', 0x0);
 define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
 
@@ -623,6 +622,75 @@ if (!function_exists('cancel_booking')) {
 	}
 }
 
+if(!function_exists('set_lecture_online_status')){
+	function set_lecture_online_status($vars){	
+		global $_PATCH;
+		$lectureId = intval($vars['lectureId']);
+		$status = $_PATCH['value'] == 'true' ? LECTURE_REMOTE : ~LECTURE_REMOTE;
+
+		try {
+			if (!isset($_SESSION['user_id'])) {
+				throw new ErrorException('Auth Needed');
+			}
+
+			$userId = intval($_SESSION['user_id']);
+			$pdo = new PDO('sqlite:../db.sqlite');
+
+			// Check user exists and is teacher
+			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':teacher', USER_TYPE_TEACHER, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			if (!$stmt->fetch()) {
+				throw new PDOException('Teacher ' . $userId . ' not found.');
+			}
+
+			// Check lecture exists, is assigned to teacher and > 30m to start
+			$nextHour = new DateTime('now', new DateTimeZone('UTC'));
+			$nextHour->modify('+30 minutes'); // Check for timezones discrepancies
+			$stmt = $pdo->prepare('SELECT *
+								   FROM lectures L, courses C
+								   WHERE L.course_id = C.ID
+									   AND L.ID = :lectureId
+									   AND C.teacher_id = :userId
+									   AND L.start_ts > :nextHour');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':nextHour', $nextHour->getTimestamp(), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			if (!$stmt->fetch()) {
+				throw new PDOException('Lecture ' . $lectureId . ' not found.');
+			}
+
+			// Set lecture status
+			if($status == LECTURE_REMOTE){
+				$stmt = $pdo->prepare('UPDATE lectures
+								   SET settings = settings | :online
+								   WHERE ID = :lectureId');
+			}
+			else{
+				$stmt = $pdo->prepare('UPDATE lectures
+								   SET settings = settings & :online
+								   WHERE ID = :lectureId');
+
+			}
+			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			// Success
+			echo json_encode(array('success' => true));
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 /*Constants to define option for the routes*/
@@ -693,6 +761,9 @@ switch ($routeInfo[0]) {
 
 			if ($httpMethod == 'DELETE') {
 				parse_str(file_get_contents("php://input"), $_DELETE);
+			}
+			else if($httpMethos == 'PATCH'){
+				parse_str(file_get_contents("php://input"), $_PATCH);
 			}
 			$handler = $routeInfo[1][0];
 			$vars = $routeInfo[2];
