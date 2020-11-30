@@ -22,7 +22,7 @@ class StatsBookingsTest extends TestCase {
 		unlink('../db.sqlite.backup');
 	}
 
-	// Teacher gets lecture stats
+	// Teacher gets lecture stats (lecture is future, no stats)
 	public function test_stats_1() {
 		$client = new Client(array('http_errors' => false));
 		$jar = new \GuzzleHttp\Cookie\CookieJar;
@@ -47,9 +47,11 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('totalBookings', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
-		$this->assertTrue($data['bookingsAvg'] == $data['totalBookings']);
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
 		$this->assertEquals(0, $data['bookingsStdDev']);
-		$this->assertEquals(1, $data['nLectures']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 
 
