@@ -136,9 +136,9 @@ class Teacher extends React.Component {
     this.setState({students : []})
   }
 
-  turnLecture(lectureId,online_s,room){
+  turnLecture(lectureId,online_s){
     //chiamata API per modificare stato lezione online/in presence
-    API.turnLecture(lectureId)
+    API.turnLecture2(lectureId,online_s)
     .then(() => {
       //andato a buon fine
       console.log("giusto")
@@ -217,9 +217,9 @@ class Teacher extends React.Component {
                                   }}
                                 >
                                   <Row>
-                                <Col md={2}>{c.startTS}{"+++"+c.courseId}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
                                     <Button type="button" variant="outline-secondary" onClick={() => {
-                                      this.turnLecture(c.lectureId,c.online,c.roomName); 
+                                      this.turnLecture(c.lectureId,c.online); 
                                     }}>
 
                                       {/*controllo va fatto su c.online*/}
