@@ -15,6 +15,7 @@ define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
 define("USER_TYPE_STUDENT", 0);
 define("USER_TYPE_TEACHER", 1);
+define("USER_TYPE_BOOK_MNGR", 2);
 
 define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
@@ -622,8 +623,8 @@ if (!function_exists('cancel_booking')) {
 	}
 }
 
-if(!function_exists('set_lecture_online_status')){
-	function set_lecture_online_status($vars){	
+if (!function_exists('set_lecture_online_status')) {
+	function set_lecture_online_status($vars) {
 		global $_PATCH;
 		$lectureId = intval($vars['lectureId']);
 		$status = $_PATCH['value'] == 'true' ? LECTURE_REMOTE : ~LECTURE_REMOTE;
@@ -667,16 +668,14 @@ if(!function_exists('set_lecture_online_status')){
 			}
 
 			// Set lecture status
-			if($status == LECTURE_REMOTE){
+			if ($status == LECTURE_REMOTE) {
 				$stmt = $pdo->prepare('UPDATE lectures
 								   SET settings = settings | :online
 								   WHERE ID = :lectureId');
-			}
-			else{
+			} else {
 				$stmt = $pdo->prepare('UPDATE lectures
 								   SET settings = settings & :online
 								   WHERE ID = :lectureId');
-
 			}
 			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
@@ -761,8 +760,7 @@ switch ($routeInfo[0]) {
 
 			if ($httpMethod == 'DELETE') {
 				parse_str(file_get_contents("php://input"), $_DELETE);
-			}
-			else if($httpMethos == 'PATCH'){
+			} else if ($httpMethod == 'PATCH') {
 				parse_str(file_get_contents("php://input"), $_PATCH);
 			}
 			$handler = $routeInfo[1][0];
