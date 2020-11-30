@@ -45,7 +45,7 @@ if (!function_exists('stats_bookings')) {
 
 			$stmt = $pdo->prepare($query);
 
-			if ($userData['type'] === USER_TYPE_TEACHER) {
+			if (intval($userData['type']) === USER_TYPE_TEACHER) {
 				$stmt->bindValue(':teacherId', $userId, PDO::PARAM_INT);
 			}
 
@@ -79,16 +79,16 @@ if (!function_exists('stats_bookings')) {
 				'bookingsAvg' => floatval($stats['bookingsAvg']),
 				'bookingsStdDev' => sqrt(floatval($stats['bookingsVar'])),
 				'totalBookings' => intval($stats['totalBookings']),
-				'nLectures' => intval($stats['nLectures'])
+				'nLectures' => intval($stats['nLectures']),
 			];
 
 			if (intval($userData['type']) === USER_TYPE_BOOK_MNGR) {
-				$data[] = floatval($stats['cancellationsAvg']);
-				$data[] = sqrt(floatval($stats['cancellationsVar']));
-				$data[] = intval($stats['totalCancellations']);
-				$data[] = floatval($stats['attendancesAvg']);
-				$data[] = sqrt(floatval($stats['attendancesVar']));
-				$data[] = intval($stats['totalAttendances']);
+				$data['cancellationsAvg'] = floatval($stats['cancellationsAvg']);
+				$data['cancellationsStdDev'] = sqrt(floatval($stats['cancellationsVar']));
+				$data['totalCancellations'] = intval($stats['totalCancellations']);
+				$data['attendancesAvg'] = floatval($stats['attendancesAvg']);
+				$data['attendancesStdDev'] = sqrt(floatval($stats['attendancesVar']));
+				$data['totalAttendances'] = intval($stats['totalAttendances']);
 			}
 
 			echo json_encode($data);
@@ -125,7 +125,7 @@ if (!function_exists('construct_query_teacher')) {
 				FROM bookings B, lectures L, courses C
 				WHERE B.lecture_id = L.ID
 					AND L.course_id = C.ID
-					AND teacher_id = :teacherId';
+					AND teacher_id = :teacherId ';
 
 		$queryBottom = ' GROUP BY lecture_id, course_id
 					)
@@ -153,7 +153,7 @@ if (!function_exists('construct_query_teacher')) {
 						$dayEnd = new DateTime();
 						$dayEnd = $dayEnd->setISODate($year, $week + 1)->modify('+7 days -1 second')->getTimestamp();
 
-						$queryMiddle .= ' AND start_ts >= :startDay AND start_ts <= :endDay ';
+						$queryMiddle .= ' AND start_ts >= :startDay ';
 					} else {
 						throw new Exception('Expected param year > 0');
 					}
@@ -169,16 +169,15 @@ if (!function_exists('construct_query_teacher')) {
 						$dayEnd = new DateTime();
 						$dayEnd = $dayEnd->setDate($year, $month + 1, 1)->modify('+1 month -1 second')->getTimestamp();
 
-						$queryMiddle .= ' AND start_ts >= :startDay AND start_ts <= :endDay ';
+						$queryMiddle .= ' AND start_ts >= :startDay ';
 					} else {
 						throw new Exception('Expected param year > 0');
 					}
 				} else {
 					throw new Exception('Expected param 0 <= month <= 11');
 				}
-			} else if ($period === null || $period === 'all') {
-				$queryMiddle .= ' AND end_ts <= :endDay';
 			}
+			$queryMiddle .= ' AND start_ts <= :endDay ';
 		}
 
 		// Constrain period to be in the past
@@ -266,7 +265,7 @@ if (!function_exists('construct_query_bookingmngr')) {
 						$dayEnd = new DateTime();
 						$dayEnd = $dayEnd->setISODate($year, $week + 1)->modify('+7 days -1 second')->getTimestamp();
 
-						$queryMiddle .= ' AND start_ts >= :startDay AND start_ts <= :endDay ';
+						$queryMiddle .= ' AND start_ts >= :startDay ';
 					} else {
 						throw new Exception('Expected param year > 0');
 					}
@@ -282,16 +281,15 @@ if (!function_exists('construct_query_bookingmngr')) {
 						$dayEnd = new DateTime();
 						$dayEnd = $dayEnd->setDate($year, $month + 1, 1)->modify('+1 month -1 second')->getTimestamp();
 
-						$queryMiddle .= ' AND start_ts >= :startDay AND start_ts <= :endDay ';
+						$queryMiddle .= ' AND start_ts >= :startDay ';
 					} else {
 						throw new Exception('Expected param year > 0');
 					}
 				} else {
 					throw new Exception('Expected param 0 <= month <= 11');
 				}
-			} else if ($period === null || $period === 'all') {
-				$queryMiddle .= ' AND end_ts <= :endDay';
 			}
+			$queryMiddle .= ' AND start_ts <= :endDay ';
 		}
 
 		// Constrain period to be in the past
