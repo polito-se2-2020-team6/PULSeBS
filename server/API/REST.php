@@ -193,6 +193,8 @@ if (!function_exists('list_lectures')) {
 				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 			}
 
+			$lecture["inWaitingList"] = check_user_in_waiting_list($lecture["lectureId"]);
+
 			$bookedSeats = $stmt_inner->fetch();
 			if (!$bookedSeats) {
 				// wtf does this even mean?
@@ -443,11 +445,16 @@ if (!function_exists('booked_students')) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
 			$students = array();
+			//get waiting list
+			$waiting_list = get_seats_by_lecture($lectureId);
+
 			while ($s = $stmt->fetch()) {
+				$studentId = intval($s['ID']);
 				$student = array(
-					'studentId' => intval($s['ID']),
+					'studentId' => $studentId,
 					'email' => $s['email'],
-					'studentName' => $s['lastname'] . ' ' . $s['firstname']
+					'studentName' => $s['lastname'] . ' ' . $s['firstname'],
+					'inWaitingList' => in_array($studentId, $waiting_list)
 				);
 
 				array_push($students, $student);
@@ -552,12 +559,13 @@ if (!function_exists('book_lecture')) {
 			}
 
 			// Success
+			$in_wait_list = check_user_in_waiting_list($lectureId);
 			//I send a confirmazion email
 			$mail_result = mail($user_data["email"], "Confirmation of " . $lecture["name"] . " lecture booking", "You did a booking for the lecture of " . $lecture["name"] . ". The booking has been successfull");
 			if (!$mail_result) {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
 			} else {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, ));
 			}
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
