@@ -47,9 +47,18 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('totalBookings', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
-		$this->assertTrue($data['bookingsAvg'] == $data['totalBookings']);
+		$this->assertEquals(1, $data['courseId']);
+		$this->assertEquals(1, $data['bookingsAvg']);
 		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(1, $data['totalBookings']);
 		$this->assertEquals(1, $data['nLectures']);
+
+		$this->assertArrayNotHasKey('cancellationsAvg', $data);
+		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
+		$this->assertArrayNotHasKey('totalCancellations', $data);
+		$this->assertArrayNotHasKey('attendancesAvg', $data);
+		$this->assertArrayNotHasKey('attendancesStdDev', $data);
+		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 
@@ -83,6 +92,13 @@ class StatsBookingsTest extends TestCase {
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(0, $data['totalBookings']);
 		$this->assertEquals(0, $data['nLectures']);
+
+		$this->assertArrayNotHasKey('cancellationsAvg', $data);
+		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
+		$this->assertArrayNotHasKey('totalCancellations', $data);
+		$this->assertArrayNotHasKey('attendancesAvg', $data);
+		$this->assertArrayNotHasKey('attendancesStdDev', $data);
+		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets month stats
@@ -115,6 +131,13 @@ class StatsBookingsTest extends TestCase {
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(0, $data['totalBookings']);
 		$this->assertEquals(0, $data['nLectures']);
+
+		$this->assertArrayNotHasKey('cancellationsAvg', $data);
+		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
+		$this->assertArrayNotHasKey('totalCancellations', $data);
+		$this->assertArrayNotHasKey('attendancesAvg', $data);
+		$this->assertArrayNotHasKey('attendancesStdDev', $data);
+		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets overall stats
@@ -147,6 +170,13 @@ class StatsBookingsTest extends TestCase {
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(0, $data['totalBookings']);
 		$this->assertEquals(0, $data['nLectures']);
+
+		$this->assertArrayNotHasKey('cancellationsAvg', $data);
+		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
+		$this->assertArrayNotHasKey('totalCancellations', $data);
+		$this->assertArrayNotHasKey('attendancesAvg', $data);
+		$this->assertArrayNotHasKey('attendancesStdDev', $data);
+		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets wrong lecture stats
@@ -179,6 +209,13 @@ class StatsBookingsTest extends TestCase {
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(0, $data['totalBookings']);
 		$this->assertEquals(0, $data['nLectures']);
+
+		$this->assertArrayNotHasKey('cancellationsAvg', $data);
+		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
+		$this->assertArrayNotHasKey('totalCancellations', $data);
+		$this->assertArrayNotHasKey('attendancesAvg', $data);
+		$this->assertArrayNotHasKey('attendancesStdDev', $data);
+		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets wrong course stats
@@ -211,6 +248,13 @@ class StatsBookingsTest extends TestCase {
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(0, $data['totalBookings']);
 		$this->assertEquals(0, $data['nLectures']);
+
+		$this->assertArrayNotHasKey('cancellationsAvg', $data);
+		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
+		$this->assertArrayNotHasKey('totalCancellations', $data);
+		$this->assertArrayNotHasKey('attendancesAvg', $data);
+		$this->assertArrayNotHasKey('attendancesStdDev', $data);
+		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Student gets stats
@@ -249,5 +293,225 @@ class StatsBookingsTest extends TestCase {
 		$this->assertFalse($data['success']);
 
 		$this->assertArrayHasKey('reason', $data);
+	}
+
+	// Booking manager gets lecture stats
+	public function test_stats_9() {
+		$client = new Client(array('http_errors' => false));
+		$jar = new \GuzzleHttp\Cookie\CookieJar;
+
+		$data = array(
+			'username' => 'bookman',
+			'password' => '123123123',
+		);
+		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+
+		$response = $client->request('GET', API_PATH . '/api/stats?lecture=1', array('cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = json_decode($response->getBody(true), true);
+
+		$this->assertArrayHasKey('success', $data);
+		$this->assertTrue($data['success']);
+
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('cancellationsAvg', $data);
+		$this->assertArrayHasKey('cancellationsStdDev', $data);
+		$this->assertArrayHasKey('totalCancellations', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(1, $data['courseId']);
+		$this->assertEquals(1, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(1, $data['totalBookings']);
+		$this->assertEquals(0, $data['cancellationsAvg']);
+		$this->assertEquals(0, $data['cancellationsStdDev']);
+		$this->assertEquals(0, $data['totalCancellations']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
+		$this->assertEquals(1, $data['nLectures']);
+	}
+
+	// Booking manager gets course stats
+	public function test_stats_10() {
+		$client = new Client(array('http_errors' => false));
+		$jar = new \GuzzleHttp\Cookie\CookieJar;
+
+		$data = array(
+			'username' => 'bookman',
+			'password' => '123123123',
+		);
+		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+
+		$response = $client->request('GET', API_PATH . '/api/stats?course=1', array('cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = json_decode($response->getBody(true), true);
+
+		$this->assertArrayHasKey('success', $data);
+		$this->assertTrue($data['success']);
+
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('cancellationsAvg', $data);
+		$this->assertArrayHasKey('cancellationsStdDev', $data);
+		$this->assertArrayHasKey('totalCancellations', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['cancellationsAvg']);
+		$this->assertEquals(0, $data['cancellationsStdDev']);
+		$this->assertEquals(0, $data['totalCancellations']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
+		$this->assertEquals(0, $data['nLectures']);
+	}
+
+	// Booking manager gets week stats
+	public function test_stats_11() {
+		$client = new Client(array('http_errors' => false));
+		$jar = new \GuzzleHttp\Cookie\CookieJar;
+
+		$data = array(
+			'username' => 'bookman',
+			'password' => '123123123',
+		);
+		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+
+		$response = $client->request('GET', API_PATH . '/api/stats?period=week&week=13&year=2020', array('cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = json_decode($response->getBody(true), true);
+
+		$this->assertArrayHasKey('success', $data);
+		$this->assertTrue($data['success']);
+
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('cancellationsAvg', $data);
+		$this->assertArrayHasKey('cancellationsStdDev', $data);
+		$this->assertArrayHasKey('totalCancellations', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['cancellationsAvg']);
+		$this->assertEquals(0, $data['cancellationsStdDev']);
+		$this->assertEquals(0, $data['totalCancellations']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
+		$this->assertEquals(0, $data['nLectures']);
+	}
+
+	// Booking manager gets month stats
+	public function test_stats_12() {
+		$client = new Client(array('http_errors' => false));
+		$jar = new \GuzzleHttp\Cookie\CookieJar;
+
+		$data = array(
+			'username' => 'bookman',
+			'password' => '123123123',
+		);
+		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+
+		$response = $client->request('GET', API_PATH . '/api/stats?period=month$month=1&year=2020', array('cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = json_decode($response->getBody(true), true);
+
+		$this->assertArrayHasKey('success', $data);
+		$this->assertTrue($data['success']);
+
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('cancellationsAvg', $data);
+		$this->assertArrayHasKey('cancellationsStdDev', $data);
+		$this->assertArrayHasKey('totalCancellations', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['cancellationsAvg']);
+		$this->assertEquals(0, $data['cancellationsStdDev']);
+		$this->assertEquals(0, $data['totalCancellations']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
+		$this->assertEquals(0, $data['nLectures']);
+	}
+
+	// Booking manager gets overall stats
+	public function test_stats_13() {
+		$client = new Client(array('http_errors' => false));
+		$jar = new \GuzzleHttp\Cookie\CookieJar;
+
+		$data = array(
+			'username' => 'bookman',
+			'password' => '123123123',
+		);
+		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+
+		$response = $client->request('GET', API_PATH . '/api/stats?period=all', array('cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = json_decode($response->getBody(true), true);
+
+		$this->assertArrayHasKey('success', $data);
+		$this->assertTrue($data['success']);
+
+		$this->assertArrayHasKey('courseId', $data);
+		$this->assertArrayHasKey('bookingsAvg', $data);
+		$this->assertArrayHasKey('bookingsStdDev', $data);
+		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('cancellationsAvg', $data);
+		$this->assertArrayHasKey('cancellationsStdDev', $data);
+		$this->assertArrayHasKey('totalCancellations', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
+		$this->assertArrayHasKey('nLectures', $data);
+
+		$this->assertEquals(0, $data['courseId']);
+		$this->assertEquals(0, $data['bookingsAvg']);
+		$this->assertEquals(0, $data['bookingsStdDev']);
+		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['cancellationsAvg']);
+		$this->assertEquals(0, $data['cancellationsStdDev']);
+		$this->assertEquals(0, $data['totalCancellations']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
+		$this->assertEquals(0, $data['nLectures']);
 	}
 }
