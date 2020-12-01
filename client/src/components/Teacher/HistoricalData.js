@@ -140,7 +140,7 @@ var lecturesDetailDay = [
         // se vuoi puoi aggiungere un'altro datasets
       ]
     };
-    const dataDefault = {
+    var dataDefault = {
       labels: [],
       //labels: [],
        datasets: [
@@ -158,6 +158,7 @@ var lecturesDetailDay = [
        ]
      };
 
+
 //////////////////////////////////// fine variabili max
 
 class HistoricalData extends React.Component {
@@ -165,78 +166,51 @@ class HistoricalData extends React.Component {
     super(props);
 
     this.state = {
-      lectures: lecturesDetailDay,
+      lectures: [],
       detailLevel: 'Select detail',
       detailLevelCourse: 'Select Course',
       detailLevelPeriod: 'Select Period',
       prova: 'defaaalt',
-      dataState : {
-          
-       },
+      dataState : {},
 
     };
   }
 
   changeValue(text) {
     //here changes the detail,need an API call to retrieve the data
-
+    var tableData = [];
     //just to try
-    if (text === 'Day'){
+    if (text === 'Lecture'){
       this.setState({lectures: lecturesDetailDay});
+    }else if (text === 'Week'){
+      for(var i=0;i<6;i++){
+              //ciclo di chiamate api, memorizzo in data gli ultimi 6 mesi in base al corso scelto
+                data.labels[i]=last6Month[i].month;
+                data.datasets[0].data[i]=last6Month[i].avg;
+                tableData[i] = {labels: last6Month[i].month, data: last6Month[i].avg}
+                
+            }
+
+            this.setState({dataState : data, lectures : tableData});
+            
+
     }else if (text === 'Month'){
-      this.setState({lectures: lecturesDetailMonth});
+      var tableData = [];
+      for(var i=0;i<12;i++){
+        //ciclo di chiamate api, memorizzo in data gli ultimi 12 mesi in base al corso scelto
+          dataDefault.labels[i]=lastYear[i].month;
+          dataDefault.datasets[0].data[i]=lastYear[i].avg;
+          tableData[i] = {labels: lastYear[i].month, data: lastYear[i].avg}
+
+      }
+      this.setState({dataState : dataDefault, lectures: tableData});
     }
     
     this.setState({detailLevel: text})
   }
 
-  async generateGraph(course){
-    //console.log("premuto");
-    //qui fare controllo se ho selezionato sia corso che periodo
-    data=dataDefault;
-    await this.setState({dataState: dataDefault});
-    if(this.state.detailLevelPeriod==="Last 6 months"){
-      var i;
-      console.log("6 Month");
-      
-      for(i=0;i<6;i++){
-        //ciclo di chiamate api, memorizzo in data gli ultimi 6 mesi in base al corso scelto
-          data.labels[i]=last6Month[i].month;
-          data.datasets[0].data[i]=last6Month[i].avg;
-      }
-      await this.setState({dataState : data});
-      /*console.log("stampo data");
-      console.log(data);
-      console.log("stampo dataState");
-      console.log(this.state.dataState);
-      */
-    }
-    else if(this.state.detailLevelPeriod==="Last Year"){
-      var i;
-      console.log("Year");
-      data=dataDefault;
-      for(i=0;i<12;i++){
-        //ciclo di chiamate api, memorizzo in data gli ultimi 12 mesi in base al corso scelto
-          data.labels[i]=lastYear[i].month;
-          data.datasets[0].data[i]=lastYear[i].avg;
-      }
-      await this.setState({dataState : data});
-      /*console.log("stampo data");
-      console.log(data);
-      console.log("stampo dataState");
-      console.log(this.state.dataState);
-      */
-    }
-
-    this.setState({prova : course});
-    document.myForm.reset();
-    
-  }
-
-
   render() {
    
-
     return (
         <>
         <Container className="mt-5">
@@ -260,18 +234,19 @@ class HistoricalData extends React.Component {
               <thead>
                 <tr>
                   <th>Course</th>
-                  <th>Lecture</th>
+                  <th>Period</th>
                   <th>Average bookings</th>
                 </tr>
               </thead>
               <tbody>
-                {this.state.lectures?.map((l) => (
-                <tr>
-                  <td>{l.course}</td>
-                  <td>{l.lecture}</td>
-                  <td>{l.averge}</td>
-                </tr>
-                ))}
+                {this.state.lectures?.map((l) =>(
+                  <tr>
+                    <td>{this.state.detailLevelCourse}</td>
+                    <td>{l.labels}</td>
+                    <td>{l.data}</td>
+                  </tr>
+                )
+                )}
               </tbody>
             </Table>
             <br></br>
@@ -292,18 +267,7 @@ class HistoricalData extends React.Component {
                         </Dropdown.Menu>
                       </Dropdown>
                     </Col>
-                    <Col>
-                      <Dropdown>
-                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                          {this.state.detailLevelPeriod}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item  onClick={(e) => this.setState({detailLevelPeriod : e.target.textContent})}>Last Year</Dropdown.Item>
-                          <Dropdown.Item  onClick={(e) => this.setState({detailLevelPeriod : e.target.textContent})}>Last 6 months</Dropdown.Item>
-                          <Dropdown.Item  onClick={(e) => this.setState({detailLevelPeriod : e.target.textContent})}>Last Month</Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </Col>
+                    
                     
                 </Row>
                 
@@ -322,7 +286,6 @@ class HistoricalData extends React.Component {
               
               </Col>
             </Row>
-            <Button onClick = {()=> this.generateGraph(this.state.detailLevelCourse)}>Generate Graph</Button>
         </Container>
         </>
      );

@@ -1,7 +1,7 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { } from "react";
+import React, { useReducer } from "react";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -64,7 +64,7 @@ class Teacher extends React.Component {
     super(props);
 
     this.state = {
-      lectureUpdated: true,
+      //lectureUpdated: true,
       totalLectures: [],
       course: '',
       students: [],
@@ -73,6 +73,11 @@ class Teacher extends React.Component {
       online: false,
     };
   }
+
+  componentDidMount(){
+    this.getLectures(this.context.authUser.userId)
+  }
+
 
   getLectures = (userId) => {
     API.getLecturesStartDate(userId)
@@ -106,7 +111,8 @@ class Teacher extends React.Component {
     API.deleteLecture(lectureId)
       .then(() => {
         //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-        this.setState({lectureUpdated: true})
+        //this.setState({lectureUpdated: true})
+        this.getLectures(this.context.authUser.userId)
         //aggiunto io
         this.setState({students : []});
         this.setState({studtable: false});
@@ -126,10 +132,10 @@ class Teacher extends React.Component {
   }
 
   updateLectures(userId) {
-    if (this.state.lectureUpdated) {
-      this.setState({ lectureUpdated: false });
+    //if (this.state.lectureUpdated) {
+    //  this.setState({ lectureUpdated: false });
       this.getLectures(userId);
-    }
+    //}
   }
 
   clearStudentTable() {
@@ -166,14 +172,15 @@ class Teacher extends React.Component {
     const corsi = this.state.totalLectures
       .map((item) => item.courseName)
       .filter((v, i, s) => s.indexOf(v) === i);
-
+    
     return (
+      
       <AuthContext.Consumer>
         {(context) => (
             <>
             {context.authUser ? (
           <>
-            {this.updateLectures(context.authUser.userId)}
+            
 
             <Container fluid className="mt-5 ">
               <Row className="justify-content-md-center">
@@ -232,6 +239,7 @@ class Teacher extends React.Component {
                                   <Button
                                     variant="danger"
                                     className="mr-2"
+                                    
                                     onClick={() => {
                                       this.deleteLecture(c.lectureId);
                                     }}
@@ -293,7 +301,8 @@ class Teacher extends React.Component {
       </AuthContext.Consumer>
     );
   }
-}
+} 
+Teacher.contextType = AuthContext;
 
 
 export default Teacher;
