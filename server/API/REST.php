@@ -562,7 +562,7 @@ if (!function_exists('book_lecture')) {
 			$in_wait_list = check_user_in_waiting_list($lectureId);
 			//I send a confirmation email
 			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
-			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
+			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .".". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
 			$mail_result = mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
 				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
