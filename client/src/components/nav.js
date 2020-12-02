@@ -19,7 +19,8 @@ class Navigation extends Component {
                     <Nav className="container-fluid">
                       {context.authUser.type === ROLES.STUDENT && (
                         <NavItem>
-                          <NavLink className="nav-link" to="/student/home">
+                          <NavLink className="nav-link" to={"/student/home?userid=" +
+                              context.authUser.userId}> 
                             Student
                           </NavLink>
                         </NavItem>

@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Dropdown from "react-bootstrap/Dropdown";
 
 class LectureList extends Component {
   state = {};
@@ -11,6 +13,31 @@ class LectureList extends Component {
           role="main"
           className="main p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4"
         >
+          <DropdownButton
+            className="mb-4"
+            id="dropdown-basic-button"
+            title="Filter Courses"
+          >
+            <Dropdown.Item
+              onClick={() => {
+                this.props.filterLectures('all');
+                
+              }}
+            >
+              All Courses
+            </Dropdown.Item>
+            {this.props.lectures.map((lecture) => (
+              <Dropdown.Item
+                
+                onClick={() => {
+                  
+                  this.props.filterLectures(lecture.courseId);
+                }}
+              >
+                {lecture.courseName}
+              </Dropdown.Item>
+            ))}
+          </DropdownButton>
           <div className="table-responsive">
             <table className="table table-hover text-center">
               <thead>
@@ -47,7 +74,7 @@ class LectureList extends Component {
 }
 function LectureRow(props) {
   return (
-    <tr >
+    <tr>
       <LectureData
         lecture={props.lecture}
         bookSeat={props.bookSeat}
@@ -62,8 +89,8 @@ function LectureData(props) {
     <>
       <td>{props.lecture.courseName}</td>
       <td>{props.lecture.startTS}</td>
-      <td>{props.lecture.endTS === false ? '-' : props.lecture.endTS}</td>
-      <td>{props.lecture.online === true ? 'Online': 'In Person'}</td>
+      <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
+      <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
       <td>{props.lecture.teacherName}</td>
       <td>{props.lecture.roomName}</td>
       <td>{props.lecture.bookedSeats}</td>
@@ -90,10 +117,13 @@ function LectureData(props) {
           // >
 
           <Button
-          onClick={() => {
-            props.cancelBooking(props.lecture.lectureId);
-          }}
-          variant="danger">Cancel Booking</Button>
+            onClick={() => {
+              props.cancelBooking(props.lecture.lectureId);
+            }}
+            variant="danger"
+          >
+            Cancel Booking
+          </Button>
         )}
       </td>
 

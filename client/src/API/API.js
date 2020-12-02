@@ -3,7 +3,11 @@ const baseURL = "/API/REST.php/api";
 
 //return list of lectures based on the userId **GET** /api/users/{userId}/lectures
 async function getLectures(userId) {
-  let url = `/users/${userId}/lectures`;
+  let data = new Date();
+  //let url = `/users/${userId}/lectures`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
+    data.getMonth() + 1
+  }`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
