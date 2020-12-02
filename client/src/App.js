@@ -104,6 +104,7 @@ class App extends React.Component {
           </Route>
           <Route path="/teacher/historicaldata">
             <HistoricalData
+              key={123435}
               studentsList={this.state.studentsList}
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}

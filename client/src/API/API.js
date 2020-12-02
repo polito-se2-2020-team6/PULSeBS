@@ -1,6 +1,38 @@
 import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
+async function getAllLectures(userId) {
+  //let data = new Date();
+  let url = `/users/${userId}/lectures`;
+  //let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
+  //  data.getMonth() + 1
+  //}`;
+  const response = await fetch(baseURL + url);
+  const lectureJson = await response.json();
+  if (response.ok) {
+    const lectures = lectureJson.lectures;
+    const final = lectures.map(
+      (l) =>
+        new Lecture(
+          l.lectureId,
+          l.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          l.totalSeats,
+          l.bookedSeats,
+          l.courseName,
+          l.bookedSelf,
+          l.teacherName
+        )
+    );
+    return final;
+  } else {
+    let err = { status: response.status, errObj: lectureJson };
+    throw err; // An object with the error coming from the server
+  }
+}
 //return list of lectures based on the userId **GET** /api/users/{userId}/lectures
 async function getLectures(userId) {
   let data = new Date();
@@ -334,6 +366,7 @@ const API = {
   turnLecture,
   turnLecture2,
   getLecturesStartDate,
-  getStats
+  getStats,
+  getAllLectures
 };
 export default API;
