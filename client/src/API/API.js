@@ -72,7 +72,9 @@ async function getLectures(userId) {
 async function getLecturesStartDate(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${data.getMonth() + 1}`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
+    data.getMonth() + 1
+  }`;
   console.log("URL startDate");
   console.log(url);
   const response = await fetch(baseURL + url);
@@ -104,7 +106,6 @@ async function getLecturesStartDate(userId) {
 
 //API for stats
 async function getStats(idLecture, idCourse, period, week, month, year) {
-  
   let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
   console.log(url);
   const response = await fetch(baseURL + url);
@@ -236,9 +237,9 @@ async function userLogin(username, password) {
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    console.log(req);
+    // console.log(req);
     req.onload = function () {
-      console.log(req);
+      // console.log(req);
       const status = JSON.parse(req.response);
       // console.log(status.success);
       if (status.success === true) {
@@ -272,30 +273,41 @@ async function isLogged() {
     throw err; // An object with the error coming from the server
   }
 }
-async function turnLecture2(lectureId,online){
-  
-    return new Promise((resolve, reject) => {
+async function turnLecture2(lectureId, online) {
+  return new Promise((resolve, reject) => {
     fetch(baseURL + `/lectures/${lectureId}/online`, {
-    method: 'PATCH',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(true),
-    }).then( (response) => {
-    if(response.ok) {
-    resolve(null);
-    } else {
-    // analyze the cause of error
-    response.json()
-    .then( (obj) => {reject(obj);} ) // error msg in the response body
-    .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
-    }
-    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
-    });
-    
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(true),
+    })
+      .then((response) => {
+        if (response.ok) {
+          resolve(null);
+        } else {
+          // analyze the cause of error
+          response
+            .json()
+            .then((obj) => {
+              reject(obj);
+            }) // error msg in the response body
+            .catch((err) => {
+              reject({
+                errors: [
+                  { param: "Application", msg: "Cannot parse server response" },
+                ],
+              });
+            }); // something else
+        }
+      })
+      .catch((err) => {
+        reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
+      }); // connection errors
+  });
 }
 // let url = baseURL + `/lectures/${lectureId}/online`;
-async function turnLecture(lectureId,online) {
+async function turnLecture(lectureId, online) {
   console.log("valori dentro turn lecture");
   console.log(lectureId);
   console.log(online);
@@ -354,6 +366,26 @@ async function userLogout() {
     });
   });
 }
+async function getStatesBookManager(
+  // lectureId,
+  courseId
+  // period,
+  // week,
+  // month,
+  // year
+) {
+  // let url = `/stats?lecture=${lectureId}&course=${courseId}&period=${period}&week=${week}&month=${month}&year=${year}`;
+  let url = `/stats?course=${courseId}`;
+  console.log(url);
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
 
 const API = {
   getLectures,
@@ -368,6 +400,7 @@ const API = {
   turnLecture2,
   getLecturesStartDate,
   getStats,
-  getAllLectures
+  getAllLectures,
+  getStatesBookManager,
 };
 export default API;

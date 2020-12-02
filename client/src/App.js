@@ -52,6 +52,12 @@ class App extends React.Component {
             // this.getCalendar(this.state.authUser.userId);
             this.props.history.push("/student/home?userId="+user.userId);
             break;
+            case ROLES.BOOKING_MANAGER:
+            this.setState({ authUser: user, authErr: null });
+            // this.getCalendar(this.state.authUser.userId);
+            // this.props.history.push("/booking-manager/home?userId="+user.userId);
+            this.props.history.push("/booking-manager/home");
+            break;
         }
       })
       .catch((errObj) => {

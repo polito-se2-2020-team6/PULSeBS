@@ -105,7 +105,6 @@ class LoginPage extends React.Component {
                   </FormGroup>
                   <FormGroup>
                     <Button
-                      block
                       type="submit"
                       color="primary"
                       // size="sm"
