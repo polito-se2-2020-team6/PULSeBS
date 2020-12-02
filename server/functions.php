@@ -51,7 +51,7 @@ if(!function_exists("get_seats_by_lecture")){
 			throw new ErrorException("Cannot retrieve number of seats");
 		}
 
-		return $seats;
+		return intval($seats);
 	}
 }
 
