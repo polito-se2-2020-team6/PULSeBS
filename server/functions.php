@@ -39,7 +39,7 @@ if(!function_exists("get_seats_by_lecture")){
 
 		//get the seats number
 		$stmt = $pdo->prepare("SELECT seats FROM lectures, rooms WHERE lectures.room_id = rooms.ID AND lectures.ID = :lectureId");
-		$stmt->bindValue(":lecture_id", $lecture_id, PDO::PARAM_INT);
+		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 
 		if (!$stmt->execute()) {
 			throw new PDOException($stmt->errorInfo()[2]);
