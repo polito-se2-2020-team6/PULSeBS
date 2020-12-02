@@ -71,6 +71,7 @@ Requires login as student or teacher
       - bookedSeats: int
       - totalSeats: int
       - bookedSelf: bool
+      - inWaitingList: bool
 
 # Book a lecture
 Requires login as student
@@ -80,6 +81,8 @@ Requires login as student
     - lectureId: int
   - *response body*
     - success: bool
+    - inWaitingList: bool
+    - mailSent: bool
 
 # Students booked to a lecture
 Requires login as teacher
@@ -93,6 +96,7 @@ Requires login as teacher
       - studentId: int
       - studentName: string
       - email: string
+      - inWaitingList : bool
 
 # Cancel a booking
 Requires login as student

@@ -2,6 +2,8 @@
 require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
+require_once "./StatsBookings.php";
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -13,8 +15,8 @@ define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
 define("USER_TYPE_STUDENT", 0);
 define("USER_TYPE_TEACHER", 1);
+define("USER_TYPE_BOOK_MNGR", 2);
 
-define('LECTURE_PRESENCE', 0x0);
 define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
 
@@ -142,12 +144,12 @@ if (!function_exists('list_lectures')) {
 
 		if (isset($_GET['startDate'])) {
 			$Ymd = explode('-', $_GET['startDate']);
-			$ts = mktime(0, 0, 0, intval($Ymd[2]), intval($Ymd[1]), intval($Ymd[0]));
+			$ts = mktime(0, 0, 0, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
 			$stmt->bindValue(':startDate', $ts, PDO::PARAM_INT);
 		}
 		if (isset($_GET['endDate'])) {
 			$Ymd = explode('-', $_GET['endDate']);
-			$ts = mktime(59, 59, 23, intval($Ymd[2]), intval($Ymd[1]), intval($Ymd[0]));
+			$ts = mktime(59, 59, 23, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
 			$stmt->bindValue(':endDate', $ts, PDO::PARAM_INT);
 		}
 
@@ -190,6 +192,8 @@ if (!function_exists('list_lectures')) {
 			if (!$stmt_inner->execute()) {
 				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 			}
+
+			$lecture["inWaitingList"] = check_user_in_waiting_list($lecture["lectureId"]);
 
 			$bookedSeats = $stmt_inner->fetch();
 			if (!$bookedSeats) {
@@ -327,6 +331,7 @@ if (!function_exists('cancel_lecture')) {
 			// Check lecture exists, is assigned to teacher and > 1h to start
 			$nextHour = new DateTime();
 			$nextHour->modify('+1 hour'); // Check for timezones discrepancies
+			//TODO check because this method doesn't take into account legal hour shift. You should use the method setTimezone
 			$stmt = $pdo->prepare('SELECT *
 								   FROM lectures L, courses C
 								   WHERE L.course_id = C.ID
@@ -341,8 +346,30 @@ if (!function_exists('cancel_lecture')) {
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
-			if (!$stmt->fetch()) {
+			if (!$lecture = $stmt->fetch()) {
 				throw new PDOException('Lecture ' . $lectureId . ' not found.');
+			}
+
+			// Get students
+			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
+								   FROM users U, bookings B
+								   WHERE U.ID = B.user_id 
+								   		AND lecture_id = :lectureId
+								   		AND type = :student 
+										AND booking_ts IS NOT NULL
+										AND cancellation_ts IS NULL');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':student', intval(USER_TYPE_STUDENT), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			$students = array();
+			while ($s = $stmt->fetch()) {
+				$students[] = array(
+					'studentId' => intval($s['ID']),
+					'email' => $s['email'],
+					'studentName' => $s['lastname'] . ' ' . $s['firstname']
+				);
 			}
 
 			// Cancel lecture
@@ -353,6 +380,13 @@ if (!function_exists('cancel_lecture')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
+			}
+
+			//send mail notifications
+			$lecture_time = new DateTime($lecture["start_ts"], new DateTimeZone("UTC"));
+			$lecture_time->setTimezone(new DateTimeZone($server_default_timezone));
+			foreach ($students as $student) {
+				mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
 			}
 			// Success
 			echo json_encode(array('success' => true));
@@ -396,6 +430,7 @@ if (!function_exists('booked_students')) {
 				throw new PDOException('Lecture' . $lectureId . ' not found.');
 			}
 
+
 			// Get students
 			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
 								   FROM users U, bookings B
@@ -410,11 +445,16 @@ if (!function_exists('booked_students')) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
 			$students = array();
+			//get waiting list
+			$waiting_list = get_seats_by_lecture($lectureId);
+
 			while ($s = $stmt->fetch()) {
+				$studentId = intval($s['ID']);
 				$student = array(
-					'studentId' => intval($s['ID']),
+					'studentId' => $studentId,
 					'email' => $s['email'],
-					'studentName' => $s['lastname'] . ' ' . $s['firstname']
+					'studentName' => $s['lastname'] . ' ' . $s['firstname'],
+					'inWaitingList' => in_array($studentId, $waiting_list)
 				);
 
 				array_push($students, $student);
@@ -519,12 +559,15 @@ if (!function_exists('book_lecture')) {
 			}
 
 			// Success
-			//I send a confirmazion email
-			$mail_result = mail($user_data["email"], "Confirmation of " . $lecture["name"] . " lecture booking", "You did a booking for the lecture of " . $lecture["name"] . ". The booking has been successfull");
+			$in_wait_list = check_user_in_waiting_list($lectureId);
+			//I send a confirmation email
+			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
+			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
+			$mail_result = mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
 			} else {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, ));
 			}
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
@@ -590,6 +633,73 @@ if (!function_exists('cancel_booking')) {
 	}
 }
 
+if (!function_exists('set_lecture_online_status')) {
+	function set_lecture_online_status($vars) {
+		global $_PATCH;
+		$lectureId = intval($vars['lectureId']);
+		$status = $_PATCH['value'] == 'true' ? LECTURE_REMOTE : ~LECTURE_REMOTE;
+
+		try {
+			if (!isset($_SESSION['user_id'])) {
+				throw new ErrorException('Auth Needed');
+			}
+
+			$userId = intval($_SESSION['user_id']);
+			$pdo = new PDO('sqlite:../db.sqlite');
+
+			// Check user exists and is teacher
+			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':teacher', USER_TYPE_TEACHER, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			if (!$stmt->fetch()) {
+				throw new PDOException('Teacher ' . $userId . ' not found.');
+			}
+
+			// Check lecture exists, is assigned to teacher and > 30m to start
+			$nextHour = new DateTime('now', new DateTimeZone('UTC'));
+			$nextHour->modify('+30 minutes'); // Check for timezones discrepancies
+			$stmt = $pdo->prepare('SELECT *
+								   FROM lectures L, courses C
+								   WHERE L.course_id = C.ID
+									   AND L.ID = :lectureId
+									   AND C.teacher_id = :userId
+									   AND L.start_ts > :nextHour');
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+			$stmt->bindValue(':nextHour', $nextHour->getTimestamp(), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			if (!$stmt->fetch()) {
+				throw new PDOException('Lecture ' . $lectureId . ' not found.');
+			}
+
+			// Set lecture status
+			if ($status == LECTURE_REMOTE) {
+				$stmt = $pdo->prepare('UPDATE lectures
+								   SET settings = settings | :online
+								   WHERE ID = :lectureId');
+			} else {
+				$stmt = $pdo->prepare('UPDATE lectures
+								   SET settings = settings & :online
+								   WHERE ID = :lectureId');
+			}
+			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
+			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			// Success
+			echo json_encode(array('success' => true));
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 /*Constants to define option for the routes*/
@@ -611,6 +721,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
+
+	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
@@ -658,6 +770,8 @@ switch ($routeInfo[0]) {
 
 			if ($httpMethod == 'DELETE') {
 				parse_str(file_get_contents("php://input"), $_DELETE);
+			} else if ($httpMethod == 'PATCH') {
+				parse_str(file_get_contents("php://input"), $_PATCH);
 			}
 			$handler = $routeInfo[1][0];
 			$vars = $routeInfo[2];
