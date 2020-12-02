@@ -70,6 +70,21 @@ async function getLecturesStartDate(userId) {
   }
 }
 
+//API for stats
+async function getStats(idLecture, idCourse, period, week, month, year) {
+  
+  let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
+  console.log(url);
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
 //return list of lectures based on the userId with time filter **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
 
 //# Book a lecture /api/users/{userId}/book
@@ -320,5 +335,6 @@ const API = {
   turnLecture,
   turnLecture2,
   getLecturesStartDate,
+  getStats
 };
 export default API;
