@@ -12,7 +12,7 @@ class Student extends Component {
       bookingProgres: 0,
     };
   }
-//let the student to book for a lecture
+  //let the student to book for a lecture
   bookSeat = (lectureId) => {
     this.setState({ bookingProgres: 1 });
     const studentId = this.props.user.userId;
@@ -29,9 +29,21 @@ class Student extends Component {
     //     this.setState({ lectures: lectures });
     //   })
     //   .catch((err) => console.log(err));
-    
   };
 
+  //filtering lectures
+  filterLectures = (courseId) => {
+    let lectures = [...this.state.lectures];
+    if (courseId === 'all') {
+      this.componentDidMount();
+    }
+    let filtered = lectures.filter((cur) => {
+      return cur.courseId === courseId;
+    });
+   
+    const newLectures = filtered;
+    this.setState({ lectures: newLectures});
+  };
 
   //cancel booking
   cancelBooking = (lectureId) => {
@@ -66,8 +78,6 @@ class Student extends Component {
       .catch((err) => console.log(err));
   }
 
-  
-
   render() {
     return (
       <AuthContext.Consumer>
@@ -78,6 +88,7 @@ class Student extends Component {
                 <h1 className="mt-5 ml-">Book Your Next Lectures</h1>
                 <LectureList
                   lectures={this.state.lectures}
+                  filterLectures={this.filterLectures}
                   bookSeat={this.bookSeat}
                   bookingProgres={this.state.bookingProgres}
                   cancelBooking={this.cancelBooking}
