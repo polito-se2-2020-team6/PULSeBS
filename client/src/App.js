@@ -50,7 +50,7 @@ class App extends React.Component {
           case ROLES.STUDENT:
             this.setState({ authUser: user, authErr: null });
             // this.getCalendar(this.state.authUser.userId);
-            this.props.history.push("/student/home");
+            this.props.history.push("/student/home?userId="+user.userId);
             break;
         }
       })

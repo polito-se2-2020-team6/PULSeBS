@@ -57,7 +57,8 @@ class Student extends Component {
     //   });
 
     //getting list of all lectures
-    const studentId = this.props.user.userId;
+    const studentId = window.location.href.split("=")[1];
+    // const studentId = this.props.user.userId;
     API.getLectures(studentId)
       .then((lectures) => {
         this.setState({ lectures: lectures });
