@@ -1,6 +1,19 @@
 // const url = "http://localhost:3000";
 const baseUr = "http://localhost:8080/API/REST.php/api";
+// context("Student Page", () => {
+//   it("Login Test for Student Component", () => {
+//     cy.visit(url);
+//     cy.get("#username").type("mostafat");
+//     cy.get("#password").type("helloworld");
+//     cy.get("#login").click();
+//     cy.url().should("include", "/student/home");
+//     cy.get("h1").should("have.text", "Book Your Next Lectures");
+//     cy.get("#calendar").click();
+//     cy.url().should("include", "/student/calendar");
+//   });
+// });
 
+// localhost:8080/API/REST.php/api/login
 describe("login API", () => {
   it("returns User", () => {
     cy.request({

@@ -20,7 +20,6 @@ import {
 import { AuthContext } from "../../auth/AuthContext";
 
 
-
 var lecturesDetailDay = [
   {
     course: "History",
