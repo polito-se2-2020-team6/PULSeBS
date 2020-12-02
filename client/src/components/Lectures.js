@@ -20,17 +20,14 @@ class LectureList extends Component {
           >
             <Dropdown.Item
               onClick={() => {
-                this.props.filterLectures('all');
-                
+                this.props.filterLectures("all");
               }}
             >
               All Courses
             </Dropdown.Item>
             {this.props.lectures.map((lecture) => (
               <Dropdown.Item
-                
                 onClick={() => {
-                  
                   this.props.filterLectures(lecture.courseId);
                 }}
               >
@@ -51,6 +48,7 @@ class LectureList extends Component {
                   <th>Booked Seats</th>
                   <th>Total Seats</th>
                   <th>Status</th>
+                  <th>In Waiting List</th>
                 </tr>
               </thead>
               <tbody>
@@ -110,12 +108,7 @@ function LectureData(props) {
             )}
           </Button>
         ) : (
-          // <button
-          //   type="button"
-          //   className="btn btn-primary"
-          //   onClick={props.bookSeat}
-          // >
-
+          
           <Button
             onClick={() => {
               props.cancelBooking(props.lecture.lectureId);
@@ -126,6 +119,11 @@ function LectureData(props) {
           </Button>
         )}
       </td>
+      <td>{props.lecture.inWaitingList === true ?
+       'Yes'
+       : 
+        'No'
+       }</td>
 
       {/*when the button is clicked the spinner will be shown till the data is ready*/}
       {/* <td>
