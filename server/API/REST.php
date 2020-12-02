@@ -193,6 +193,8 @@ if (!function_exists('list_lectures')) {
 				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
 			}
 
+			$lecture["inWaitingList"] = check_user_in_waiting_list($lecture["lectureId"]);
+
 			$bookedSeats = $stmt_inner->fetch();
 			if (!$bookedSeats) {
 				// wtf does this even mean?
@@ -443,11 +445,16 @@ if (!function_exists('booked_students')) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
 			$students = array();
+			//get waiting list
+			$waiting_list = get_seats_by_lecture($lectureId);
+
 			while ($s = $stmt->fetch()) {
+				$studentId = intval($s['ID']);
 				$student = array(
-					'studentId' => intval($s['ID']),
+					'studentId' => $studentId,
 					'email' => $s['email'],
-					'studentName' => $s['lastname'] . ' ' . $s['firstname']
+					'studentName' => $s['lastname'] . ' ' . $s['firstname'],
+					'inWaitingList' => in_array($studentId, $waiting_list)
 				);
 
 				array_push($students, $student);
@@ -552,12 +559,15 @@ if (!function_exists('book_lecture')) {
 			}
 
 			// Success
-			//I send a confirmazion email
-			$mail_result = mail($user_data["email"], "Confirmation of " . $lecture["name"] . " lecture booking", "You did a booking for the lecture of " . $lecture["name"] . ". The booking has been successfull");
+			$in_wait_list = check_user_in_waiting_list($lectureId);
+			//I send a confirmation email
+			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
+			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
+			$mail_result = mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
 			} else {
-				echo json_encode(array('success' => true, 'mailSent' => $mail_result));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, ));
 			}
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));

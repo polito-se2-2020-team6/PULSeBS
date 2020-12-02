@@ -22,7 +22,7 @@ if (!function_exists("check_login")) {
 
 
 		if (!$stmt->execute()) {
-			throw new PDOException($stmt->errorInfo()[2], $stmt->errorInfo()[0]);
+			throw new PDOException($stmt->errorInfo()[2]);
 		}
 
 		$user_data = $stmt->fetch();
@@ -33,4 +33,67 @@ if (!function_exists("check_login")) {
 	}
 }
 
+if(!function_exists("get_seats_by_lecture")){
+	function get_seats_by_lecture($lecture_id){
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		//get the seats number
+		$stmt = $pdo->prepare("SELECT seats FROM lectures, rooms WHERE lectures.room_id = rooms.ID AND lectures.ID = :lectureId");
+		$stmt->bindValue(":lecture_id", $lecture_id, PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$seats = $stmt->fetchColumn();
+
+		if($seats === false){
+			throw new ErrorException("Cannot retrieve number of seats");
+		}
+
+		return intval($seats);
+	}
+}
+
+if (!function_exists("check_user_in_waiting_list")){
+	function check_user_in_waiting_list($lecture_id, $user_id = null){
+		$seats = get_seats_by_lecture($lecture_id);
+		$user_id = $user_id === null ? $_SESSION["user_id"] : $user_id;
+
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare("SELECT COUNT(*) FROM (
+				SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER_BY booking_ts ASC LIMIT :seats
+			) AS t WHERE t.user_id = :userId");
+		
+		$stmt->bindValue(":userId", $user_id, PDO::PARAM_INT);
+		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
+		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		return false === $stmt->fetch();
+	}
+}
+
+if(!function_exists("get_waiting_list_by_lecture")){
+	function get_waiting_list_by_lecture($lecture_id){
+		$seats = get_seats_by_lecture($lecture_id);
+
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER_BY booking_ts ASC LIMIT -1 OFFSET :seats");
+		
+		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
+		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+	}
+}
 ?>
