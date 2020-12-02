@@ -3,6 +3,7 @@
 
 import React, { Component } from "react";
 import { Bar } from 'react-chartjs-2';
+import API from "../../API/API";
 
 import  { Redirect } from 'react-router-dom'
 import {
@@ -176,17 +177,35 @@ class HistoricalData extends React.Component {
     };
   }
 
+  getStats = (idLecture, idCourse, period, week, month, year) => {
+    API.getStats(idLecture, idCourse, period, week, month, year)
+      .then((s) => {
+        console.log(s);
+        //this.setState({
+        //  totalLectures: lectures || [],
+        //});
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });
+  };
+
   changeValue(text) {
     //here changes the detail,need an API call to retrieve the data
+
     var tableData = [];
+    var data = new Date();
     //just to try
     if (text === 'Lecture'){
-      this.setState({lectures: lecturesDetailDay});
+      
     }else if (text === 'Week'){
       for(var i=0;i<6;i++){
               //ciclo di chiamate api, memorizzo in data gli ultimi 6 mesi in base al corso scelto
                 data.labels[i]=last6Month[i].month;
                 data.datasets[0].data[i]=last6Month[i].avg;
+                //
+                
+
                 tableData[i] = {labels: last6Month[i].month, data: last6Month[i].avg}
                 
             }
@@ -200,6 +219,9 @@ class HistoricalData extends React.Component {
         //ciclo di chiamate api, memorizzo in data gli ultimi 12 mesi in base al corso scelto
           dataDefault.labels[i]=lastYear[i].month;
           dataDefault.datasets[0].data[i]=lastYear[i].avg;
+
+         // this.getStats(null, this.state.detailLevelCourse, 'month', null, data.getMonth(), null)
+
           tableData[i] = {labels: lastYear[i].month, data: lastYear[i].avg}
 
       }
