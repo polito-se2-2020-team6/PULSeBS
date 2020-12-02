@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import { Bar } from 'react-chartjs-2';
 import API from "../../API/API";
 
+
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -124,22 +125,7 @@ var lecturesDetailDay = [
     },
     
   ];
-  var data = {
-      labels: [],
-      datasets: [
-        {
-          label: 'AVG Bookings/TOT Bookings',
-          backgroundColor: 'rgb(22, 205, 254)',
-          borderColor: 'rgb(35, 126, 254)',
-          borderWidth: 1,
-          hoverBackgroundColor: 'rgb(151, 205, 251)',
-          hoverBorderColor: 'rgb(151, 205, 240)',
-          data: []
-         // data: []
-        },
-        // se vuoi puoi aggiungere un'altro datasets
-      ]
-    };
+  
     var dataDefault = {
       labels: [],
       //labels: [],
@@ -168,21 +154,74 @@ class HistoricalData extends React.Component {
     this.state = {
       lectures: [],
       detailLevel: 'Select detail',
-      detailLevelCourse: 'Select Course',
+      detailLevelCourse: 'APA`',
       detailLevelPeriod: 'Select Period',
       prova: 'defaaalt',
       dataState : {},
-
+      totalLectures: [],
+      allCourses: []
     };
   }
 
-  getStats = (idLecture, idCourse, period, week, month, year) => {
+  componentDidMount(){
+    
+    this.getLectures(this.context.authUser.userId)
+    
+
+  }
+
+
+  getLectures = (userId) => {
+    API.getAllLectures(userId)
+      .then((lectures) => {
+        var today = new Date();
+        
+       
+        this.setState({
+          totalLectures: lectures.filter(l => new Date(l.startTS)<today)  || [],
+        });
+        
+        
+        const seen = new Set();
+        const filteredArr = this.state.totalLectures.filter(l => {
+        const duplicate = seen.has(l.courseId);
+        seen.add(l.courseId);
+        return !duplicate;
+        });
+        console.log(filteredArr);
+        this.setState({allCourses: filteredArr});
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });
+  };
+
+  getWeek = () => {
+    var date = new Date();
+    date.setHours(0, 0, 0, 0);
+    // Thursday in current week decides the year.
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    // January 4 is always in week 1.
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+                          - 3 + (week1.getDay() + 6) % 7) / 7);
+  }
+
+  getStats = (idLecture, idCourse, period, week, month, year, i, data, tableData) => {
     API.getStats(idLecture, idCourse, period, week, month, year)
       .then((s) => {
         console.log(s);
         //this.setState({
         //  totalLectures: lectures || [],
         //});
+        data.labels[i]= month || week || idLecture;
+        data.datasets[0].data[i]=10;
+        tableData[i] = {labels: month || week || idLecture, data: 10}
+        if(i>=10){
+          this.setState({dataState : data, lectures : tableData});
+        }
+
       })
       .catch((errorObj) => {
         console.log(errorObj);
@@ -190,41 +229,40 @@ class HistoricalData extends React.Component {
   };
 
   changeValue(text) {
-    //here changes the detail,need an API call to retrieve the data
 
+    var data = {
+      labels: [],
+      datasets: [
+        {
+          label: 'AVG Bookings/TOT Bookings',
+          backgroundColor: 'rgb(22, 205, 254)',
+          borderColor: 'rgb(35, 126, 254)',
+          borderWidth: 1,
+          hoverBackgroundColor: 'rgb(151, 205, 251)',
+          hoverBorderColor: 'rgb(151, 205, 240)',
+          data: []
+         
+        },
+      ]
+    };
     var tableData = [];
-    var data = new Date();
-    //just to try
+    var date = new Date();
+    
     if (text === 'Lecture'){
       
+      for(var i=0;i<this.state.totalLectures.length;i++){
+        
+        this.getStats(this.state.totalLectures[i].lectureId, this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, '', '', '', i, data, tableData);
+      }
     }else if (text === 'Week'){
-      for(var i=0;i<6;i++){
-              //ciclo di chiamate api, memorizzo in data gli ultimi 6 mesi in base al corso scelto
-                data.labels[i]=last6Month[i].month;
-                data.datasets[0].data[i]=last6Month[i].avg;
-                //
-                
-
-                tableData[i] = {labels: last6Month[i].month, data: last6Month[i].avg}
-                
+      for(var i=0;i<10;i++){
+                this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', (this.getWeek()-10+i)%52, '', date.getFullYear(), i, data, tableData) 
             }
-
-            this.setState({dataState : data, lectures : tableData});
-            
-
     }else if (text === 'Month'){
       var tableData = [];
-      for(var i=0;i<12;i++){
-        //ciclo di chiamate api, memorizzo in data gli ultimi 12 mesi in base al corso scelto
-          dataDefault.labels[i]=lastYear[i].month;
-          dataDefault.datasets[0].data[i]=lastYear[i].avg;
-
-         // this.getStats(null, this.state.detailLevelCourse, 'month', null, data.getMonth(), null)
-
-          tableData[i] = {labels: lastYear[i].month, data: lastYear[i].avg}
-
-      }
-      this.setState({dataState : dataDefault, lectures: tableData});
+      for(var i=0;i<10;i++){
+         this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'month', '', (date.getMonth()-10+i)%12, date.getFullYear(), i, data, tableData)
+      }  
     }
     
     this.setState({detailLevel: text})
@@ -233,6 +271,11 @@ class HistoricalData extends React.Component {
   render() {
    
     return (
+      <AuthContext.Consumer>
+        {(context) => (
+            <>
+            {context.authUser ? (
+          
         <>
         <Container className="mt-5">
             <Row>
@@ -242,7 +285,7 @@ class HistoricalData extends React.Component {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Day</Dropdown.Item>
+                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Lecture</Dropdown.Item>
                 <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Week</Dropdown.Item>
                 <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Month</Dropdown.Item>
               </Dropdown.Menu>
@@ -282,9 +325,9 @@ class HistoricalData extends React.Component {
                           {this.state.detailLevelCourse}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          <Dropdown.Item  onClick={(e) => this.setState({detailLevelCourse: e.target.textContent})}>APA</Dropdown.Item>
-                          <Dropdown.Item  onClick={(e) => this.setState({detailLevelCourse: e.target.textContent})}>Software Eng 2</Dropdown.Item>
-                          <Dropdown.Item  onClick={(e) => this.setState({detailLevelCourse: e.target.textContent})}>WEB Application</Dropdown.Item>
+                        {this.state.allCourses?.map((c) =>(
+                          <Dropdown.Item key={c.courseId}  onClick={(e) => this.setState({detailLevelCourse: e.target.textContent})}>{c.courseName}</Dropdown.Item>
+                        ))}
                         </Dropdown.Menu>
                       </Dropdown>
                     </Col>
@@ -309,9 +352,15 @@ class HistoricalData extends React.Component {
             </Row>
         </Container>
         </>
-     );
-  }
+     ) : (
+      <><Redirect to='/login'  /></>
+    )}
+  </>
+  )}
+</AuthContext.Consumer>
+);
 }
+} 
 
-
+HistoricalData.contextType = AuthContext;
 export default HistoricalData;
