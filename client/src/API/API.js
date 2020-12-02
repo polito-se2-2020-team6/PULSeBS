@@ -57,7 +57,8 @@ async function getLectures(userId) {
           l.bookedSeats,
           l.courseName,
           l.bookedSelf,
-          l.teacherName
+          l.teacherName,
+          l.inWaitingList
         )
     );
     return final;
