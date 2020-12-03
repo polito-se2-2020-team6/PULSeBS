@@ -240,7 +240,7 @@ class HistoricalData extends React.Component {
             <Table striped bordered hover size="sm" className="mt-2">
               <thead>
                 <tr>
-                  <th>Course</th>
+                  
                   <th>{this.state.detailLevel}</th>
                   <th>Average bookings</th>
                 </tr>
@@ -248,7 +248,7 @@ class HistoricalData extends React.Component {
               <tbody>
                 {this.state.lectures?.map((l) =>(
                   <tr>
-                    <td>{this.state.detailLevelCourse}</td>
+                    
                     <td>{l.labels}</td>
                     <td>{l.data}</td>
                   </tr>
