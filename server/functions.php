@@ -95,7 +95,8 @@ if(!function_exists("get_waiting_list_by_lecture")){
 
 		$waitlist = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
-		if($waitlist !== false && !is_array($waitlist)) $waitlist = array($waitlist);
+		if($waitlist === false) $waitlist = array();
+		else if(!is_array($waitlist)) $waitlist = array($waitlist);
 		return $waitlist;
 	}
 }
