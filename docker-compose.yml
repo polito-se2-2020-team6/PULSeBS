@@ -4,10 +4,14 @@ services:
     pbs-back:
         build: "./server"
         network_mode: "bridge"
-        ports:
-            - "8080:80"
     pbs-front:
         build: "./client"
         network_mode: "bridge"
+        ports:
+            - "3000:3000"
+        expose:
+            - "3000"
+        links:
+            - pbs-back
         depends_on:
             - "pbs-back"
