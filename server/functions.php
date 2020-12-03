@@ -84,7 +84,7 @@ if(!function_exists("get_waiting_list_by_lecture")){
 
 		$pdo = new PDO("sqlite:../db.sqlite");
 
-		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER_BY booking_ts ASC LIMIT -1 OFFSET :seats");
+		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT -1 OFFSET :seats");
 		
 		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
