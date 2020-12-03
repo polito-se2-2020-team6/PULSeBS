@@ -95,6 +95,7 @@ class Teacher extends React.Component {
   getStudentsBooked(lectureId) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
+        console.log("studenti")
           console.log(students);
         this.setState({
           students: students.students || [],
@@ -144,7 +145,7 @@ class Teacher extends React.Component {
 
   turnLecture(lectureId,online_s){
     //chiamata API per modificare stato lezione online/in presence
-    API.turnLecture2(lectureId,online_s)
+    API.turnLecture(lectureId,online_s)
     .then(() => {
       //andato a buon fine
       console.log("giusto")

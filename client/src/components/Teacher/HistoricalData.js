@@ -47,102 +47,8 @@ var lecturesDetailDay = [
 
 
 //////////////////////////////////// variabili prova max
-  var last6Month = [
-    {
-      month: "Maggio",
-      avg: 50,
-    },
-    {
-      month: "Giugno",
-      avg: 60,
-    },
-    {
-      month: "Luglio",
-      avg: 20.6,
-    },
-    {
-      month: "Agosto",
-      avg: 0,
-    },
-    {
-      month: "Settembre",
-      avg: 117.5,
-    },
-    {
-      month: "Ottobre",
-      avg: 100.8,
-    },
-    
-  ];
-  var lastYear = [
-    {
-      month: "Novembre",
-      avg: 30,
-    },
-    {
-      month: "Dicembre",
-      avg: 24.5,
-    },
-    {
-      month: "Gennaio",
-      avg: 20.5,
-    },
-    {
-      month: "Febbraio",
-      avg: 10.4,
-    },
-    {
-      month: "Marzo",
-      avg: 50,
-    },
-    {
-      month: "Aprile",
-      avg: 120.2,
-    },
-    {
-      month: "Maggio",
-      avg: 50,
-    },
-    {
-      month: "Giugno",
-      avg: 60,
-    },
-    {
-      month: "Luglio",
-      avg: 20.6,
-    },
-    {
-      month: "Agosto",
-      avg: 0,
-    },
-    {
-      month: "Settembre",
-      avg: 117.5,
-    },
-    {
-      month: "Ottobre",
-      avg: 100.8,
-    },
-    
-  ];
-  
-    var dataDefault = {
-      labels: [],
-      //labels: [],
-       datasets: [
-         {
-           label: 'AVG Bookings/TOT Bookings',
-           backgroundColor: 'rgb(22, 205, 254)',
-           borderColor: 'rgb(35, 126, 254)',
-           borderWidth: 1,
-           hoverBackgroundColor: 'rgb(151, 205, 251)',
-           hoverBorderColor: 'rgb(151, 205, 240)',
-           data: []
-          // data: []
-         },
-         // se vuoi puoi aggiungere un'altro datasets
-       ]
-     };
+var months = [ "January", "February", "March", "April", "May", "June", 
+"July", "August", "September", "October", "November", "December" ];
 
 
 //////////////////////////////////// fine variabili max
@@ -154,7 +60,7 @@ class HistoricalData extends React.Component {
     this.state = {
       lectures: [],
       detailLevel: 'Select detail',
-      detailLevelCourse: 'APA`',
+      detailLevelCourse: 'Select Course',
       detailLevelPeriod: 'Select Period',
       prova: 'defaaalt',
       dataState : {},
@@ -182,6 +88,7 @@ class HistoricalData extends React.Component {
         });
         
         
+        
         const seen = new Set();
         const filteredArr = this.state.totalLectures.filter(l => {
         const duplicate = seen.has(l.courseId);
@@ -190,6 +97,7 @@ class HistoricalData extends React.Component {
         });
         console.log(filteredArr);
         this.setState({allCourses: filteredArr});
+        this.setState({detailLevelCourse: this.state.allCourses[0].courseName});
       })
       .catch((errorObj) => {
         console.log(errorObj);
@@ -215,11 +123,32 @@ class HistoricalData extends React.Component {
         //this.setState({
         //  totalLectures: lectures || [],
         //});
-        data.labels[i]= month || week || idLecture;
-        data.datasets[0].data[i]=10;
-        tableData[i] = {labels: month || week || idLecture, data: 10}
-        if(i>=10){
-          this.setState({dataState : data, lectures : tableData});
+        console.log(month);
+        console.log(week);
+        console.log(idLecture);
+        data.labels[i]=0;
+        data.labels[i]= idLecture;//month || week || idLecture;
+        console.log(data.labels[i]);
+        data.datasets[0].data[i]=s.bookingsAvg;
+        //console.log("stampe")
+        //console.log(i);
+        //console.log(this.state.detailLevel);
+        //console.log(this.state.totalLectures.length);
+        tableData[i] = {labels: months[month] || week || idLecture, data: s.bookingsAvg}
+        if(this.state.detailLevel==="Week"|| this.state.detailLevel==="Month"){
+          console.log("primo")
+          if(i>=9){
+            console.log("patasta");
+            this.setState({dataState : data, lectures : tableData});
+          }
+        }
+        if(this.state.detailLevel==="Lecture"){
+          console.log("LEZIONI");
+          console.log(i);
+          if(i>=this.state.totalLectures.length-1){
+            console.log("patasta");
+            this.setState({dataState : data, lectures : tableData});
+          }
         }
 
       })
@@ -234,7 +163,7 @@ class HistoricalData extends React.Component {
       labels: [],
       datasets: [
         {
-          label: 'AVG Bookings/TOT Bookings',
+          label: 'AVG Bookings',
           backgroundColor: 'rgb(22, 205, 254)',
           borderColor: 'rgb(35, 126, 254)',
           borderWidth: 1,
@@ -252,7 +181,7 @@ class HistoricalData extends React.Component {
       
       for(var i=0;i<this.state.totalLectures.length;i++){
         
-        this.getStats(this.state.totalLectures[i].lectureId, this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, '', '', '', i, data, tableData);
+        this.getStats(this.state.totalLectures[i].lectureId, this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, '','', '', '', i, data, tableData);
       }
     }else if (text === 'Week'){
       for(var i=0;i<10;i++){
@@ -279,6 +208,7 @@ class HistoricalData extends React.Component {
         <>
         <Container className="mt-5">
             <Row>
+              <Col md={2}>
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
                 {this.state.detailLevel}
@@ -290,6 +220,19 @@ class HistoricalData extends React.Component {
                 <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Month</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
+            </Col>
+            <Col md={2}>
+              <Dropdown>
+                        <Dropdown.Toggle variant="success" id="dropdown-basic">
+                          {this.state.detailLevelCourse}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                        {this.state.allCourses?.map((c) =>(
+                          <Dropdown.Item key={c.courseId}  onClick={(e) => this.setState({detailLevelCourse: e.target.textContent})}>{c.courseName}</Dropdown.Item>
+                        ))}
+                        </Dropdown.Menu>
+              </Dropdown>
+           </Col>
             </Row>
             <Row>
               <Col><h2 className="text-center">Table Data</h2></Col>
@@ -298,7 +241,7 @@ class HistoricalData extends React.Component {
               <thead>
                 <tr>
                   <th>Course</th>
-                  <th>Period</th>
+                  <th>{this.state.detailLevel}</th>
                   <th>Average bookings</th>
                 </tr>
               </thead>
@@ -317,28 +260,9 @@ class HistoricalData extends React.Component {
             <br></br>
             <br></br>
             <Row >
-              <Col><h2 className="text-center">Graph Data</h2>
-                  <Row>
-                    <Col>
-                      <Dropdown>
-                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                          {this.state.detailLevelCourse}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                        {this.state.allCourses?.map((c) =>(
-                          <Dropdown.Item key={c.courseId}  onClick={(e) => this.setState({detailLevelCourse: e.target.textContent})}>{c.courseName}</Dropdown.Item>
-                        ))}
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </Col>
-                    
-                    
-                </Row>
-                
-            
+              <Col><h2 className="text-center">Graph Data</h2>              
               <div className="flex flex-col items-center w-full max-w-md" >
                 <form name="myForm">
-                <h2>Statistics {this.state.prova}</h2>
                   <Bar
                       data={this.state.dataState}
                       width={100}
