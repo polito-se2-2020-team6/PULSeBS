@@ -305,7 +305,9 @@ async function turnLecture(lectureId,online) {
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}/online`;
     let data = `value=${!online}`;
-    req.open("patch", url);
+    console.log(url);
+    console.log(data);
+    req.open("PATCH", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
