@@ -446,7 +446,7 @@ if (!function_exists('booked_students')) {
 			}
 			$students = array();
 			//get waiting list
-			$waiting_list = get_seats_by_lecture($lectureId);
+			$waiting_list = get_waiting_list_by_lecture($lectureId);
 
 			while ($s = $stmt->fetch()) {
 				$studentId = intval($s['ID']);
