@@ -93,7 +93,10 @@ if(!function_exists("get_waiting_list_by_lecture")){
 			throw new PDOException($stmt->errorInfo()[2]);
 		}
 
-		return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+		$waitlist = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+		if($waitlist !== false && !is_array($waitlist)) $waitlist = array($waitlist);
+		return $waitlist;
 	}
 }
 ?>
