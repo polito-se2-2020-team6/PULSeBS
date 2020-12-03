@@ -90,7 +90,7 @@ function LectureData(props) {
       <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
       <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
       <td>{props.lecture.teacherName}</td>
-      <td>{props.lecture.roomName}</td>
+      <td>{props.lecture.online === true ? "Virtual Classroom " : props.lecture.roomName}</td>
       <td>{props.lecture.bookedSeats}</td>
       <td>{props.lecture.totalSeats}</td>
       <td>
