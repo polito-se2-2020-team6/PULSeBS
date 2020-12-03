@@ -1,7 +1,7 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { } from "react";
+import React, { useReducer } from "react";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -64,7 +64,7 @@ class Teacher extends React.Component {
     super(props);
 
     this.state = {
-      lectureUpdated: true,
+      //lectureUpdated: true,
       totalLectures: [],
       course: '',
       students: [],
@@ -73,6 +73,11 @@ class Teacher extends React.Component {
       online: false,
     };
   }
+
+  componentDidMount(){
+    this.getLectures(this.context.authUser.userId)
+  }
+
 
   getLectures = (userId) => {
     API.getLecturesStartDate(userId)
@@ -90,6 +95,7 @@ class Teacher extends React.Component {
   getStudentsBooked(lectureId) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
+        console.log("studenti")
           console.log(students);
         this.setState({
           students: students.students || [],
@@ -106,7 +112,8 @@ class Teacher extends React.Component {
     API.deleteLecture(lectureId)
       .then(() => {
         //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-        this.setState({lectureUpdated: true})
+        //this.setState({lectureUpdated: true})
+        this.getLectures(this.context.authUser.userId)
         //aggiunto io
         this.setState({students : []});
         this.setState({studtable: false});
@@ -126,19 +133,19 @@ class Teacher extends React.Component {
   }
 
   updateLectures(userId) {
-    if (this.state.lectureUpdated) {
-      this.setState({ lectureUpdated: false });
+    //if (this.state.lectureUpdated) {
+    //  this.setState({ lectureUpdated: false });
       this.getLectures(userId);
-    }
+    //}
   }
 
   clearStudentTable() {
     this.setState({students : []})
   }
 
-  turnLecture(lectureId,online_s,room){
+  turnLecture(lectureId,online_s){
     //chiamata API per modificare stato lezione online/in presence
-    API.turnLecture(lectureId)
+    API.turnLecture(lectureId,online_s)
     .then(() => {
       //andato a buon fine
       console.log("giusto")
@@ -166,14 +173,15 @@ class Teacher extends React.Component {
     const corsi = this.state.totalLectures
       .map((item) => item.courseName)
       .filter((v, i, s) => s.indexOf(v) === i);
-
+    
     return (
+      
       <AuthContext.Consumer>
         {(context) => (
             <>
             {context.authUser ? (
           <>
-            {this.updateLectures(context.authUser.userId)}
+            
 
             <Container fluid className="mt-5 ">
               <Row className="justify-content-md-center">
@@ -217,9 +225,9 @@ class Teacher extends React.Component {
                                   }}
                                 >
                                   <Row>
-                                <Col md={2}>{c.startTS}{"+++"+c.courseId}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
                                     <Button type="button" variant="outline-secondary" onClick={() => {
-                                      this.turnLecture(c.lectureId,c.online,c.roomName); 
+                                      this.turnLecture(c.lectureId,c.online); 
                                     }}>
 
                                       {/*controllo va fatto su c.online*/}
@@ -232,6 +240,7 @@ class Teacher extends React.Component {
                                   <Button
                                     variant="danger"
                                     className="mr-2"
+                                    
                                     onClick={() => {
                                       this.deleteLecture(c.lectureId);
                                     }}
@@ -293,7 +302,8 @@ class Teacher extends React.Component {
       </AuthContext.Consumer>
     );
   }
-}
+} 
+Teacher.contextType = AuthContext;
 
 
 export default Teacher;

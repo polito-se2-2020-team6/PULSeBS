@@ -1,9 +1,80 @@
 import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
+async function getAllLectures(userId) {
+  //let data = new Date();
+  let url = `/users/${userId}/lectures`;
+  //let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
+  //  data.getMonth() + 1
+  //}`;
+  const response = await fetch(baseURL + url);
+  const lectureJson = await response.json();
+  if (response.ok) {
+    const lectures = lectureJson.lectures;
+    const final = lectures.map(
+      (l) =>
+        new Lecture(
+          l.lectureId,
+          l.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          l.totalSeats,
+          l.bookedSeats,
+          l.courseName,
+          l.bookedSelf,
+          l.teacherName
+        )
+    );
+    return final;
+  } else {
+    let err = { status: response.status, errObj: lectureJson };
+    throw err; // An object with the error coming from the server
+  }
+}
 //return list of lectures based on the userId **GET** /api/users/{userId}/lectures
 async function getLectures(userId) {
-  let url = `/users/${userId}/lectures`;
+  let data = new Date();
+  //let url = `/users/${userId}/lectures`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
+    data.getMonth() + 1
+  }`;
+  const response = await fetch(baseURL + url);
+  const lectureJson = await response.json();
+  if (response.ok) {
+    const lectures = lectureJson.lectures;
+    const final = lectures.map(
+      (l) =>
+        new Lecture(
+          l.lectureId,
+          l.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          l.totalSeats,
+          l.bookedSeats,
+          l.courseName,
+          l.bookedSelf,
+          l.teacherName,
+          l.inWaitingList
+        )
+    );
+    return final;
+  } else {
+    let err = { status: response.status, errObj: lectureJson };
+    throw err; // An object with the error coming from the server
+  }
+}
+
+//return list of lectures based on the userId **GET** /api/users/{userId}/lectures
+async function getLecturesStartDate(userId) {
+  let data = new Date();
+  /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  console.log("URL startDate");
+  console.log(url);
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -31,38 +102,17 @@ async function getLectures(userId) {
   }
 }
 
-//return list of lectures based on the userId **GET** /api/users/{userId}/lectures
-async function getLecturesStartDate(userId) {
-  let data = new Date();
-  /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
-    data.getMonth() + 1
-  }`;
-  console.log("URL startDate");
+//API for stats
+async function getStats(idLecture, idCourse, period, week, month, year) {
+  
+  let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
   console.log(url);
   const response = await fetch(baseURL + url);
-  const lectureJson = await response.json();
+  const stats = await response.json();
   if (response.ok) {
-    const lectures = lectureJson.lectures;
-    const final = lectures.map(
-      (l) =>
-        new Lecture(
-          l.lectureId,
-          l.courseId,
-          l.startTS,
-          l.endTS,
-          l.online,
-          l.roomName,
-          l.totalSeats,
-          l.bookedSeats,
-          l.courseName,
-          l.bookedSelf,
-          l.teacherName
-        )
-    );
-    return final;
+    return stats;
   } else {
-    let err = { status: response.status, errObj: lectureJson };
+    let err = { status: response.status, errObj: stats };
     throw err; // An object with the error coming from the server
   }
 }
@@ -132,7 +182,9 @@ async function getStudentsBooked(lectureId) {
     const queryParams = lectureId + "/students";
     url += queryParams;
   }
+  console.log(url);
   const response = await fetch(baseURL + url);
+  
   const studentsList = await response.json();
   if (response.ok) {
     return studentsList;
@@ -222,13 +274,40 @@ async function isLogged() {
     throw err; // An object with the error coming from the server
   }
 }
-async function turnLecture(lectureId) {
+async function turnLecture2(lectureId,online){
+  
+    return new Promise((resolve, reject) => {
+    fetch(baseURL + `/lectures/${lectureId}/online`, {
+    method: 'PATCH',
+    headers: {
+    'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(true),
+    }).then( (response) => {
+    if(response.ok) {
+    resolve(null);
+    } else {
+    // analyze the cause of error
+    response.json()
+    .then( (obj) => {reject(obj);} ) // error msg in the response body
+    .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+    }
+    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+    
+}
+// let url = baseURL + `/lectures/${lectureId}/online`;
+async function turnLecture(lectureId,online) {
+  console.log(lectureId);
+  console.log(online);
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}/online`;
-    let data = `lectureId=${lectureId}`;
-    req.open("patch", url);
+    let data = `value=${!online}`;
+    console.log(url);
+    console.log(data);
+    req.open("PATCH", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
@@ -289,6 +368,9 @@ const API = {
   bookLecture,
   cancelBooking,
   turnLecture,
+  turnLecture2,
   getLecturesStartDate,
+  getStats,
+  getAllLectures
 };
 export default API;

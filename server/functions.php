@@ -65,7 +65,7 @@ if (!function_exists("check_user_in_waiting_list")){
 		$stmt = $pdo->prepare("SELECT COUNT(*) FROM (
 				SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT :seats
 			) AS t WHERE t.user_id = :userId");
-		
+
 		$stmt->bindValue(":userId", $user_id, PDO::PARAM_INT);
 		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);

@@ -10,7 +10,8 @@ class Lecture {
     bookedSeats,
     courseName,
     bookedSelf,
-    teacherName
+    teacherName,
+    inWaitingList
   ) {
     const convertTS = (ts) => {
       const unixTimestamp = ts;
@@ -31,6 +32,7 @@ class Lecture {
     this.bookedSeats = bookedSeats;
     this.totalSeats = totalSeats;
     this.bookedSelf = bookedSelf;
+    this.inWaitingList = false;
 
   }
 
