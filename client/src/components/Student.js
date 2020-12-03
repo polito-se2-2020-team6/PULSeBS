@@ -73,6 +73,7 @@ class Student extends Component {
     // const studentId = this.props.user.userId;
     API.getLectures(studentId)
       .then((lectures) => {
+        console.log(lectures);
         this.setState({ lectures: lectures });
       })
       .catch((err) => console.log(err));
@@ -85,7 +86,7 @@ class Student extends Component {
           <>
             {context.authUser ? (
               <>
-                <h1 className="mt-5 ml-">Book Your Next Lectures</h1>
+                <h1 className="mt-5 ml-3">Book Your Next Lectures</h1>
                 <LectureList
                   lectures={this.state.lectures}
                   filterLectures={this.filterLectures}
