@@ -307,6 +307,7 @@ if (!function_exists('print_myself')) {
 
 if (!function_exists('cancel_lecture')) {
 	function cancel_lecture($vars) {
+		global $server_default_timezone;
 		$lectureId = intval($vars['lectureId']);
 
 		try {
@@ -383,7 +384,8 @@ if (!function_exists('cancel_lecture')) {
 			}
 
 			//send mail notifications
-			$lecture_time = new DateTime($lecture["start_ts"], new DateTimeZone("UTC"));
+			$lecture_time = new DateTime();
+			$lecture_time->setTimestamp(intval($lecture["start_ts"]));
 			$lecture_time->setTimezone(new DateTimeZone($server_default_timezone));
 			foreach ($students as $student) {
 				mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
