@@ -45,7 +45,7 @@ var lecturesDetailDay = [
       averge: 3,
     }];
 
-
+var n = 0;
 //////////////////////////////////// variabili prova max
 var months = [ "January", "February", "March", "April", "May", "June", 
 "July", "August", "September", "October", "November", "December" ];
@@ -127,7 +127,7 @@ class HistoricalData extends React.Component {
         console.log(week);
         console.log(idLecture);
         data.labels[i]=0;
-        data.labels[i]= idLecture;//month || week || idLecture;
+        data.labels[i]= month || week || idLecture;
         console.log(data.labels[i]);
         data.datasets[0].data[i]=s.bookingsAvg;
         //console.log("stampe")
@@ -136,16 +136,20 @@ class HistoricalData extends React.Component {
         //console.log(this.state.totalLectures.length);
         tableData[i] = {labels: months[month] || week || idLecture, data: s.bookingsAvg}
         if(this.state.detailLevel==="Week"|| this.state.detailLevel==="Month"){
+          n++;
           console.log("primo")
-          if(i>=9){
+          if(n>=10){
+            n=0;
             console.log("patasta");
             this.setState({dataState : data, lectures : tableData});
           }
         }
         if(this.state.detailLevel==="Lecture"){
+          n++;
           console.log("LEZIONI");
-          console.log(i);
-          if(i>=this.state.totalLectures.length-1){
+          console.log(n);
+          if(n>=this.state.totalLectures.length){
+            n=0;
             console.log("patasta");
             this.setState({dataState : data, lectures : tableData});
           }
@@ -158,7 +162,7 @@ class HistoricalData extends React.Component {
   };
 
   changeValue(text) {
-
+    var i;
     var data = {
       labels: [],
       datasets: [
@@ -179,17 +183,17 @@ class HistoricalData extends React.Component {
     
     if (text === 'Lecture'){
       
-      for(var i=0;i<this.state.totalLectures.length;i++){
+      for(i=0;i<this.state.totalLectures.length;i++){
         
         this.getStats(this.state.totalLectures[i].lectureId, this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, '','', '', '', i, data, tableData);
       }
     }else if (text === 'Week'){
-      for(var i=0;i<10;i++){
+      for(i=0;i<10;i++){
                 this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', (this.getWeek()-10+i)%52, '', date.getFullYear(), i, data, tableData) 
             }
     }else if (text === 'Month'){
       var tableData = [];
-      for(var i=0;i<10;i++){
+      for(i=0;i<10;i++){
          this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'month', '', (date.getMonth()-10+i)%12, date.getFullYear(), i, data, tableData)
       }  
     }
