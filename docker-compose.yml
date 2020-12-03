@@ -1,0 +1,13 @@
+version: "3.0"
+
+services:
+    pbs-back:
+        build: "./server"
+        network_mode: "bridge"
+        ports:
+            - "8080:80"
+    pbs-front:
+        build: "./client"
+        network_mode: "bridge"
+        depends_on:
+            - "pbs-back"
