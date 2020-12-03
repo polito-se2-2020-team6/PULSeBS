@@ -446,7 +446,7 @@ if (!function_exists('booked_students')) {
 			}
 			$students = array();
 			//get waiting list
-			$waiting_list = get_seats_by_lecture($lectureId);
+			$waiting_list = get_waiting_list_by_lecture($lectureId);
 
 			while ($s = $stmt->fetch()) {
 				$studentId = intval($s['ID']);
@@ -719,6 +719,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/lectures', ['list_lectures', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . '/lectures/{lectureId:\d+}/online', ['set_lecture_online_status', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 

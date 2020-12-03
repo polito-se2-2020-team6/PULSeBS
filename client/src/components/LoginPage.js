@@ -51,7 +51,7 @@ class LoginPage extends React.Component {
                 >
                   <AppBar position="fixed">
                     <Toolbar>
-                      <Typography variant="h5">
+                      <Typography id="title" variant="h5">
                         Pandemic University Lecture Seat Booking System
                         (PULSeBS)
                       </Typography>
@@ -61,7 +61,11 @@ class LoginPage extends React.Component {
                   <Row>
                     <Col className="mb-5"></Col>
                   </Row>
-                  <Typography component="h2" className="mb-3 mt-5">
+                  <Typography
+                    id="loginTitle"
+                    component="h2"
+                    className="mb-3 mt-5"
+                  >
                     Login
                   </Typography>
                   <FormGroup>
@@ -101,7 +105,6 @@ class LoginPage extends React.Component {
                   </FormGroup>
                   <FormGroup>
                     <Button
-                      block
                       type="submit"
                       color="primary"
                       // size="sm"

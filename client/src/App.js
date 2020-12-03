@@ -50,7 +50,13 @@ class App extends React.Component {
           case ROLES.STUDENT:
             this.setState({ authUser: user, authErr: null });
             // this.getCalendar(this.state.authUser.userId);
-            this.props.history.push("/student/home");
+            this.props.history.push("/student/home?userId="+user.userId);
+            break;
+            case ROLES.BOOKING_MANAGER:
+            this.setState({ authUser: user, authErr: null });
+            // this.getCalendar(this.state.authUser.userId);
+            // this.props.history.push("/booking-manager/home?userId="+user.userId);
+            this.props.history.push("/booking-manager/home");
             break;
         }
       })
@@ -104,6 +110,7 @@ class App extends React.Component {
           </Route>
           <Route path="/teacher/historicaldata">
             <HistoricalData
+              key={123435}
               studentsList={this.state.studentsList}
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}

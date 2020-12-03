@@ -35,30 +35,3 @@ describe("login API", () => {
     });
   });
 });
-
-describe("lectures API", () => {
-  it("lectures", () => {
-    cy.request({
-      // auth: {
-      //   username: "mostafat",
-      //   password: "helloworld",
-      // },
-      method: "GET",
-      url: `${baseUr}/users/5/lectures`,
-      // form: true,
-      // headers: {
-      //   "Content-Type": "application/x-www-form-urlencoded",
-      // },
-      // body: {
-      //   username: "mostafat",
-      //   password: "helloworld",
-      // },
-      // }).then((response) => {
-      //   const status = JSON.parse(JSON.stringify(response.body));
-      //   expect(status).to.have.property("success", true);
-      //   expect(status).to.have.property("userId", "5");
-      //   expect(status).to.have.property("type", "0");
-      // });
-    });
-  });
-});

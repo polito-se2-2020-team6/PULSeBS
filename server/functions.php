@@ -39,7 +39,7 @@ if(!function_exists("get_seats_by_lecture")){
 
 		//get the seats number
 		$stmt = $pdo->prepare("SELECT seats FROM lectures, rooms WHERE lectures.room_id = rooms.ID AND lectures.ID = :lectureId");
-		$stmt->bindValue(":lecture_id", $lecture_id, PDO::PARAM_INT);
+		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 
 		if (!$stmt->execute()) {
 			throw new PDOException($stmt->errorInfo()[2]);
@@ -63,9 +63,9 @@ if (!function_exists("check_user_in_waiting_list")){
 		$pdo = new PDO("sqlite:../db.sqlite");
 
 		$stmt = $pdo->prepare("SELECT COUNT(*) FROM (
-				SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER_BY booking_ts ASC LIMIT :seats
+				SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT :seats
 			) AS t WHERE t.user_id = :userId");
-		
+
 		$stmt->bindValue(":userId", $user_id, PDO::PARAM_INT);
 		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
@@ -84,7 +84,7 @@ if(!function_exists("get_waiting_list_by_lecture")){
 
 		$pdo = new PDO("sqlite:../db.sqlite");
 
-		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER_BY booking_ts ASC LIMIT -1 OFFSET :seats");
+		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT -1 OFFSET :seats");
 		
 		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
@@ -93,7 +93,11 @@ if(!function_exists("get_waiting_list_by_lecture")){
 			throw new PDOException($stmt->errorInfo()[2]);
 		}
 
-		return $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+		$waitlist = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+		if($waitlist === false) $waitlist = array();
+		else if(!is_array($waitlist)) $waitlist = array($waitlist);
+		return $waitlist;
 	}
 }
 ?>

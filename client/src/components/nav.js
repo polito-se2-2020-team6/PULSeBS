@@ -19,7 +19,8 @@ class Navigation extends Component {
                     <Nav className="container-fluid">
                       {context.authUser.type === ROLES.STUDENT && (
                         <NavItem>
-                          <NavLink className="nav-link" to="/student/home">
+                          <NavLink className="nav-link" to={"/student/home?userid=" +
+                              context.authUser.userId}> 
                             Student
                           </NavLink>
                         </NavItem>
@@ -49,6 +50,7 @@ class Navigation extends Component {
                       {context.authUser.type === ROLES.TEACHER && (
                         <NavItem>
                           <NavLink
+                            id="historicaldata"
                             className="nav-link"
                             to="/teacher/historicaldata"
                           >
@@ -69,6 +71,7 @@ class Navigation extends Component {
 
                       <NavItem className="ml-auto">
                         <NavLink
+                          id="logout"
                           className="nav-link"
                           to="/logout"
                           onClick={() => context.logoutUser()}
