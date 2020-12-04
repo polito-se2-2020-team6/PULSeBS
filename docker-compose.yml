@@ -1,0 +1,19 @@
+version: "3.0"
+
+services:
+    pbs-back:
+        image: "politosftengteam6/pulsebs-back:v0.2"
+        build: "./server"
+        network_mode: "bridge"
+    pbs-front:
+        image: "politosftengteam6/pulsebs-front:v0.2"
+        build: "./client"
+        network_mode: "bridge"
+        ports:
+            - "3000:3000"
+        expose:
+            - "3000"
+        links:
+            - pbs-back
+        depends_on:
+            - "pbs-back"

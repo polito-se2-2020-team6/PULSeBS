@@ -149,6 +149,7 @@ class Teacher extends React.Component {
     .then(() => {
       //andato a buon fine
       console.log("giusto")
+      this.getLectures(this.context.authUser.userId)
       //aggiunto io
       
     })

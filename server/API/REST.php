@@ -307,6 +307,7 @@ if (!function_exists('print_myself')) {
 
 if (!function_exists('cancel_lecture')) {
 	function cancel_lecture($vars) {
+		global $server_default_timezone;
 		$lectureId = intval($vars['lectureId']);
 
 		try {
@@ -383,7 +384,8 @@ if (!function_exists('cancel_lecture')) {
 			}
 
 			//send mail notifications
-			$lecture_time = new DateTime($lecture["start_ts"], new DateTimeZone("UTC"));
+			$lecture_time = new DateTime();
+			$lecture_time->setTimestamp(intval($lecture["start_ts"]));
 			$lecture_time->setTimezone(new DateTimeZone($server_default_timezone));
 			foreach ($students as $student) {
 				mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
@@ -446,7 +448,7 @@ if (!function_exists('booked_students')) {
 			}
 			$students = array();
 			//get waiting list
-			$waiting_list = get_seats_by_lecture($lectureId);
+			$waiting_list = get_waiting_list_by_lecture($lectureId);
 
 			while ($s = $stmt->fetch()) {
 				$studentId = intval($s['ID']);
@@ -719,6 +721,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/lectures', ['list_lectures', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . '/lectures/{lectureId:\d+}/online', ['set_lecture_online_status', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 

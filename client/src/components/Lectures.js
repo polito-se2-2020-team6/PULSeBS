@@ -154,8 +154,6 @@ function LectureData(props) {
           )}
         </td>
         <td>{props.lecture.inWaitingList === true ? "Yes" : "No"}</td>
-  
-        
       </>
     );
 }

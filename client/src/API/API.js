@@ -68,7 +68,9 @@ async function getLectures(userId) {
 async function getLecturesStartDate(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
+    data.getMonth() + 1
+  }-${data.getDate()}`;
   console.log("URL startDate");
   console.log(url);
   const response = await fetch(baseURL + url);
@@ -100,7 +102,6 @@ async function getLecturesStartDate(userId) {
 
 //API for stats
 async function getStats(idLecture, idCourse, period, week, month, year) {
-  
   let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
   console.log(url);
   const response = await fetch(baseURL + url);
@@ -180,7 +181,7 @@ async function getStudentsBooked(lectureId) {
   }
   console.log(url);
   const response = await fetch(baseURL + url);
-  
+
   const studentsList = await response.json();
   if (response.ok) {
     return studentsList;
@@ -270,30 +271,41 @@ async function isLogged() {
     throw err; // An object with the error coming from the server
   }
 }
-async function turnLecture2(lectureId,online){
-  
-    return new Promise((resolve, reject) => {
+async function turnLecture2(lectureId, online) {
+  return new Promise((resolve, reject) => {
     fetch(baseURL + `/lectures/${lectureId}/online`, {
-    method: 'PATCH',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(true),
-    }).then( (response) => {
-    if(response.ok) {
-    resolve(null);
-    } else {
-    // analyze the cause of error
-    response.json()
-    .then( (obj) => {reject(obj);} ) // error msg in the response body
-    .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
-    }
-    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
-    });
-    
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(true),
+    })
+      .then((response) => {
+        if (response.ok) {
+          resolve(null);
+        } else {
+          // analyze the cause of error
+          response
+            .json()
+            .then((obj) => {
+              reject(obj);
+            }) // error msg in the response body
+            .catch((err) => {
+              reject({
+                errors: [
+                  { param: "Application", msg: "Cannot parse server response" },
+                ],
+              });
+            }); // something else
+        }
+      })
+      .catch((err) => {
+        reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
+      }); // connection errors
+  });
 }
 // let url = baseURL + `/lectures/${lectureId}/online`;
-async function turnLecture(lectureId,online) {
+async function turnLecture(lectureId, online) {
   console.log(lectureId);
   console.log(online);
   return new Promise(function (resolve, reject) {
@@ -354,6 +366,19 @@ async function userLogout() {
   });
 }
 
+async function getStatesBookManager(idCourse) {
+  let url = `/stats?course=${idCourse}`;
+  console.log(url);
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
 const API = {
   getLectures,
   userLogin,
@@ -367,6 +392,7 @@ const API = {
   turnLecture2,
   getLecturesStartDate,
   getStats,
-  getAllLectures
+  getAllLectures,
+  getStatesBookManager,
 };
 export default API;

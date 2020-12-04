@@ -21,6 +21,6 @@ FROM node:12.18.3
 RUN mkdir -p /src 
 WORKDIR /src
 COPY . /src
-RUN npm install
+RUN npm install --production
 RUN npm build
 CMD ["npm","start"]
