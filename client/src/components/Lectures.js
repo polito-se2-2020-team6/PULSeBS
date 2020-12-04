@@ -36,6 +36,7 @@ class LectureList extends Component {
             ))}
           </DropdownButton>
           <div className="table-responsive">
+          <h2 className="mt-5 ml-">Book Lectures</h2>
             <table className="table table-hover text-center">
               <thead>
                 <tr className="">
@@ -52,16 +53,50 @@ class LectureList extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.lectures.map((lecture) => (
-                  <LectureRow
+                {this.props.lectures.map((lecture) =>
+                !lecture.bookedSelf && 
+                  (<LectureRow
                     key={lecture.lectureId}
                     lecture={lecture}
                     bookSeat={this.props.bookSeat}
                     cancelBooking={this.props.cancelBooking}
                     //   onClick={this.props.onClick}
                     bookingProgres={this.props.bookingProgres}
-                  />
-                ))}
+                  />)
+                
+                )}
+              </tbody>
+            </table>
+
+            <h2 className="mt-5 ml-">Booked Lectures</h2>
+            <table className="table table-hover text-center">
+              <thead>
+                <tr className="">
+                  <th>Course Name</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Online</th>
+                  <th>Teacher</th>
+                  <th>Room</th>
+                  <th>Booked Seats</th>
+                  <th>Total Seats</th>
+                  <th>Status</th>
+                  <th>In Waiting List</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.props.lectures.map((lecture) =>
+                lecture.bookedSelf && 
+                  (<LectureRow
+                    key={lecture.lectureId}
+                    lecture={lecture}
+                    bookSeat={this.props.bookSeat}
+                    cancelBooking={this.props.cancelBooking}
+                    //   onClick={this.props.onClick}
+                    bookingProgres={this.props.bookingProgres}
+                  />)
+                
+                )}
               </tbody>
             </table>
           </div>
@@ -83,71 +118,44 @@ function LectureRow(props) {
   );
 }
 function LectureData(props) {
-  return (
-    <>
-      <td>{props.lecture.courseName}</td>
-      <td>{props.lecture.startTS}</td>
-      <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
-      <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
-      <td>{props.lecture.teacherName}</td>
-      <td>{props.lecture.online === true ? "Virtual Classroom " : props.lecture.roomName}</td>
-      <td>{props.lecture.bookedSeats}</td>
-      <td>{props.lecture.totalSeats}</td>
-      <td>
-        {props.lecture.bookedSelf === false ? (
-          <Button
-            variant="outline-success"
-            onClick={() => {
-              props.bookSeat(props.lecture.lectureId);
-            }}
-          >
-            {props.bookingProgres === 1 ? (
-              <Spinner animation="border" size="sm" variant="success" />
-            ) : (
-              "Book a Seat"
-            )}
-          </Button>
-        ) : (
-          
-          <Button
-            onClick={() => {
-              props.cancelBooking(props.lecture.lectureId);
-            }}
-            variant="danger"
-          >
-            Cancel Booking
-          </Button>
-        )}
-      </td>
-      <td>{props.lecture.inWaitingList === true ?
-       'Yes'
-       : 
-        'No'
-       }</td>
-
-      {/*when the button is clicked the spinner will be shown till the data is ready*/}
-      {/* <td>
-        
-          <button
-            className="btn btn-outline-success"
-            value={props.lecture.courseId}
-            onClick={() => {
-              props.onClick(props.service.courseId);
-            }}
-          >
-            New Ticket
-          </button>
-        
-      </td> */}
-    </>
-  );
+    return (
+      <>
+        <td>{props.lecture.courseName}</td>
+        <td>{props.lecture.startTS}</td>
+        <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
+        <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
+        <td>{props.lecture.teacherName}</td>
+        <td>{props.lecture.roomName}</td>
+        <td>{props.lecture.bookedSeats}</td>
+        <td>{props.lecture.totalSeats}</td>
+        <td>
+          {props.lecture.bookedSelf === false ? (
+            <Button
+              variant="outline-success"
+              onClick={() => {
+                props.bookSeat(props.lecture.lectureId);
+              }}
+            >
+              {props.bookingProgres === 1 ? (
+                <Spinner animation="border" size="sm" variant="success" />
+              ) : (
+                "Book a Seat"
+              )}
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                props.cancelBooking(props.lecture.lectureId);
+              }}
+              variant="danger"
+            >
+              Cancel Booking
+            </Button>
+          )}
+        </td>
+        <td>{props.lecture.inWaitingList === true ? "Yes" : "No"}</td>
+      </>
+    );
 }
 
-// function IfAvailable(available) {
-//   if (available === 0) {
-//     return "Not Available";
-//   } else {
-//     return "Available";
-//   }
-// }
 export default LectureList;
