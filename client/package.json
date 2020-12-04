@@ -24,7 +24,7 @@
     "web-vitals": "^0.2.4"
   },
   "proxy": "http://pbs-back:80",
-  "scripts":{
+  "scripts": {
     "start": "react-scripts -r @cypress/instrument-cra start",
     "build": "react-scripts build",
     "test": "react-scripts test",
