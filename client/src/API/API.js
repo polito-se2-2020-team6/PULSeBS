@@ -2,11 +2,9 @@ import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
 async function getAllLectures(userId) {
-  //let data = new Date();
-  let url = `/users/${userId}/lectures`;
-  //let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
-  //  data.getMonth() + 1
-  //}`;
+  let data = new Date();
+  /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -36,10 +34,8 @@ async function getAllLectures(userId) {
 //return list of lectures based on the userId **GET** /api/users/{userId}/lectures
 async function getLectures(userId) {
   let data = new Date();
-  //let url = `/users/${userId}/lectures`;
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getDate()}-${
-    data.getMonth() + 1
-  }`;
+  /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
