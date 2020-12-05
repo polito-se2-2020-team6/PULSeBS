@@ -1,6 +1,12 @@
 import React from "react";
 import PieChart, { Series, Label, Connector } from "devextreme-react/pie-chart";
 import {
+  Chart,
+  CommonSeriesSettings,
+  Legend,
+  Export,
+} from "devextreme-react/chart";
+import {
   FormControl,
   FormGroup,
   InputLabel,
@@ -9,7 +15,9 @@ import {
 } from "@material-ui/core";
 import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
-
+import { AuthContext } from "../auth/AuthContext";
+import { Redirect } from "react-router-dom";
+import { dataSource } from "../data/fakeUsers";
 class UsageMonitor extends React.Component {
   constructor(props) {
     super(props);
@@ -17,6 +25,7 @@ class UsageMonitor extends React.Component {
       course: "",
       statistics: [],
       areas: [],
+      filter: "",
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -70,51 +79,182 @@ class UsageMonitor extends React.Component {
     });
   };
 
+  // handleToggle = (value) => () => {
+  //   console.log(value);
+  //   const currentIndex = this.state.checked.indexOf(value);
+  //   const newChecked = [...this.state.checked];
+  //   if (currentIndex === -1) {
+  //     newChecked.push(value);
+  //   } else {
+  //     newChecked.splice(currentIndex, 1);
+  //   }
+  //   this.setState({
+  //     checked: newChecked,
+  //   });
+  //   console.log(this.state.checked);
+  // };
+
+  handleFilterChange = async (event) => {
+    console.log(event.target.value);
+    const selectedFIlter = event.target.value;
+    await this.setState({
+      filter: selectedFIlter,
+    });
+
+    // console.log(this.state.filter);
+    // setValue(event.target.value);
+  };
+
   render() {
     return (
-      <Container fluid className="center center mt-5 ">
-        <Row>
-          <Col className="center center mt-5 " md={{ span: 4, offset: 4 }}>
-            <FormGroup>
-              <FormControl>
-                <InputLabel id="course mb-5">Courses</InputLabel>
-                <Select
-                  ref={this.wrapper}
-                  labelId="course"
-                  id="course"
-                  value={this.state.course}
-                  onChange={this.handleChange}
-                >
-                  <MenuItem value={1}>Software Engineering I</MenuItem>
-                  <MenuItem value={2}>Software Engineering</MenuItem>
-                  <MenuItem value={3}>APA`</MenuItem>
-                  <MenuItem value={4}>Data Science</MenuItem>
-                  <MenuItem value={5}>Web Application</MenuItem>
-                </Select>
-              </FormControl>
-            </FormGroup>
+      <AuthContext.Consumer>
+        {(context) => (
+          <>
+            {context.authUser === null && <Redirect to="/login"></Redirect>}
+            <Container className="center center mt-5 ">
+              <Row>
+                <Col className="center center mt-5" md={{ span: 4, offset: 4 }}>
+                  <FormGroup>
+                    <FormControl>
+                      <InputLabel id="course mb-5">
+                        Choose the Course
+                      </InputLabel>
+                      <Select
+                        ref={this.wrapper}
+                        labelId="course"
+                        id="course"
+                        value={this.state.course}
+                        onChange={this.handleChange}
+                      >
+                        <MenuItem value={1}>Software Engineering I</MenuItem>
+                        <MenuItem value={2}>Software Engineering</MenuItem>
+                        <MenuItem value={3}>APA`</MenuItem>
+                        <MenuItem value={4}>Data Science</MenuItem>
+                        <MenuItem value={5}>Web Application</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </FormGroup>
 
-            <PieChart
-              className="mt-5 "
-              id="pie"
-              dataSource={this.state.areas}
-              palette="Bright"
-              //   title="Area of Countries"
-              //   onPointClick={this.pointClickHandler}
-              //   onLegendClick={this.legendClickHandler}
-            >
-              <Series argumentField="slice" valueField="area">
-                <Label visible={true}>
-                  <Connector visible={true} width={1} />
-                </Label>
-              </Series>
+                  <FormGroup className="mt-3  ">
+                    <FormControl>
+                      <InputLabel id="filter mb-5">Filter</InputLabel>
+                      <Select
+                        ref={this.wrapper}
+                        labelId="filter"
+                        id="filter"
+                        value={this.state.filter}
+                        onChange={this.handleFilterChange}
+                      >
+                        <MenuItem value="all">All</MenuItem>
+                        <MenuItem value="weekly">Weekly</MenuItem>
+                        <MenuItem value="monthly">Monthly</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </FormGroup>
 
-              {/* <Size width={500} />
+                  {/* <FormControl className="mt-5" component="fieldset">
+                    <FormLabel component="legend">Filters</FormLabel>
+                    <RadioGroup
+                      aria-label="gender"
+                      name="gender1"
+                      value={this.state.filter}
+                      onChange={this.handleFilterChange}
+                    >
+                      <FormControlLabel
+                        value="weekly"
+                        control={<Radio />}
+                        label="Weekly"
+                      />
+                      <FormControlLabel
+                        value="monthly"
+                        control={<Radio />}
+                        label="Monthly"
+                      />
+                    </RadioGroup>
+                  </FormControl> */}
+                  {/* <List
+                    className="mt-5"
+                    subheader={<ListSubheader>Filters</ListSubheader>}
+                  >
+                    <ListItem>
+                      <ListItemText id="Weekly" primary="Weekly Statistics" />
+                      <ListItemSecondaryAction>
+                        <Switch
+                          edge="end"
+                          onChange={this.handleToggle("weekly")}
+                          checked={this.state.checked.indexOf("weekly") !== -1}
+                          inputProps={{
+                            "aria-labelledby": "switch-list-label-wifi",
+                          }}
+                        />
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText id="Monthly" primary="Monthly Statistics" />
+                      <ListItemSecondaryAction>
+                        <Switch
+                          edge="end"
+                          onChange={this.handleToggle("Monthly")}
+                          checked={this.state.checked.indexOf("Monthly") !== -1}
+                          inputProps={{
+                            "aria-labelledby": "switch-list-label-bluetooth",
+                          }}
+                        />
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  </List> */}
+                </Col>
+              </Row>
+              <Row>
+                <Col className="mt-5">
+                  {this.state.filter === "all" && (
+                    <PieChart
+                      className="mt-3 "
+                      id="pie"
+                      dataSource={this.state.areas}
+                      palette="Bright"
+                      //   title="Area of Countries"
+                      //   onPointClick={this.pointClickHandler}
+                      //   onLegendClick={this.legendClickHandler}
+                    >
+                      <Series argumentField="slice" valueField="area">
+                        <Label visible={true}>
+                          <Connector visible={true} width={1} />
+                        </Label>
+                      </Series>
+
+                      {/* <Size width={500} />
               <Export enabled={true} /> */}
-            </PieChart>
-          </Col>
-        </Row>
-      </Container>
+                    </PieChart>
+                  )}
+                  {this.state.filter === "weekly" && (
+                    <Chart
+                      id="chart"
+                      palette="Soft"
+                      title="Weekly Statistics"
+                      dataSource={dataSource}
+                    >
+                      <CommonSeriesSettings
+                        argumentField="week"
+                        type="bar"
+                        ignoreEmptyPoints={true}
+                      />
+                      <Series valueField="oil" name="Oil Production" />
+                      <Series valueField="gas" name="Gas Production" />
+                      <Series valueField="coal" name="Coal Production" />
+                      <Legend
+                        verticalAlignment="bottom"
+                        horizontalAlignment="center"
+                      />
+                      {/* <Export enabled={true} /> */}
+                    </Chart>
+                  )}
+                </Col>
+              </Row>
+            </Container>
+          </>
+        )}
+      </AuthContext.Consumer>
     );
   }
   //   pointClickHandler(e) {
