@@ -1,7 +1,7 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { useReducer } from "react";
+import React from "react";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from ".././API/API";
+import DialogAlert from "./DialogAlert"
 
 /*  listaLezione -> getLectures
     corso -> courseId
@@ -71,8 +72,10 @@ class Teacher extends React.Component {
       lecture: '',
       studtable: true,
       online: false,
+      
     };
   }
+
 
   componentDidMount(){
     this.getLectures(this.context.authUser.userId)
@@ -109,6 +112,7 @@ class Teacher extends React.Component {
 
   //delete a lecture as teacher
   deleteLecture(lectureId) {
+    console.log(lectureId);
     API.deleteLecture(lectureId)
       .then(() => {
         //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
@@ -156,7 +160,9 @@ class Teacher extends React.Component {
     .catch((errorObj) => {
       console.log("errore")
       console.log(errorObj);
-    });
+    });}
+
+   
     
     //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
   /*
@@ -168,7 +174,7 @@ class Teacher extends React.Component {
     }
     */
     
-  }
+  
 
   render() {
     const corsi = this.state.totalLectures
@@ -237,17 +243,9 @@ class Teacher extends React.Component {
                                     </Button>
                                     <Col></Col>
                                   
-
-                                  <Button
-                                    variant="danger"
-                                    className="mr-2"
-                                    
-                                    onClick={() => {
-                                      this.deleteLecture(c.lectureId);
-                                    }}
-                                  >
-                                   delete
-                                  </Button>
+                                  <DialogAlert deleteLecture={this.deleteLecture}
+                                  lectureId={c.lectureId}
+                                  onConfirm={(lectureId)=>{this.deleteLecture(lectureId)}} />
                                   
                                   </Row>
                                 </ListGroup.Item>
