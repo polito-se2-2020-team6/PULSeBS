@@ -4,9 +4,7 @@ const baseURL = "/API/REST.php/api";
 async function getAllLectures(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
-    data.getMonth() + 1
-  }-${data.getDate()}`;
+  let url = `/users/${userId}/lectures`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {

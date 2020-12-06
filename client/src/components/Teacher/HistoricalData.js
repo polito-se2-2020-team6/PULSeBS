@@ -11,10 +11,6 @@ import {
   Col,
   Container,
   Row,
-  Tabs,
-  Tab,
-  ListGroup,
-  Button,
   Table,
   Dropdown
 } from "react-bootstrap";
@@ -67,13 +63,13 @@ class HistoricalData extends React.Component {
       totalLectures: [],
       allCourses: []
     };
+    this.wrapper = React.createRef();
   }
 
   componentDidMount(){
     
     this.getLectures(this.context.authUser.userId)
     
-
   }
 
 
@@ -87,7 +83,7 @@ class HistoricalData extends React.Component {
           totalLectures: lectures.filter(l => new Date(l.startTS)<today)  || [],
         });
         
-        
+        console.log(this.state.totalLectures);
         
         const seen = new Set();
         const filteredArr = this.state.totalLectures.filter(l => {

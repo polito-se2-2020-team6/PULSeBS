@@ -3,7 +3,7 @@ import {
     Button,
     Modal
   } from "react-bootstrap";
-  import { AuthContext } from "../auth/AuthContext";
+  
 
 
 function DialogAlert(props) {
@@ -35,6 +35,6 @@ function DialogAlert(props) {
     </>
   );
   }
-  DialogAlert.contextType = AuthContext;
+
   
   export default DialogAlert;

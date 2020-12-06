@@ -74,6 +74,7 @@ class Teacher extends React.Component {
       online: false,
       
     };
+    this.wrapper = React.createRef();
   }
 
 
