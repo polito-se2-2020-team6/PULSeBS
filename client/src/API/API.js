@@ -4,7 +4,9 @@ const baseURL = "/API/REST.php/api";
 async function getAllLectures(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
+    data.getMonth() + 1
+  }-${data.getDate()}`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -35,7 +37,9 @@ async function getAllLectures(userId) {
 async function getLectures(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
+    data.getMonth() + 1
+  }-${data.getDate()}`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -261,10 +265,11 @@ async function userLogin(username, password) {
 
 //Check login **GET** /api/logged
 async function isLogged() {
-  const response = await fetch(`${baseURL}/logged`);
+  const response = await fetch(`${baseURL}/user/me`);
   const userJson = await response.json();
-  console.log(userJson.user.loggedIn);
+  // console.log(userJson.user.loggedIn);
   if (response.ok) {
+    console.log(userJson);
     return userJson;
   } else {
     let err = { status: response.status, errObj: userJson };

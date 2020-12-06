@@ -12,6 +12,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Typography,
 } from "@material-ui/core";
 import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
@@ -32,6 +33,13 @@ class UsageMonitor extends React.Component {
     // this line was added to solve the above problem.
     this.wrapper = React.createRef();
     // this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentDidMount() {
+    // just to solve the problem of refreshing the page and prevent going to the login Page
+    if (!this.props.isStillLogged) {
+      this.props.isLogged(true);
+    }
   }
 
   //   async handleChange(e) {
@@ -112,6 +120,12 @@ class UsageMonitor extends React.Component {
           <>
             {context.authUser === null && <Redirect to="/login"></Redirect>}
             <Container className="center center mt-5 ">
+              <Typography variant="h1" component="h2">
+                {/*  use ? to solve the
+                problem of having no data */}
+                Welcome Mr.{context.authUser?.lastname}
+              </Typography>
+
               <Row>
                 <Col className="center center mt-5" md={{ span: 4, offset: 4 }}>
                   <FormGroup>
