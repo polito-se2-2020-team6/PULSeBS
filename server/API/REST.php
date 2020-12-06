@@ -281,7 +281,7 @@ if (!function_exists('print_myself')) {
 		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
 
-			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE ID = :userId");
+			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
 			if (!$stmt->execute()) {
