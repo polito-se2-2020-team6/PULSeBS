@@ -207,7 +207,7 @@ class HistoricalData extends React.Component {
           
         <>
         <Container className="mt-5">
-            <Row>
+            <Row className="justify-content-md-center">
               <Col md={2}>
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -234,7 +234,7 @@ class HistoricalData extends React.Component {
               </Dropdown>
            </Col>
             </Row>
-            <Row>
+            <Row className="mt-3">
               <Col><h2 className="text-center">Table Data</h2></Col>
             </Row>
             <Table striped bordered hover size="sm" className="mt-2">

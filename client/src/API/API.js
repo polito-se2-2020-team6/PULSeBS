@@ -104,7 +104,13 @@ async function getLecturesStartDate(userId) {
 
 //API for stats
 async function getStats(idLecture, idCourse, period, week, month, year) {
-  let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
+  let l=idLecture?`lecture=${idLecture}&`:"";
+  let c=idCourse?`course=${idCourse}&`:"";
+  let w=week?`week=${week}&`:"";
+  let m=month?`month=${month}&`:"";
+
+  let url = "/stats?" + l + c + `period=${period}&` + w + m + `year=${year}`;
+
   console.log(url);
   const response = await fetch(baseURL + url);
   const stats = await response.json();
