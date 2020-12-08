@@ -19,7 +19,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
 import { AuthContext } from "../auth/AuthContext";
 import { Redirect } from "react-router-dom";
-import { dataSource } from "../data/fakeUsers";
+
 class UsageMonitor extends React.Component {
   constructor(props) {
     super(props);
@@ -144,61 +144,19 @@ class UsageMonitor extends React.Component {
             this.setState({
               weekly,
             });
-            // console.log(weekly);
-            // let weekly = { ...this.state.weekly };
-            // weekly[this.state.weekNo] = weeklyDataSource;
 
-            // this.setState({
-            //   weekly: { ...weekly },
-            // week: this.state.week + 1,
-            // });
-
-            // console.log(this.state.weeklyStatistics);
-            // const weeklyDataSource = [
-            //   {
-            //     week: this.state.weekNo,
-            //     totalBookings: this.state.weeklyStatistics.totalBookings,
-            //     totalCancellations: this.state.weeklyStatistics.totalCancellations,
-            //     totalAttendances: this.state.weeklyStatistics.totalAttendances,
-            //   },
-            // ];
-            console.log(this.state.weekly);
+            // console.log(this.state.weekly);
             this.setState({
               weeklyDataSource: this.state.weekly,
             });
           }
         );
       }
-      // this.showOnGraph();
     }
     this.setState({
       weekly: [],
     });
-    // console.log(this.state.filter);
-    // setValue(event.target.value);
   };
-
-  // showOnGraph = () => {
-  //   console.log(this.state.weekly);
-  // for (const key in this.state.weekly) {
-  //   if (this.state.weekly.hasOwnProperty(key)) {
-  //     const slots = this.state.weekly[key];
-  //     for (let index = 0; index < slots.length; index++) {
-  //       const slot = slots[index];
-
-  //       const weeklyDataSource = [
-  //         {
-  //           week: slot.week,
-  //           totalBookings: slot.totalBookings,
-  //           totalCancellations: slot.totalCancellations,
-  //           totalAttendances: slot.totalAttendances,
-  //         },
-  //       ];
-  //       console.log(weeklyDataSource);
-  //     }
-  //   }
-  // }
-  // };
 
   getWeek = () => {
     var date = new Date();
