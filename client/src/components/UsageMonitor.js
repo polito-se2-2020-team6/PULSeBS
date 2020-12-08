@@ -14,6 +14,7 @@ import {
   Select,
   Typography,
 } from "@material-ui/core";
+
 import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
 import { AuthContext } from "../auth/AuthContext";
@@ -218,6 +219,7 @@ class UsageMonitor extends React.Component {
                     </ListItem>
                   </List> */}
                 </Col>
+                <Col></Col>
               </Row>
               <Row>
                 <Col className="mt-5">
@@ -271,20 +273,6 @@ class UsageMonitor extends React.Component {
       </AuthContext.Consumer>
     );
   }
-  //   pointClickHandler(e) {
-  //     this.toggleVisibility(e.target);
-  //   }
-
-  //   legendClickHandler(e) {
-  //     let arg = e.target;
-  //     let item = e.component.getAllSeries()[0].getPointsByArg(arg)[0];
-
-  //     this.toggleVisibility(item);
-  //   }
-
-  //   toggleVisibility(item) {
-  //     item.isVisible() ? item.hide() : item.show();
-  //   }
 }
 
 export default UsageMonitor;
