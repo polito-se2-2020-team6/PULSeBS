@@ -129,7 +129,7 @@ class UsageMonitor extends React.Component {
               weeklyStatistics,
             });
 
-            console.log("dfasdf", this.state.weeklyStatistics);
+            // need to create an Array to push the data recieved from API
             const weeklyDataSource = [];
 
             weeklyDataSource.push({
@@ -139,6 +139,8 @@ class UsageMonitor extends React.Component {
                 .totalCancellations,
               totalAttendances: this.state.weeklyStatistics.totalAttendances,
             });
+            // need another array to have all info related to the entire weeks
+            // this array will pass to the chart for filling the data
             let weekly = [...this.state.weekly];
             weekly.push(...weeklyDataSource);
             this.setState({
@@ -157,7 +159,7 @@ class UsageMonitor extends React.Component {
       weekly: [],
     });
   };
-
+  // this funtion receives the date and generate the week of the given date
   getWeek = () => {
     var date = new Date();
     date.setHours(0, 0, 0, 0);
