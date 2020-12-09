@@ -51,10 +51,10 @@ Requires login
     - firstname: string
     - lastname: string
 
-# All lectures of a user
-Requires login as student or teacher
+# All lectures of a student
+Requires login as student
 
-- **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
+- **GET** /api/users/{studentId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
   - *request params*
     - empty
   - *response body*
@@ -72,6 +72,50 @@ Requires login as student or teacher
       - totalSeats: int
       - bookedSelf: bool
       - inWaitingList: bool
+
+# All lectures of a teacher
+Requires login teacher
+
+- **GET** /api/users/{teacherId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
+  - *request params*
+    - empty
+  - *response body*
+    - success: bool
+    - lectures: [object]
+      - lectureId: int
+      - courseId: int
+      - courseName: string
+      - startTS: int *(GMT timezone)*
+      - endTS: int *(GMT timezone)*
+      - online: bool
+      - teacherName: string
+      - roomName: string
+      - bookedSeats: int
+      - waitingUsers: int
+      - totalSeats: int
+
+
+# All lectures of a booking manager
+Requires login as booking manager
+
+- **GET** /api/users/{studentId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
+  - *request params*
+    - empty
+  - *response body*
+    - success: bool
+    - lectures: [object]
+      - lectureId: int
+      - courseId: int
+      - courseName: string
+      - startTS: int *(GMT timezone)*
+      - endTS: int *(GMT timezone)*
+      - online: bool
+      - teacherName: string
+      - roomName: string
+      - bookedSeats: int
+      - waitingUsers: int
+      - cancelledBookings: int
+      - totalSeats: int
 
 # Book a lecture
 Requires login as student
