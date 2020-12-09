@@ -19,7 +19,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
 import { AuthContext } from "../auth/AuthContext";
 import { Redirect } from "react-router-dom";
-import { dataSource } from "../data/fakeUsers";
+
 class UsageMonitor extends React.Component {
   constructor(props) {
     super(props);
@@ -28,6 +28,10 @@ class UsageMonitor extends React.Component {
       statistics: [],
       areas: [],
       filter: "",
+      weeklyStatistics: [],
+      weekNo: "",
+      weeklyDataSource: [],
+      weekly: [],
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -56,12 +60,15 @@ class UsageMonitor extends React.Component {
   // ----------------------------------------------------------------------
   // imp TIP and USEFUL, add async and await to handle delay of setting the state
   handleChange = async (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     const course = e.target.value;
     await this.setState({
       course: course,
     });
     this.getStatesBookManager();
+    this.setState({
+      filter: [],
+    });
   };
   getStatesBookManager = async () => {
     await API.getStatesBookManager(this.state.course).then((statistics) => {
@@ -104,14 +111,72 @@ class UsageMonitor extends React.Component {
   // };
 
   handleFilterChange = async (event) => {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     const selectedFIlter = event.target.value;
     await this.setState({
       filter: selectedFIlter,
     });
 
-    // console.log(this.state.filter);
-    // setValue(event.target.value);
+    if (this.state.filter === "weekly") {
+      for (let i = 0; i < 6; i++) {
+        const weekNo = (this.getWeek() - 6 + i) % 52;
+        this.setState({
+          weekNo,
+        });
+        await API.getStatesWeekly(this.state.course, this.state.weekNo).then(
+          (weeklyStatistics) => {
+            this.setState({
+              weeklyStatistics,
+            });
+
+            // need to create an Array to push the data recieved from API
+            const weeklyDataSource = [];
+
+            weeklyDataSource.push({
+              week: this.state.weekNo,
+              totalBookings: this.state.weeklyStatistics.totalBookings,
+              totalCancellations: this.state.weeklyStatistics
+                .totalCancellations,
+              totalAttendances: this.state.weeklyStatistics.totalAttendances,
+            });
+            // need another array to have all info related to the entire weeks
+            // this array will pass to the chart for filling the data
+            let weekly = [...this.state.weekly];
+            weekly.push(...weeklyDataSource);
+            this.setState({
+              weekly,
+            });
+
+            // console.log(this.state.weekly);
+            this.setState({
+              weeklyDataSource: this.state.weekly,
+            });
+          }
+        );
+      }
+    }
+    this.setState({
+      weekly: [],
+    });
+  };
+  // this funtion receives the date and generate the week of the given date
+  getWeek = () => {
+    var date = new Date();
+    date.setHours(0, 0, 0, 0);
+    // Thursday in current week decides the year.
+    date.setDate(date.getDate() + 3 - ((date.getDay() + 6) % 7));
+    // January 4 is always in week 1.
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+    return (
+      1 +
+      Math.round(
+        ((date.getTime() - week1.getTime()) / 86400000 -
+          3 +
+          ((week1.getDay() + 6) % 7)) /
+          7
+      )
+    );
   };
 
   render() {
@@ -248,16 +313,25 @@ class UsageMonitor extends React.Component {
                       id="chart"
                       palette="Soft"
                       title="Weekly Statistics"
-                      dataSource={dataSource}
+                      dataSource={this.state.weeklyDataSource}
                     >
                       <CommonSeriesSettings
                         argumentField="week"
                         type="bar"
                         ignoreEmptyPoints={true}
                       />
-                      <Series valueField="oil" name="Oil Production" />
-                      <Series valueField="gas" name="Gas Production" />
-                      <Series valueField="coal" name="Coal Production" />
+                      <Series
+                        valueField="totalBookings"
+                        name="Total Bookings"
+                      />
+                      <Series
+                        valueField="totalCancellations"
+                        name="Total Cancellations"
+                      />
+                      <Series
+                        valueField="totalAttendances"
+                        name="Total Attendances"
+                      />
                       <Legend
                         verticalAlignment="bottom"
                         horizontalAlignment="center"
