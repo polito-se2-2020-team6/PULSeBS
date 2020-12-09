@@ -2,6 +2,7 @@
 // scompare la tab
 
 import React from "react";
+import moment from "moment";
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -96,13 +97,13 @@ class Teacher extends React.Component {
       });
   };
 
-  getStudentsBooked(lectureId) {
+  getStudentsBooked(lectureId, online) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
         console.log("studenti")
           console.log(students);
         this.setState({
-          students: students.students || [],
+          students: students.students || [],online: online
         });
       })
       .catch((errorObj) => {
@@ -229,22 +230,26 @@ class Teacher extends React.Component {
                                       lecture: c.lectureId,
                                       studtable: true,
                                     });
-                                    this.getStudentsBooked(c.lectureId);
+                                    this.getStudentsBooked(c.lectureId,c.online);
                                   }}
                                 >
                                   <Row>
-                                <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
-                                    <Button type="button" variant="outline-secondary" onClick={() => {
-                                      this.turnLecture(c.lectureId,c.online); 
-                                    }}>
-
-                                      {/*controllo va fatto su c.online*/}
-                                      
-                                      turn to {c.online? "presence": "online"}
-                                    </Button>
+                                <Col md={2}>{moment(c.startTS).format("DD/MM/YYYY HH:mm")}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                {   c.online? <></> :
+                                  <DialogAlert 
+                                  dialog={"turn"}
+                                  courseName={C_Id}
+                                  startTs={c.startTS}
+                                  lectureId={c.lectureId}
+                                  onConfirm={(lectureId)=>{this.turnLecture(lectureId)}} />
+                                    }
                                     <Col></Col>
                                   
-                                  <DialogAlert deleteLecture={this.deleteLecture}
+                                  <DialogAlert 
+                                  dialog={"delete"}
+                                  courseName={C_Id}
+                                  startTs={c.startTS}
+                                  deleteLecture={this.deleteLecture}
                                   lectureId={c.lectureId}
                                   onConfirm={(lectureId)=>{this.deleteLecture(lectureId)}} />
                                   
@@ -259,34 +264,26 @@ class Teacher extends React.Component {
                       <Col md={4}>
                       {this.state.studtable?
                         <ListGroup as="ul" className="mt-2">
-                          <ListGroup.Item as="li" active>
-                            <h3>students booked</h3>
-                          </ListGroup.Item>
-                          
-                          
-                            {this.state.students.length?
+                            {(this.state.students.length&&!this.state.online)?
+
+                                    <><ListGroup.Item as="li" active>
+                                    <h3>students booked</h3>
+                                  </ListGroup.Item>
                                     <ListGroup.Item ><h5>number of students:
                                           {" "}{this.state.students.length}</h5>
-                                      </ListGroup.Item>:
-                                      <></>
-                            }
-                            {this.state.students?.map((s) => (
+                                      </ListGroup.Item>
+                                      {this.state.students?.map((s) => (
                               <ListGroup.Item as="li" key={s}>
                                 {"S"+s.studentId + " - " +s.studentName}
                               </ListGroup.Item>
                             ))}
-                          
-
-
-
-                        </ListGroup>:
-                        <ListGroup>
-                          <ListGroup.Item as="li" active>
-                            <h3>students booked</h3>
-                          </ListGroup.Item>
-                      </ListGroup>
+                                      </>:
+                                      <></>
+                            }
+                            
+                          </ListGroup>:
+                        <></>
                         }
-                        
                       </Col>
                     </Row>
                   </Tab>
