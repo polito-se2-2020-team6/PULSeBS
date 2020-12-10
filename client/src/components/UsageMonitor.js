@@ -11,6 +11,8 @@ import {
   Legend,
   Export,
   ArgumentAxis,
+  Tick,
+  ValueAxis,
 } from "devextreme-react/chart";
 import {
   FormControl,
@@ -25,6 +27,9 @@ import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
 import { AuthContext } from "../auth/AuthContext";
 import { Redirect } from "react-router-dom";
+import { dataSource } from "../data/fakeUsers";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 class UsageMonitor extends React.Component {
   constructor(props) {
@@ -32,12 +37,17 @@ class UsageMonitor extends React.Component {
     this.state = {
       course: "",
       statistics: [],
+      monthlyStats: [],
+      mDataSource: [],
       areas: [],
       filter: "",
       weeklyStatistics: [],
       weekNo: "",
       weeklyDataSource: [],
       weekly: [],
+      startDate: new Date(),
+      month: "",
+      year: "",
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -73,7 +83,7 @@ class UsageMonitor extends React.Component {
     });
     this.getStatesBookManager();
     this.setState({
-      filter: [],
+      filter: "",
     });
   };
   getStatesBookManager = async () => {
@@ -194,6 +204,56 @@ class UsageMonitor extends React.Component {
     else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
     return ISOweekStart;
   };
+
+  async setStartDate(date) {
+    await this.setState({
+      startDate: date,
+    });
+    await this.setState({
+      year: this.state.startDate.getFullYear(),
+      month: this.state.startDate.getMonth(),
+    });
+    console.log(this.state.startDate);
+    await API.getStatesMonthly(
+      this.state.course,
+      this.state.month,
+      this.state.year
+    ).then((monthlyStats) => {
+      this.setState({
+        monthlyStats,
+      });
+      console.log(this.state.monthlyStats);
+      const monthData = [
+        {
+          mStat: "Bookings Average",
+          mValue: this.state.monthlyStats.bookingsAvg,
+        },
+        {
+          mStat: "Total Bookings",
+          mValue: this.state.monthlyStats.totalBookings,
+        },
+        {
+          mStat: "Cancellations Average",
+          mValue: this.state.monthlyStats.cancellationsAvg,
+        },
+        {
+          mStat: "Total Attendances",
+          mValue: this.state.monthlyStats.totalAttendances,
+        },
+        {
+          mStat: "Total Cancellations",
+          mValue: this.state.monthlyStats.totalCancellations,
+        },
+        {
+          mStat: "Number of Lectures",
+          mValue: this.state.monthlyStats.nLectures,
+        },
+      ];
+      this.setState({
+        mDataSource: monthData,
+      });
+    });
+  }
 
   render() {
     return (
@@ -321,7 +381,7 @@ class UsageMonitor extends React.Component {
                       </Series>
 
                       {/* <Size width={500} />
-              <Export enabled={true} /> */}
+                    <Export enabled={true} /> */}
                     </PieChart>
                   )}
                   {this.state.filter === "weekly" && (
@@ -365,6 +425,46 @@ class UsageMonitor extends React.Component {
                       />
                       {/* <Export enabled={true} /> */}
                     </Chart>
+                  )}
+                  {this.state.filter === "monthly" && (
+                    <>
+                      <DatePicker
+                        selected={this.state.startDate}
+                        onChange={(date) => this.setStartDate(date)}
+                        dateFormat="MM/yyyy"
+                        showMonthYearPicker
+                        inline // for showing the specific calendar
+                      />
+
+                      <Chart
+                        title="Monthly Statistics"
+                        dataSource={this.state.mDataSource}
+                        rotated={true}
+                        id="chart"
+                      >
+                        <ArgumentAxis>
+                          <Label customizeText={this.customizeText} />
+                        </ArgumentAxis>
+
+                        <ValueAxis>
+                          <Tick visible={false} />
+                          <Label visible={false} />
+                        </ValueAxis>
+
+                        <Series
+                          valueField="mValue"
+                          argumentField="mStat"
+                          type="bar"
+                          color="#79cac4"
+                        >
+                          <Label visible={true} backgroundColor="#c18e92" />
+                        </Series>
+
+                        <Legend visible={false} />
+
+                        {/* <Export enabled={true} /> */}
+                      </Chart>
+                    </>
                   )}
                 </Col>
               </Row>

@@ -402,6 +402,20 @@ async function getStatesWeekly(idCourse, WeekNo) {
   }
 }
 
+async function getStatesMonthly(idCourse, MonthNo, year) {
+  // const year = new Date().getFullYear();
+  let url = `/stats?course=${idCourse}&period=month&month=${MonthNo}&year=${year}`;
+  // console.log(url);
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
 const API = {
   getLectures,
   userLogin,
@@ -418,5 +432,6 @@ const API = {
   getAllLectures,
   getStatesBookManager,
   getStatesWeekly,
+  getStatesMonthly,
 };
 export default API;
