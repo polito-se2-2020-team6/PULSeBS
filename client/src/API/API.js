@@ -105,9 +105,9 @@ async function getLecturesStartDate(userId) {
 //API for stats
 async function getStats(idLecture, idCourse, period, week, month, year) {
   let l=idLecture?`lecture=${idLecture}&`:"";
-  let c=idCourse?`course=${idCourse}&`:"";
-  let w=week?`week=${week}&`:"";
-  let m=month?`month=${month}&`:"";
+  let c=idCourse||idCourse===0?`course=${idCourse}&`:"";
+  let w=week||week===0?`week=${week}&`:"";
+  let m=month||month===0?`month=${month}&`:"";
 
   let url = "/stats?" + l + c + `period=${period}&` + w + m + `year=${year}`;
 

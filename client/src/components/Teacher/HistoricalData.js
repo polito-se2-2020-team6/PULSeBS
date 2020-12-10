@@ -61,13 +61,15 @@ class HistoricalData extends React.Component {
       prova: 'defaaalt',
       dataState : {},
       totalLectures: [],
-      allCourses: []
+      allCourses: [],
+      offset: 1,
     };
     this.wrapper = React.createRef();
   }
 
   componentDidMount(){
-    
+    console.log("Modulo")
+    console.log(Math.floor((-10)/12))
     this.getLectures(this.context.authUser.userId)
     
   }
@@ -129,7 +131,7 @@ class HistoricalData extends React.Component {
         console.log(week);
         console.log(idLecture);
         data.labels[i]=0;
-        data.labels[i]= month || week || idLecture;
+        data.labels[i]= months[month] || week || idLecture;
         console.log(data.labels[i]);
         data.datasets[0].data[i]=s.bookingsAvg;
         //console.log("stampe")
@@ -191,12 +193,18 @@ class HistoricalData extends React.Component {
       }
     }else if (text === 'Week'){
       for(i=0;i<10;i++){
-                this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', (this.getWeek()-10+i)%52, '', date.getFullYear(), i, data, tableData) 
+        console.log("dentro")
+        let week= ((this.getWeek()-10*this.state.offset+i)%52+52)%52; 
+        let year=date.getFullYear() - Math.abs(Math.floor( (this.getWeek()-10*this.state.offset+i)/52) );
+                this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', week, '', year, i, data, tableData) 
             }
     }else if (text === 'Month'){
       var tableData = [];
       for(i=0;i<10;i++){
-         this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'month', '', (date.getMonth()-10+i)%12, date.getFullYear(), i, data, tableData)
+        //testare modulo -30
+        let month= ((date.getMonth()-10*this.state.offset+i)%12+12)%12; 
+        let year=date.getFullYear() - Math.abs(Math.floor( (date.getMonth()-10*this.state.offset+i)/12) );
+         this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'month', '',month , year, i, data, tableData)
       }  
     }
     
