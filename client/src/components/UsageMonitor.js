@@ -1,10 +1,16 @@
 import React from "react";
-import PieChart, { Series, Label, Connector } from "devextreme-react/pie-chart";
+import PieChart, {
+  Series,
+  Label,
+  Connector,
+  LoadingIndicator,
+} from "devextreme-react/pie-chart";
 import {
   Chart,
   CommonSeriesSettings,
   Legend,
   Export,
+  ArgumentAxis,
 } from "devextreme-react/chart";
 import {
   FormControl,
@@ -118,8 +124,8 @@ class UsageMonitor extends React.Component {
     });
 
     if (this.state.filter === "weekly") {
-      for (let i = 0; i < 6; i++) {
-        const weekNo = (this.getWeek() - 6 + i) % 52;
+      for (let i = 0; i < 10; i++) {
+        const weekNo = (this.getWeek() - 10 + i) % 52;
         this.setState({
           weekNo,
         });
@@ -133,7 +139,7 @@ class UsageMonitor extends React.Component {
             const weeklyDataSource = [];
 
             weeklyDataSource.push({
-              week: this.state.weekNo,
+              week: this.getDateOfISOWeek(this.state.weekNo, 2020),
               totalBookings: this.state.weeklyStatistics.totalBookings,
               totalCancellations: this.state.weeklyStatistics
                 .totalCancellations,
@@ -143,6 +149,7 @@ class UsageMonitor extends React.Component {
             // this array will pass to the chart for filling the data
             let weekly = [...this.state.weekly];
             weekly.push(...weeklyDataSource);
+            console.log(this.state.weekly);
             this.setState({
               weekly,
             });
@@ -177,6 +184,15 @@ class UsageMonitor extends React.Component {
           7
       )
     );
+  };
+
+  getDateOfISOWeek = (w, y) => {
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    return ISOweekStart;
   };
 
   render() {
@@ -315,7 +331,18 @@ class UsageMonitor extends React.Component {
                       title="Weekly Statistics"
                       dataSource={this.state.weeklyDataSource}
                     >
+                      <LoadingIndicator enabled={true} />
+                      <ArgumentAxis>
+                        <Label
+                          displayMode="rotate"
+                          format="yyyy-MM-dd"
+                          rotationAngle="65"
+                          // alignment="right"
+                        />
+                      </ArgumentAxis>
+
                       <CommonSeriesSettings
+                        barPadding={0.005}
                         argumentField="week"
                         type="bar"
                         ignoreEmptyPoints={true}
