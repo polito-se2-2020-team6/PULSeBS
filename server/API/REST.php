@@ -3,6 +3,7 @@ require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 require_once "./StatsBookings.php";
+require_once "./UploadCourses.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -16,6 +17,7 @@ define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 define("USER_TYPE_STUDENT", 0);
 define("USER_TYPE_TEACHER", 1);
 define("USER_TYPE_BOOK_MNGR", 2);
+define("USER_TYPE_SPRT_OFCR", 3);
 
 define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
@@ -564,12 +566,12 @@ if (!function_exists('book_lecture')) {
 			$in_wait_list = check_user_in_waiting_list($lectureId);
 			//I send a confirmation email
 			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
-			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .".". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
+			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] . "." . ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
 			$mail_result = @mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
 				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
 			} else {
-				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, ));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result,));
 			}
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
@@ -726,6 +728,9 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 
 	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
+
+
+	$r->addRoute('POST', API_PATH . '/courses/upload', ['upload_courses', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
