@@ -286,7 +286,7 @@ class UsageMonitor extends React.Component {
           <>
             {context.authUser === null && <Redirect to="/login"></Redirect>}
             <Container className="center center mt-5 ">
-              <Typography variant="h1" component="h2">
+              <Typography variant="h1" component="h2" id="welcomeText">
                 {/*  use ? to solve the
                 problem of having no data */}
                 Welcome Mr.{context.authUser?.lastname}
@@ -388,6 +388,7 @@ class UsageMonitor extends React.Component {
                     <FormGroup className="mt-5">
                       <FormControl>
                         <DatePicker
+                          id="monthDatePicker"
                           selected={this.state.startDate}
                           onChange={(date) => this.setStartDate(date)}
                           dateFormat="MM/yyyy"
@@ -424,7 +425,7 @@ class UsageMonitor extends React.Component {
                   )}
                   {this.state.filter === "weekly" && (
                     <Chart
-                      id="chart"
+                      id="weeklyChart"
                       palette="Soft"
                       title="Weekly Statistics"
                       dataSource={this.state.weeklyDataSource}
@@ -464,6 +465,7 @@ class UsageMonitor extends React.Component {
                       {/* <Export enabled={true} /> */}
                     </Chart>
                   )}
+                  {/* the below item should be visible once the week and year from Datepicker is selected */}
                   {this.state.isSelected === true && (
                     <>
                       {/* <DatePicker
@@ -478,7 +480,7 @@ class UsageMonitor extends React.Component {
                         title="Monthly Statistics"
                         dataSource={this.state.mDataSource}
                         rotated={true}
-                        id="chart"
+                        id="monthlyChart"
                       >
                         <ArgumentAxis>
                           <Label customizeText={this.customizeText} />
