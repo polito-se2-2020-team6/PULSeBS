@@ -9,7 +9,6 @@ import {
   Chart,
   CommonSeriesSettings,
   Legend,
-  Export,
   ArgumentAxis,
   Tick,
   ValueAxis,
@@ -27,7 +26,6 @@ import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
 import { AuthContext } from "../auth/AuthContext";
 import { Redirect } from "react-router-dom";
-import { dataSource } from "../data/fakeUsers";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -48,6 +46,7 @@ class UsageMonitor extends React.Component {
       startDate: new Date(),
       month: "",
       year: "",
+      isSelected: false,
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -80,6 +79,7 @@ class UsageMonitor extends React.Component {
     const course = e.target.value;
     await this.setState({
       course: course,
+      isSelected: false,
     });
     this.getStatesBookManager();
     this.setState({
@@ -97,12 +97,24 @@ class UsageMonitor extends React.Component {
           area: this.state.statistics.totalBookings,
         },
         {
+          slice: "Total Attendances",
+          area: this.state.statistics.totalAttendances,
+        },
+        {
           slice: "Total Cancellations",
           area: this.state.statistics.totalCancellations,
         },
         {
-          slice: "Total Attendances",
-          area: this.state.statistics.totalAttendances,
+          slice: "BookingsSD",
+          area: this.state.statistics.bookingsStdDev,
+        },
+        {
+          slice: "AttendancesSD",
+          area: this.state.statistics.attendancesStdDev,
+        },
+        {
+          slice: "CancellationsSD",
+          area: this.state.statistics.cancellationsStdDev,
         },
       ];
       this.setState({
@@ -127,17 +139,24 @@ class UsageMonitor extends React.Component {
   // };
 
   handleFilterChange = async (event) => {
-    // console.log(event.target.value);
+    console.log(event.target.value);
     const selectedFIlter = event.target.value;
     await this.setState({
       filter: selectedFIlter,
+      isSelected: false,
     });
+    // this should be called when the user select nothing form the courses seection
+    // in this way it shows all statistics for all courses
+    if (this.state.filter === "all") {
+      this.getStatesBookManager();
+    }
 
     if (this.state.filter === "weekly") {
       for (let i = 0; i < 10; i++) {
         const weekNo = (this.getWeek() - 10 + i) % 52;
         this.setState({
           weekNo,
+          // isSelected: false,
         });
         await API.getStatesWeekly(this.state.course, this.state.weekNo).then(
           (weeklyStatistics) => {
@@ -208,6 +227,7 @@ class UsageMonitor extends React.Component {
   async setStartDate(date) {
     await this.setState({
       startDate: date,
+      isSelected: true,
     });
     await this.setState({
       year: this.state.startDate.getFullYear(),
@@ -225,16 +245,8 @@ class UsageMonitor extends React.Component {
       console.log(this.state.monthlyStats);
       const monthData = [
         {
-          mStat: "Bookings Average",
-          mValue: this.state.monthlyStats.bookingsAvg,
-        },
-        {
           mStat: "Total Bookings",
           mValue: this.state.monthlyStats.totalBookings,
-        },
-        {
-          mStat: "Cancellations Average",
-          mValue: this.state.monthlyStats.cancellationsAvg,
         },
         {
           mStat: "Total Attendances",
@@ -243,6 +255,18 @@ class UsageMonitor extends React.Component {
         {
           mStat: "Total Cancellations",
           mValue: this.state.monthlyStats.totalCancellations,
+        },
+        {
+          mStat: "Bookings Average",
+          mValue: this.state.monthlyStats.bookingsAvg,
+        },
+        {
+          mStat: "Cancellations Average",
+          mValue: this.state.monthlyStats.cancellationsAvg,
+        },
+        {
+          mStat: "Attendances Average",
+          mValue: this.state.monthlyStats.attendancesAvg,
         },
         {
           mStat: "Number of Lectures",
@@ -282,6 +306,7 @@ class UsageMonitor extends React.Component {
                         value={this.state.course}
                         onChange={this.handleChange}
                       >
+                        <MenuItem value={0}>ALL Courses</MenuItem>
                         <MenuItem value={1}>Software Engineering I</MenuItem>
                         <MenuItem value={2}>Software Engineering</MenuItem>
                         <MenuItem value={3}>APA`</MenuItem>
@@ -301,9 +326,9 @@ class UsageMonitor extends React.Component {
                         value={this.state.filter}
                         onChange={this.handleFilterChange}
                       >
-                        <MenuItem value="all">All</MenuItem>
-                        <MenuItem value="weekly">Weekly</MenuItem>
-                        <MenuItem value="monthly">Monthly</MenuItem>
+                        <MenuItem value="all">Total Statistics</MenuItem>
+                        <MenuItem value="weekly">Weekly Statistics</MenuItem>
+                        <MenuItem value="monthly">Monthly Statistics</MenuItem>
                       </Select>
                     </FormControl>
                   </FormGroup>
@@ -359,13 +384,26 @@ class UsageMonitor extends React.Component {
                       </ListItemSecondaryAction>
                     </ListItem>
                   </List> */}
+                  {this.state.filter === "monthly" && (
+                    <FormGroup className="mt-5">
+                      <FormControl>
+                        <DatePicker
+                          selected={this.state.startDate}
+                          onChange={(date) => this.setStartDate(date)}
+                          dateFormat="MM/yyyy"
+                          showMonthYearPicker
+                          inline // for showing the specific calendar
+                        />
+                      </FormControl>
+                    </FormGroup>
+                  )}
                 </Col>
-                <Col></Col>
               </Row>
               <Row>
                 <Col className="mt-5">
                   {this.state.filter === "all" && (
                     <PieChart
+                      title="Total Statistics"
                       className="mt-3 "
                       id="pie"
                       dataSource={this.state.areas}
@@ -426,15 +464,15 @@ class UsageMonitor extends React.Component {
                       {/* <Export enabled={true} /> */}
                     </Chart>
                   )}
-                  {this.state.filter === "monthly" && (
+                  {this.state.isSelected === true && (
                     <>
-                      <DatePicker
+                      {/* <DatePicker
                         selected={this.state.startDate}
                         onChange={(date) => this.setStartDate(date)}
                         dateFormat="MM/yyyy"
                         showMonthYearPicker
                         inline // for showing the specific calendar
-                      />
+                      /> */}
 
                       <Chart
                         title="Monthly Statistics"
