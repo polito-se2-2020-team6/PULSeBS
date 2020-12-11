@@ -3,6 +3,7 @@
 
 import React from "react";
 import moment from "moment";
+import Pagination from 'react-bootstrap/Pagination'
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -60,6 +61,7 @@ var listaLezioni = [
     studenti: new Array("ludo", "carlo", "max"),
   },
 ]; */
+const view = 5; //number of lectures per pagination
 
 class Teacher extends React.Component {
   constructor(props) {
@@ -73,6 +75,7 @@ class Teacher extends React.Component {
       lecture: '',
       studtable: true,
       online: false,
+      range: 1,
       
     };
     this.wrapper = React.createRef();
@@ -175,7 +178,19 @@ class Teacher extends React.Component {
       this.setState({online: true});
     }
     */
-    
+   changeRange(x){
+     console.log(x);
+     var range=this.state.range; //range va da 1 a x in base a quanto seleziono  1->0-9     2->10-19   ecc
+     var lung= this.state.totalLectures.length;
+     if(x<0){
+       (this.state.range-1)>0 ? range-- : console.log("non posso -1")   
+     }
+     else if(x>0){
+      (this.state.range+1)<(Math.ceil(lung/view)) ? range++ : console.log("non posso")   
+    }
+    console.log(range);
+     this.setState({range: range});
+   }
   
 
   render() {
@@ -200,13 +215,21 @@ class Teacher extends React.Component {
               <Tabs
                 defaultActiveKey={this.state.totalLectures[0]?.courseId}
                 id="noanim-tab-example"
-                onSelect={() => this.clearStudentTable()}
+                onSelect={() => {this.clearStudentTable();this.selectLectures();}}
               >
                 {corsi?.map((C_Id) => (
                   <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
                     <Row className="mt-5 ">
                       <Col md={1}></Col>
                       <Col md={5}>
+                      <Pagination>
+                      
+                      <Pagination.Prev onClick={() => this.changeRange(-1)} />
+                      <Pagination.Item>{this.state.range}</Pagination.Item>
+                      
+                      <Pagination.Next onClick={() => this.changeRange(+1)}/>
+
+                    </Pagination>
                         <Tab.Container id="list-group-tabs-example">
                           <ListGroup className="mt-2">
                             <ListGroup.Item as="li" active>
@@ -215,6 +238,7 @@ class Teacher extends React.Component {
 
                             {this.state.totalLectures
                               .filter((l) => l.courseName === C_Id)
+                              ?.slice(this.state.range*view,this.state.range*view+view)
                               ?.map((c) => (
                                 <ListGroup.Item
                                   action
