@@ -1,10 +1,17 @@
 import React from "react";
-import PieChart, { Series, Label, Connector } from "devextreme-react/pie-chart";
+import PieChart, {
+  Series,
+  Label,
+  Connector,
+  LoadingIndicator,
+} from "devextreme-react/pie-chart";
 import {
   Chart,
   CommonSeriesSettings,
   Legend,
-  Export,
+  ArgumentAxis,
+  Tick,
+  ValueAxis,
 } from "devextreme-react/chart";
 import {
   FormControl,
@@ -19,6 +26,8 @@ import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
 import { AuthContext } from "../auth/AuthContext";
 import { Redirect } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 class UsageMonitor extends React.Component {
   constructor(props) {
@@ -26,12 +35,18 @@ class UsageMonitor extends React.Component {
     this.state = {
       course: "",
       statistics: [],
+      monthlyStats: [],
+      mDataSource: [],
       areas: [],
       filter: "",
       weeklyStatistics: [],
       weekNo: "",
       weeklyDataSource: [],
       weekly: [],
+      startDate: new Date(),
+      month: "",
+      year: "",
+      isSelected: false,
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -64,10 +79,11 @@ class UsageMonitor extends React.Component {
     const course = e.target.value;
     await this.setState({
       course: course,
+      isSelected: false,
     });
     this.getStatesBookManager();
     this.setState({
-      filter: [],
+      filter: "",
     });
   };
   getStatesBookManager = async () => {
@@ -81,12 +97,24 @@ class UsageMonitor extends React.Component {
           area: this.state.statistics.totalBookings,
         },
         {
+          slice: "Total Attendances",
+          area: this.state.statistics.totalAttendances,
+        },
+        {
           slice: "Total Cancellations",
           area: this.state.statistics.totalCancellations,
         },
         {
-          slice: "Total Attendances",
-          area: this.state.statistics.totalAttendances,
+          slice: "BookingsSD",
+          area: this.state.statistics.bookingsStdDev,
+        },
+        {
+          slice: "AttendancesSD",
+          area: this.state.statistics.attendancesStdDev,
+        },
+        {
+          slice: "CancellationsSD",
+          area: this.state.statistics.cancellationsStdDev,
         },
       ];
       this.setState({
@@ -111,17 +139,24 @@ class UsageMonitor extends React.Component {
   // };
 
   handleFilterChange = async (event) => {
-    // console.log(event.target.value);
+    console.log(event.target.value);
     const selectedFIlter = event.target.value;
     await this.setState({
       filter: selectedFIlter,
+      isSelected: false,
     });
+    // this should be called when the user select nothing form the courses seection
+    // in this way it shows all statistics for all courses
+    if (this.state.filter === "all") {
+      this.getStatesBookManager();
+    }
 
     if (this.state.filter === "weekly") {
-      for (let i = 0; i < 6; i++) {
-        const weekNo = (this.getWeek() - 6 + i) % 52;
+      for (let i = 0; i < 10; i++) {
+        const weekNo = (this.getWeek() - 10 + i) % 52;
         this.setState({
           weekNo,
+          // isSelected: false,
         });
         await API.getStatesWeekly(this.state.course, this.state.weekNo).then(
           (weeklyStatistics) => {
@@ -133,7 +168,7 @@ class UsageMonitor extends React.Component {
             const weeklyDataSource = [];
 
             weeklyDataSource.push({
-              week: this.state.weekNo,
+              week: this.getDateOfISOWeek(this.state.weekNo, 2020),
               totalBookings: this.state.weeklyStatistics.totalBookings,
               totalCancellations: this.state.weeklyStatistics
                 .totalCancellations,
@@ -143,6 +178,7 @@ class UsageMonitor extends React.Component {
             // this array will pass to the chart for filling the data
             let weekly = [...this.state.weekly];
             weekly.push(...weeklyDataSource);
+            console.log(this.state.weekly);
             this.setState({
               weekly,
             });
@@ -179,6 +215,70 @@ class UsageMonitor extends React.Component {
     );
   };
 
+  getDateOfISOWeek = (w, y) => {
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    return ISOweekStart;
+  };
+
+  async setStartDate(date) {
+    await this.setState({
+      startDate: date,
+      isSelected: true,
+    });
+    await this.setState({
+      year: this.state.startDate.getFullYear(),
+      month: this.state.startDate.getMonth(),
+    });
+    console.log(this.state.startDate);
+    await API.getStatesMonthly(
+      this.state.course,
+      this.state.month,
+      this.state.year
+    ).then((monthlyStats) => {
+      this.setState({
+        monthlyStats,
+      });
+      console.log(this.state.monthlyStats);
+      const monthData = [
+        {
+          mStat: "Total Bookings",
+          mValue: this.state.monthlyStats.totalBookings,
+        },
+        {
+          mStat: "Total Attendances",
+          mValue: this.state.monthlyStats.totalAttendances,
+        },
+        {
+          mStat: "Total Cancellations",
+          mValue: this.state.monthlyStats.totalCancellations,
+        },
+        {
+          mStat: "Bookings Average",
+          mValue: this.state.monthlyStats.bookingsAvg,
+        },
+        {
+          mStat: "Cancellations Average",
+          mValue: this.state.monthlyStats.cancellationsAvg,
+        },
+        {
+          mStat: "Attendances Average",
+          mValue: this.state.monthlyStats.attendancesAvg,
+        },
+        {
+          mStat: "Number of Lectures",
+          mValue: this.state.monthlyStats.nLectures,
+        },
+      ];
+      this.setState({
+        mDataSource: monthData,
+      });
+    });
+  }
+
   render() {
     return (
       <AuthContext.Consumer>
@@ -206,6 +306,7 @@ class UsageMonitor extends React.Component {
                         value={this.state.course}
                         onChange={this.handleChange}
                       >
+                        <MenuItem value={0}>ALL Courses</MenuItem>
                         <MenuItem value={1}>Software Engineering I</MenuItem>
                         <MenuItem value={2}>Software Engineering</MenuItem>
                         <MenuItem value={3}>APA`</MenuItem>
@@ -225,9 +326,9 @@ class UsageMonitor extends React.Component {
                         value={this.state.filter}
                         onChange={this.handleFilterChange}
                       >
-                        <MenuItem value="all">All</MenuItem>
-                        <MenuItem value="weekly">Weekly</MenuItem>
-                        <MenuItem value="monthly">Monthly</MenuItem>
+                        <MenuItem value="all">Total Statistics</MenuItem>
+                        <MenuItem value="weekly">Weekly Statistics</MenuItem>
+                        <MenuItem value="monthly">Monthly Statistics</MenuItem>
                       </Select>
                     </FormControl>
                   </FormGroup>
@@ -283,13 +384,26 @@ class UsageMonitor extends React.Component {
                       </ListItemSecondaryAction>
                     </ListItem>
                   </List> */}
+                  {this.state.filter === "monthly" && (
+                    <FormGroup className="mt-5">
+                      <FormControl>
+                        <DatePicker
+                          selected={this.state.startDate}
+                          onChange={(date) => this.setStartDate(date)}
+                          dateFormat="MM/yyyy"
+                          showMonthYearPicker
+                          inline // for showing the specific calendar
+                        />
+                      </FormControl>
+                    </FormGroup>
+                  )}
                 </Col>
-                <Col></Col>
               </Row>
               <Row>
                 <Col className="mt-5">
                   {this.state.filter === "all" && (
                     <PieChart
+                      title="Total Statistics"
                       className="mt-3 "
                       id="pie"
                       dataSource={this.state.areas}
@@ -305,7 +419,7 @@ class UsageMonitor extends React.Component {
                       </Series>
 
                       {/* <Size width={500} />
-              <Export enabled={true} /> */}
+                    <Export enabled={true} /> */}
                     </PieChart>
                   )}
                   {this.state.filter === "weekly" && (
@@ -315,7 +429,18 @@ class UsageMonitor extends React.Component {
                       title="Weekly Statistics"
                       dataSource={this.state.weeklyDataSource}
                     >
+                      <LoadingIndicator enabled={true} />
+                      <ArgumentAxis>
+                        <Label
+                          displayMode="rotate"
+                          format="yyyy-MM-dd"
+                          rotationAngle="65"
+                          // alignment="right"
+                        />
+                      </ArgumentAxis>
+
                       <CommonSeriesSettings
+                        barPadding={0.005}
                         argumentField="week"
                         type="bar"
                         ignoreEmptyPoints={true}
@@ -338,6 +463,46 @@ class UsageMonitor extends React.Component {
                       />
                       {/* <Export enabled={true} /> */}
                     </Chart>
+                  )}
+                  {this.state.isSelected === true && (
+                    <>
+                      {/* <DatePicker
+                        selected={this.state.startDate}
+                        onChange={(date) => this.setStartDate(date)}
+                        dateFormat="MM/yyyy"
+                        showMonthYearPicker
+                        inline // for showing the specific calendar
+                      /> */}
+
+                      <Chart
+                        title="Monthly Statistics"
+                        dataSource={this.state.mDataSource}
+                        rotated={true}
+                        id="chart"
+                      >
+                        <ArgumentAxis>
+                          <Label customizeText={this.customizeText} />
+                        </ArgumentAxis>
+
+                        <ValueAxis>
+                          <Tick visible={false} />
+                          <Label visible={false} />
+                        </ValueAxis>
+
+                        <Series
+                          valueField="mValue"
+                          argumentField="mStat"
+                          type="bar"
+                          color="#79cac4"
+                        >
+                          <Label visible={true} backgroundColor="#c18e92" />
+                        </Series>
+
+                        <Legend visible={false} />
+
+                        {/* <Export enabled={true} /> */}
+                      </Chart>
+                    </>
                   )}
                 </Col>
               </Row>
