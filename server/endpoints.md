@@ -156,6 +156,15 @@ Requires login as teacher or booking manager
       - attendance statistics are not present at the moment
       - cancellation statistics are present only for a booking manager
 
+# Upload courses csv
+Require login as support officer
+
+- **POST** /api/courses/upload
+  - *request params*
+    - text: string *content of the csv file*
+  - *response body*
+    - success: bool
+
 # Error
 If an error occurs, the *response body* is
 - success: bool
