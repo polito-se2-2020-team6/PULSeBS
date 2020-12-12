@@ -128,7 +128,8 @@ function LectureData(props) {
         <td>{props.lecture.roomName}</td>
         <td>{props.lecture.bookedSeats}</td>
         <td>{props.lecture.totalSeats}</td>
-        <td>
+        
+        {props.lecture.online === false ?<td>
           {props.lecture.bookedSelf === false ? (
             <Button
               variant="outline-success"
@@ -152,7 +153,9 @@ function LectureData(props) {
               Cancel Booking
             </Button>
           )}
-        </td>
+           </td>: <td>Not Bookable</td>
+          }
+  
         <td>{props.lecture.inWaitingList === true ? "Yes" : "No"}</td>
       </>
     );

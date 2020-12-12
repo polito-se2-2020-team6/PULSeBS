@@ -178,10 +178,12 @@ class Teacher extends React.Component {
       this.setState({online: true});
     }
     */
-   changeRange(x){
+   changeRange(x,courseId){
      console.log(x);
      var range=this.state.range; //range va da 1 a x in base a quanto seleziono  1->0-9     2->10-19   ecc
-     var lung= this.state.totalLectures.length;
+     var lung= this.state.totalLectures.filter(l => l.courseName === courseId).length;
+     console.log(courseId)
+     console.log(lung)
      if(x<0){
        (this.state.range-1)>0 ? range-- : console.log("non posso -1")   
      }
@@ -215,7 +217,7 @@ class Teacher extends React.Component {
               <Tabs
                 defaultActiveKey={this.state.totalLectures[0]?.courseId}
                 id="noanim-tab-example"
-                onSelect={() => {this.clearStudentTable();this.selectLectures();}}
+                onSelect={() => {this.clearStudentTable(); this.setState({range: 1})}}
               >
                 {corsi?.map((C_Id) => (
                   <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
@@ -224,10 +226,10 @@ class Teacher extends React.Component {
                       <Col md={5}>
                       <Pagination>
                       
-                      <Pagination.Prev onClick={() => this.changeRange(-1)} />
+                      <Pagination.Prev onClick={() => this.changeRange(-1,C_Id)} />
                       <Pagination.Item>{this.state.range}</Pagination.Item>
                       
-                      <Pagination.Next onClick={() => this.changeRange(+1)}/>
+                      <Pagination.Next onClick={() => this.changeRange(+1,C_Id)}/>
 
                     </Pagination>
                         <Tab.Container id="list-group-tabs-example">
