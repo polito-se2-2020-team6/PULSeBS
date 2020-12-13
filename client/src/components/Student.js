@@ -10,6 +10,8 @@ class Student extends Component {
     this.state = {
       lectures: [],
       bookingProgres: 0,
+      distincted: [],
+      filtered:[]
     };
   }
   //let the student to book for a lecture
@@ -34,15 +36,19 @@ class Student extends Component {
   //filtering lectures
   filterLectures = (courseId) => {
     let lectures = [...this.state.lectures];
-    if (courseId === 'all') {
+    if (courseId === "all") {
+      this.setState({filtered:[]})
+      console.log(this.state.filtered)
+      console.log(this.state.lectures)
       this.componentDidMount();
+    } else {
+      let filtered = lectures.filter((cur) => {
+        return cur.courseName === courseId;
+      });
+
+      const newLectures = filtered;
+      this.setState({ filtered: newLectures });
     }
-    let filtered = lectures.filter((cur) => {
-      return cur.courseId === courseId;
-    });
-   
-    const newLectures = filtered;
-    this.setState({ lectures: newLectures});
   };
 
   //cancel booking
@@ -59,22 +65,17 @@ class Student extends Component {
   };
 
   componentDidMount() {
-    // API.isLogged()
-    //   .then((user) => {
-    //     this.setState({ authUser: user });
-    //     console.log(this.state);
-    //   })
-    //   .catch((err) => {
-    //     this.setState({ authErr: err.errorObj });
-    //   });
-
-    //getting list of all lectures
     const studentId = window.location.href.split("=")[1];
-    // const studentId = this.props.user.userId;
     API.getLectures(studentId)
       .then((lectures) => {
-        console.log(lectures);
         this.setState({ lectures: lectures });
+        let courseNames = [];
+        courseNames = lectures.map((lecture) => {
+          return lecture.courseName;
+        });
+        let unique = [...new Set(courseNames)];
+        console.log(unique);
+        this.setState({ distincted: unique });
       })
       .catch((err) => console.log(err));
   }
@@ -93,6 +94,8 @@ class Student extends Component {
                   bookSeat={this.bookSeat}
                   bookingProgres={this.state.bookingProgres}
                   cancelBooking={this.cancelBooking}
+                  distincted={this.state.distincted}
+                  filtered={this.state.filtered}
                 />
               </>
             ) : (
