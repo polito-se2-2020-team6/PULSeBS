@@ -6,6 +6,15 @@ import Dropdown from "react-bootstrap/Dropdown";
 
 class LectureList extends Component {
   state = {};
+
+  componentDidUpdate(){
+    setTimeout(()=>{
+      document.getElementById('booked').scrollIntoView({
+        behavior: 'smooth'
+      });
+    },1000)
+    
+  }
   render() {
     return (
       <Fragment>
@@ -36,7 +45,7 @@ class LectureList extends Component {
             ))}
           </DropdownButton>
           <div className="table-responsive">
-          <h2 className="mt-5 ml-">Book Lectures</h2>
+            <h2 className="mt-5 ml-">Book Lectures</h2>
             <table className="table table-hover text-center">
               <thead>
                 <tr className="">
@@ -49,27 +58,28 @@ class LectureList extends Component {
                   <th>Booked Seats</th>
                   <th>Total Seats</th>
                   <th>Status</th>
-                  <th>In Waiting List</th>
                 </tr>
               </thead>
               <tbody>
-                {this.props.lectures.map((lecture) =>
-                !lecture.bookedSelf && 
-                  (<LectureRow
-                    key={lecture.lectureId}
-                    lecture={lecture}
-                    bookSeat={this.props.bookSeat}
-                    cancelBooking={this.props.cancelBooking}
-                    //   onClick={this.props.onClick}
-                    bookingProgres={this.props.bookingProgres}
-                  />)
-                
+                {this.props.lectures.map(
+                  (lecture) =>
+                    !lecture.bookedSelf && (
+                      <LectureRow
+                        key={lecture.lectureId}
+                        lecture={lecture}
+                        bookSeat={this.props.bookSeat}
+                        cancelBooking={this.props.cancelBooking}
+                        //   onClick={this.props.onClick}
+                        show="false"
+                        bookingProgres={this.props.bookingProgres}
+                      />
+                    )
                 )}
               </tbody>
             </table>
 
             <h2 className="mt-5 ml-">Booked Lectures</h2>
-            <table className="table table-hover text-center">
+            <table id="booked" className="table table-hover text-center">
               <thead>
                 <tr className="">
                   <th>Course Name</th>
@@ -85,17 +95,19 @@ class LectureList extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.lectures.map((lecture) =>
-                lecture.bookedSelf && 
-                  (<LectureRow
-                    key={lecture.lectureId}
-                    lecture={lecture}
-                    bookSeat={this.props.bookSeat}
-                    cancelBooking={this.props.cancelBooking}
-                    //   onClick={this.props.onClick}
-                    bookingProgres={this.props.bookingProgres}
-                  />)
-                
+                {this.props.lectures.map(
+                  (lecture) =>
+                    lecture.bookedSelf && (
+                      <LectureRow
+                        key={lecture.lectureId}
+                        lecture={lecture}
+                        bookSeat={this.props.bookSeat}
+                        cancelBooking={this.props.cancelBooking}
+                        show="true"
+                        //   onClick={this.props.onClick}
+                        bookingProgres={this.props.bookingProgres}
+                      />
+                    )
                 )}
               </tbody>
             </table>
@@ -113,23 +125,26 @@ function LectureRow(props) {
         bookSeat={props.bookSeat}
         cancelBooking={props.cancelBooking}
         bookingProgres={props.bookingProgres}
+        show = {props.show}
       />
     </tr>
   );
 }
 function LectureData(props) {
-    return (
-      <>
-        <td>{props.lecture.courseName}</td>
-        <td>{props.lecture.startTS}</td>
-        <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
-        <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
-        <td>{props.lecture.teacherName}</td>
-        <td>{props.lecture.roomName}</td>
-        <td>{props.lecture.bookedSeats}</td>
-        <td>{props.lecture.totalSeats}</td>
+  return (
+    <>
+      <td>{props.lecture.courseName}</td>
+      <td>{props.lecture.startTS}</td>
+      <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
+      <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
+      <td>{props.lecture.teacherName}</td>
+      <td>{props.lecture.roomName}</td>
+      <td>{props.lecture.bookedSeats}</td>
+      <td>{props.lecture.totalSeats}</td>
+      {props.lecture.online === false ? (
         <td>
           {props.lecture.bookedSelf === false ? (
+           
             <Button
               variant="outline-success"
               onClick={() => {
@@ -142,6 +157,7 @@ function LectureData(props) {
                 "Book a Seat"
               )}
             </Button>
+            
           ) : (
             <Button
               onClick={() => {
@@ -153,9 +169,23 @@ function LectureData(props) {
             </Button>
           )}
         </td>
+      ) : (
+        <td>
+          {" "}
+          <Button variant="danger" disabled>
+            Online
+          </Button>
+        </td>
+      )}
+
+      {props.show === "false" ? (
+        ""
+      ) : (
         <td>{props.lecture.inWaitingList === true ? "Yes" : "No"}</td>
-      </>
-    );
+      )}
+    </>
+  );
 }
+
 
 export default LectureList;
