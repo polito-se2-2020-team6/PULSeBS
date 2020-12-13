@@ -5,15 +5,17 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 
 class LectureList extends Component {
-  state = {};
-
-  componentDidUpdate(){
+  state = {
+  };
+  
+  
+  scroll = ()=>{
     setTimeout(()=>{
-      document.getElementById('booked').scrollIntoView({
-        behavior: 'smooth'
-      });
-    },1000)
-    
+              document.getElementById('booked').scrollIntoView({
+                behavior: 'smooth'
+              });
+            },1500)
+         
   }
   render() {
     return (
@@ -70,6 +72,7 @@ class LectureList extends Component {
                         bookSeat={this.props.bookSeat}
                         cancelBooking={this.props.cancelBooking}
                         //   onClick={this.props.onClick}
+                        scroll={this.scroll}
                         show="false"
                         bookingProgres={this.props.bookingProgres}
                       />
@@ -104,7 +107,6 @@ class LectureList extends Component {
                         bookSeat={this.props.bookSeat}
                         cancelBooking={this.props.cancelBooking}
                         show="true"
-                        //   onClick={this.props.onClick}
                         bookingProgres={this.props.bookingProgres}
                       />
                     )
@@ -124,6 +126,7 @@ function LectureRow(props) {
         lecture={props.lecture}
         bookSeat={props.bookSeat}
         cancelBooking={props.cancelBooking}
+        scroll={props.scroll}
         bookingProgres={props.bookingProgres}
         show = {props.show}
       />
@@ -148,8 +151,9 @@ function LectureData(props) {
             <Button
               variant="outline-success"
               onClick={() => {
-                props.bookSeat(props.lecture.lectureId);
+                props.bookSeat(props.lecture.lectureId); props.scroll()
               }}
+              
             >
               {props.bookingProgres === 1 ? (
                 <Spinner animation="border" size="sm" variant="success" />
