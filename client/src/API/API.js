@@ -4,7 +4,7 @@ const baseURL = "/API/REST.php/api";
 async function getAllLectures(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -35,7 +35,9 @@ async function getAllLectures(userId) {
 async function getLectures(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
+    data.getMonth() + 1
+  }-${data.getDate()}`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -102,7 +104,13 @@ async function getLecturesStartDate(userId) {
 
 //API for stats
 async function getStats(idLecture, idCourse, period, week, month, year) {
-  let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
+  let l = idLecture ? `lecture=${idLecture}&` : "";
+  let c = idCourse || idCourse === 0 ? `course=${idCourse}&` : "";
+  let w = week || week === 0 ? `week=${week}&` : "";
+  let m = month || month === 0 ? `month=${month}&` : "";
+
+  let url = "/stats?" + l + c + `period=${period}&` + w + m + `year=${year}`;
+
   console.log(url);
   const response = await fetch(baseURL + url);
   const stats = await response.json();
@@ -261,10 +269,11 @@ async function userLogin(username, password) {
 
 //Check login **GET** /api/logged
 async function isLogged() {
-  const response = await fetch(`${baseURL}/logged`);
+  const response = await fetch(`${baseURL}/user/me`);
   const userJson = await response.json();
-  console.log(userJson.user.loggedIn);
+  // console.log(userJson.user.loggedIn);
   if (response.ok) {
+    console.log(userJson);
     return userJson;
   } else {
     let err = { status: response.status, errObj: userJson };
@@ -368,7 +377,35 @@ async function userLogout() {
 
 async function getStatesBookManager(idCourse) {
   let url = `/stats?course=${idCourse}`;
-  console.log(url);
+  // console.log(url);
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
+async function getStatesWeekly(idCourse, WeekNo) {
+  const year = new Date().getFullYear();
+  let url = `/stats?course=${idCourse}&period=week&week=${WeekNo}&year=${year}`;
+  // console.log(url);
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
+async function getStatesMonthly(idCourse, MonthNo, year) {
+  // const year = new Date().getFullYear();
+  let url = `/stats?course=${idCourse}&period=month&month=${MonthNo}&year=${year}`;
+  // console.log(url);
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -394,5 +431,7 @@ const API = {
   getStats,
   getAllLectures,
   getStatesBookManager,
+  getStatesWeekly,
+  getStatesMonthly,
 };
 export default API;

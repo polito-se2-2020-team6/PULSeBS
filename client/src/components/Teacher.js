@@ -1,7 +1,9 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { useReducer } from "react";
+import React from "react";
+import moment from "moment";
+import Pagination from 'react-bootstrap/Pagination'
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -14,6 +16,7 @@ import {
 } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from ".././API/API";
+import DialogAlert from "./DialogAlert"
 
 /*  listaLezione -> getLectures
     corso -> courseId
@@ -58,6 +61,7 @@ var listaLezioni = [
     studenti: new Array("ludo", "carlo", "max"),
   },
 ]; */
+const view = 5; //number of lectures per pagination
 
 class Teacher extends React.Component {
   constructor(props) {
@@ -71,8 +75,12 @@ class Teacher extends React.Component {
       lecture: '',
       studtable: true,
       online: false,
+      range: 1,
+      
     };
+    this.wrapper = React.createRef();
   }
+
 
   componentDidMount(){
     this.getLectures(this.context.authUser.userId)
@@ -92,13 +100,13 @@ class Teacher extends React.Component {
       });
   };
 
-  getStudentsBooked(lectureId) {
+  getStudentsBooked(lectureId, online) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
         console.log("studenti")
           console.log(students);
         this.setState({
-          students: students.students || [],
+          students: students.students || [],online: online
         });
       })
       .catch((errorObj) => {
@@ -109,6 +117,7 @@ class Teacher extends React.Component {
 
   //delete a lecture as teacher
   deleteLecture(lectureId) {
+    console.log(lectureId);
     API.deleteLecture(lectureId)
       .then(() => {
         //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
@@ -156,7 +165,9 @@ class Teacher extends React.Component {
     .catch((errorObj) => {
       console.log("errore")
       console.log(errorObj);
-    });
+    });}
+
+   
     
     //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
   /*
@@ -167,8 +178,22 @@ class Teacher extends React.Component {
       this.setState({online: true});
     }
     */
-    
-  }
+   changeRange(x,courseId){
+     console.log(x);
+     var range=this.state.range; //range va da 1 a x in base a quanto seleziono  1->0-9     2->10-19   ecc
+     var lung= this.state.totalLectures.filter(l => l.courseName === courseId).length;
+     console.log(courseId)
+     console.log(lung)
+     if(x<0){
+       (this.state.range-1)>0 ? range-- : console.log("non posso -1")   
+     }
+     else if(x>0){
+      (this.state.range+1)<(Math.ceil(lung/view)) ? range++ : console.log("non posso")   
+    }
+    console.log(range);
+     this.setState({range: range});
+   }
+  
 
   render() {
     const corsi = this.state.totalLectures
@@ -192,13 +217,21 @@ class Teacher extends React.Component {
               <Tabs
                 defaultActiveKey={this.state.totalLectures[0]?.courseId}
                 id="noanim-tab-example"
-                onSelect={() => this.clearStudentTable()}
+                onSelect={() => {this.clearStudentTable(); this.setState({range: 1})}}
               >
                 {corsi?.map((C_Id) => (
                   <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
                     <Row className="mt-5 ">
                       <Col md={1}></Col>
                       <Col md={5}>
+                      <Pagination>
+                      
+                      <Pagination.Prev onClick={() => this.changeRange(-1,C_Id)} />
+                      <Pagination.Item>{this.state.range}</Pagination.Item>
+                      
+                      <Pagination.Next onClick={() => this.changeRange(+1,C_Id)}/>
+
+                    </Pagination>
                         <Tab.Container id="list-group-tabs-example">
                           <ListGroup className="mt-2">
                             <ListGroup.Item as="li" active>
@@ -207,6 +240,7 @@ class Teacher extends React.Component {
 
                             {this.state.totalLectures
                               .filter((l) => l.courseName === C_Id)
+                              ?.slice(this.state.range*view,this.state.range*view+view)
                               ?.map((c) => (
                                 <ListGroup.Item
                                   action
@@ -222,32 +256,28 @@ class Teacher extends React.Component {
                                       lecture: c.lectureId,
                                       studtable: true,
                                     });
-                                    this.getStudentsBooked(c.lectureId);
+                                    this.getStudentsBooked(c.lectureId,c.online);
                                   }}
                                 >
                                   <Row>
-                                <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
-                                    <Button type="button" variant="outline-secondary" onClick={() => {
-                                      this.turnLecture(c.lectureId,c.online); 
-                                    }}>
-
-                                      {/*controllo va fatto su c.online*/}
-                                      
-                                      turn to {c.online? "presence": "online"}
-                                    </Button>
+                                <Col md={2}>{moment(c.startTS).format("DD/MM/YYYY HH:mm")}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                {   c.online? <></> :
+                                  <DialogAlert 
+                                  dialog={"turn"}
+                                  courseName={C_Id}
+                                  startTs={c.startTS}
+                                  lectureId={c.lectureId}
+                                  onConfirm={(lectureId)=>{this.turnLecture(lectureId)}} />
+                                    }
                                     <Col></Col>
                                   
-
-                                  <Button
-                                    variant="danger"
-                                    className="mr-2"
-                                    
-                                    onClick={() => {
-                                      this.deleteLecture(c.lectureId);
-                                    }}
-                                  >
-                                   delete
-                                  </Button>
+                                  <DialogAlert 
+                                  dialog={"delete"}
+                                  courseName={C_Id}
+                                  startTs={c.startTS}
+                                  deleteLecture={this.deleteLecture}
+                                  lectureId={c.lectureId}
+                                  onConfirm={(lectureId)=>{this.deleteLecture(lectureId)}} />
                                   
                                   </Row>
                                 </ListGroup.Item>
@@ -260,34 +290,26 @@ class Teacher extends React.Component {
                       <Col md={4}>
                       {this.state.studtable?
                         <ListGroup as="ul" className="mt-2">
-                          <ListGroup.Item as="li" active>
-                            <h3>students booked</h3>
-                          </ListGroup.Item>
-                          
-                          
-                            {this.state.students.length?
+                            {(this.state.students.length&&!this.state.online)?
+
+                                    <><ListGroup.Item as="li" active>
+                                    <h3>students booked</h3>
+                                  </ListGroup.Item>
                                     <ListGroup.Item ><h5>number of students:
                                           {" "}{this.state.students.length}</h5>
-                                      </ListGroup.Item>:
-                                      <></>
-                            }
-                            {this.state.students?.map((s) => (
+                                      </ListGroup.Item>
+                                      {this.state.students?.map((s) => (
                               <ListGroup.Item as="li" key={s}>
                                 {"S"+s.studentId + " - " +s.studentName}
                               </ListGroup.Item>
                             ))}
-                          
-
-
-
-                        </ListGroup>:
-                        <ListGroup>
-                          <ListGroup.Item as="li" active>
-                            <h3>students booked</h3>
-                          </ListGroup.Item>
-                      </ListGroup>
+                                      </>:
+                                      <></>
+                            }
+                            
+                          </ListGroup>:
+                        <></>
                         }
-                        
                       </Col>
                     </Row>
                   </Tab>
