@@ -3,20 +3,19 @@ import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
-
+import Badge from "react-bootstrap/Badge";
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 class LectureList extends Component {
-  state = {
+  state = {};
+
+  scroll = () => {
+    setTimeout(() => {
+      document.getElementById("booked").scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 1000);
   };
-  
-  
-  scroll = ()=>{
-    setTimeout(()=>{
-              document.getElementById('booked').scrollIntoView({
-                behavior: 'smooth'
-              });
-            },1500)
-         
-  }
   render() {
     return (
       <Fragment>
@@ -24,6 +23,8 @@ class LectureList extends Component {
           role="main"
           className="main p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4"
         >
+          <Row xs={2} md={4} lg={6}>
+            <Col>
           <DropdownButton
             className="mb-4"
             id="dropdown-basic-button"
@@ -46,8 +47,12 @@ class LectureList extends Component {
               </Dropdown.Item>
             ))}
           </DropdownButton>
+          </Col>
+          <Col>
+         <Button variant="info" className="ml-n5" onClick={()=>this.scroll()}>Booked Lectures</Button></Col>
+         </Row>
           <div className="table-responsive">
-            <h2 className="mt-5 ml-">Book Lectures</h2>
+            <h2 className="mt-5 ml-">Available Lectures</h2>
             <table className="table table-hover text-center">
               <thead>
                 <tr className="">
@@ -128,7 +133,7 @@ function LectureRow(props) {
         cancelBooking={props.cancelBooking}
         scroll={props.scroll}
         bookingProgres={props.bookingProgres}
-        show = {props.show}
+        show={props.show}
       />
     </tr>
   );
@@ -141,19 +146,19 @@ function LectureData(props) {
       <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
       <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
       <td>{props.lecture.teacherName}</td>
-      <td>{props.lecture.roomName}</td>
+      {props.lecture.online ?<td><h3><Badge variant="danger">{props.lecture.roomName}</Badge></h3></td>  : <td><h3><Badge variant="success">{props.lecture.roomName}</Badge></h3></td>}
+      
       <td>{props.lecture.bookedSeats}</td>
       <td>{props.lecture.totalSeats}</td>
       {props.lecture.online === false ? (
         <td>
           {props.lecture.bookedSelf === false ? (
-           
             <Button
               variant="outline-success"
               onClick={() => {
-                props.bookSeat(props.lecture.lectureId); props.scroll()
+                props.bookSeat(props.lecture.lectureId);
+                props.scroll();
               }}
-              
             >
               {props.bookingProgres === 1 ? (
                 <Spinner animation="border" size="sm" variant="success" />
@@ -161,7 +166,6 @@ function LectureData(props) {
                 "Book a Seat"
               )}
             </Button>
-            
           ) : (
             <Button
               onClick={() => {
@@ -185,11 +189,16 @@ function LectureData(props) {
       {props.show === "false" ? (
         ""
       ) : (
-        <td>{props.lecture.inWaitingList === true ? "Yes" : "No"}</td>
+        <td>
+          {props.lecture.inWaitingList === true ? (
+           <h3> <Badge variant="success">Yes</Badge></h3>
+          ) : (
+            <h3> <Badge variant="warning">No</Badge></h3>
+          )}
+        </td>
       )}
     </>
   );
 }
-
 
 export default LectureList;
