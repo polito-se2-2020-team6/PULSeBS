@@ -388,7 +388,7 @@ if (!function_exists('cancel_lecture')) {
 			$lecture_time->setTimestamp(intval($lecture["start_ts"]));
 			$lecture_time->setTimezone(new DateTimeZone($server_default_timezone));
 			foreach ($students as $student) {
-				mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
+				@mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
 			}
 			// Success
 			echo json_encode(array('success' => true));
@@ -565,7 +565,7 @@ if (!function_exists('book_lecture')) {
 			//I send a confirmation email
 			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
 			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .".". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
-			$mail_result = mail($user_data["email"], $mail_subject, $mail_body);
+			$mail_result = @mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
 				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
 			} else {
