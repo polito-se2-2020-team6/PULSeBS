@@ -68,7 +68,7 @@ class ListLecturesTest extends TestCase {
 		$this->assertTrue($data['success']);
 
 		$this->assertArrayHasKey('lectures', $data);
-		$this->assertEquals(6, count($data['lectures']));
+		$this->assertEquals(5, count($data['lectures']));
 	}
 
 	// Test API endpoint  when not logged in (403)
@@ -77,5 +77,30 @@ class ListLecturesTest extends TestCase {
 
 		$response = $client->request('GET', API_PATH . '/api/users/5/lectures');
 		$this->assertEquals(403, $response->getStatusCode());
+	}
+
+	// Test API endpoint when logged in as booking manager (200)
+	public function test_list_4() {
+		$client = new Client(array('http_errors' => false));
+		$jar = new \GuzzleHttp\Cookie\CookieJar;
+
+		$data = array(
+			'username' => 'bookman',
+			'password' => '123123123',
+		);
+		$response = $client->request('POST', 'http://127.0.0.1:8080/API/REST.php/api/login', array('form_params' => $data, 'cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+
+		$response = $client->request('GET', API_PATH . '/api/users/5/lectures', array('cookies' => $jar));
+		$this->assertEquals(200, $response->getStatusCode());
+		$data = json_decode($response->getBody(true), true);
+
+		var_dump($data);
+
+		$this->assertArrayHasKey('success', $data);
+		$this->assertTrue($data['success']);
+
+		$this->assertArrayHasKey('lectures', $data);
+		$this->assertEquals(5, count($data['lectures']));
 	}
 }
