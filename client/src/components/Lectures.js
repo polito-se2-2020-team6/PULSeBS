@@ -7,7 +7,9 @@ import Badge from "react-bootstrap/Badge";
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 class LectureList extends Component {
-  state = {};
+  state = {
+    lectures:[]
+  };
 
   scroll = () => {
     setTimeout(() => {
@@ -16,6 +18,7 @@ class LectureList extends Component {
       });
     }, 1000);
   };
+
   render() {
     return (
       <Fragment>
@@ -37,15 +40,16 @@ class LectureList extends Component {
             >
               All Courses
             </Dropdown.Item>
-            {this.props.lectures.map((lecture) => (
+            {this.props.distincted.map((lecture) => (
               <Dropdown.Item
                 onClick={() => {
-                  this.props.filterLectures(lecture.courseId);
+                  this.props.filterLectures(lecture);
                 }}
               >
-                {lecture.courseName}
+                {lecture}
               </Dropdown.Item>
             ))}
+            
           </DropdownButton>
           </Col>
           <Col>
@@ -67,23 +71,42 @@ class LectureList extends Component {
                   <th>Status</th>
                 </tr>
               </thead>
+              {this.props.filtered == '' ? <tbody>
+              {this.props.lectures.map(
+                (lecture) =>
+                  !lecture.bookedSelf && (
+                    <LectureRow
+                      key={lecture.lectureId}
+                      lecture={lecture}
+                      bookSeat={this.props.bookSeat}
+                      cancelBooking={this.props.cancelBooking}
+                      //   onClick={this.props.onClick}
+                      scroll={this.scroll}
+                      show="false"
+                      bookingProgres={this.props.bookingProgres}
+                    />
+                  )
+              )}
+            </tbody>
+            :
               <tbody>
-                {this.props.lectures.map(
-                  (lecture) =>
-                    !lecture.bookedSelf && (
-                      <LectureRow
-                        key={lecture.lectureId}
-                        lecture={lecture}
-                        bookSeat={this.props.bookSeat}
-                        cancelBooking={this.props.cancelBooking}
-                        //   onClick={this.props.onClick}
-                        scroll={this.scroll}
-                        show="false"
-                        bookingProgres={this.props.bookingProgres}
-                      />
-                    )
-                )}
-              </tbody>
+              {this.props.filtered.map(
+                (lecture) =>
+                  !lecture.bookedSelf && (
+                    <LectureRow
+                      key={lecture.lectureId}
+                      lecture={lecture}
+                      bookSeat={this.props.bookSeat}
+                      cancelBooking={this.props.cancelBooking}
+                      //   onClick={this.props.onClick}
+                      scroll={this.scroll}
+                      show="false"
+                      bookingProgres={this.props.bookingProgres}
+                    />
+                  )
+              )}
+            </tbody>
+              }
             </table>
 
             <h2 className="mt-5 ml-">Booked Lectures</h2>
