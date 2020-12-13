@@ -298,6 +298,9 @@ if (!function_exists('print_myself')) {
 				'email' => $user_data['email'],
 				'firstname' => $user_data['firstname'],
 				'lastname' => $user_data['lastname'],
+				'city' => $user_data['city'],
+				'birthday' => $user_data['birthday'],
+				'SSN' => $user_data['SSN']
 			));
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
