@@ -146,7 +146,7 @@ function LectureData(props) {
       <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
       <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
       <td>{props.lecture.teacherName}</td>
-      {props.lecture.online ?<td><h3><Badge variant="danger">{props.lecture.roomName}</Badge></h3></td>  : <td><h3><Badge variant="success">{props.lecture.roomName}</Badge></h3></td>}
+      {props.lecture.online ?<td><h4><Badge variant="danger">{props.lecture.roomName}</Badge></h4></td>  : <td><h4><Badge variant="success">{props.lecture.roomName}</Badge></h4></td>}
       
       <td>{props.lecture.bookedSeats}</td>
       <td>{props.lecture.totalSeats}</td>
