@@ -63,6 +63,8 @@ Requires login as student
       - lectureId: int
       - courseId: int
       - courseName: string
+      - year: int
+      - semester: int
       - startTS: int *(GMT timezone)*
       - endTS: int *(GMT timezone)*
       - online: bool
@@ -85,6 +87,8 @@ Requires login teacher
       - lectureId: int
       - courseId: int
       - courseName: string
+      - year: int
+      - semester: int
       - startTS: int *(GMT timezone)*
       - endTS: int *(GMT timezone)*
       - online: bool
@@ -107,6 +111,8 @@ Requires login as booking manager
       - lectureId: int
       - courseId: int
       - courseName: string
+      - year: int
+      - semester: int
       - startTS: int *(GMT timezone)*
       - endTS: int *(GMT timezone)*
       - online: bool
