@@ -5,7 +5,7 @@ context("loginAPITest", () => {
     cy.request({
       method: "POST",
       url: `http://localhost:8080/API/REST.php/api/login`,
-      form: true,
+      form: true, // because I want to send request in XHR format(xmlhttprequest) not JSON, so this fields should be TRUE
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
