@@ -101,7 +101,7 @@ if (!function_exists("get_waiting_list_by_lecture")) {
 }
 
 
-if (!function_exists('et_list_of_teachers')) {
+if (!function_exists('get_list_of_teachers')) {
 	function get_list_of_teachers() {
 		$pdo = new PDO("sqlite:../db.sqlite");
 
@@ -121,5 +121,54 @@ if (!function_exists('et_list_of_teachers')) {
 		}
 
 		return $teacherList;
+	}
+}
+
+if (!function_exists('get_list_of_students')) {
+	function get_list_of_students() {
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare('SELECT ID FROM users WHERE type = :student');
+		$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$studentList = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+		if ($studentList === false) {
+			$studentList = array();
+		} else if (!is_array($studentList)) {
+			$studentList = array($studentList);
+		}
+
+		return $studentList;
+	}
+}
+
+if (!function_exists('get_list_of_course_codes')) {
+	function get_list_of_course_codes() {
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare('SELECT ID, code FROM courses');
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$codesList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		if ($codesList === false) {
+			$codesList = array();
+		} else if (!is_array($codesList)) {
+			$codesList = array($codesList);
+		}
+
+		// [
+		//   "CODE" => "ID",
+		//   ...	
+		// ]
+		return array_combine(array_column($codesList, 'code'), array_column($codesList, 'ID'));
 	}
 }
