@@ -282,29 +282,7 @@ if (!function_exists('print_types')) {
 if (!function_exists('print_myself')) {
 	function print_myself($vars) {
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
-
-			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
-
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$user_data = $stmt->fetch();
-
-			echo json_encode(array(
-				'success' => true,
-				'userId' => intval($user_data['ID']),
-				'type' => intval($user_data['type']),
-				'username' => $user_data['username'],
-				'email' => $user_data['email'],
-				'firstname' => $user_data['firstname'],
-				'lastname' => $user_data['lastname'],
-				'city' => $user_data['city'],
-				'birthday' => $user_data['birthday'],
-				'SSN' => $user_data['SSN']
-			));
+			echo json_encode(get_myself());
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
