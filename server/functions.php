@@ -100,4 +100,37 @@ if(!function_exists("get_waiting_list_by_lecture")){
 		return $waitlist;
 	}
 }
+
+if(!function_exists("get_myself")){
+	function get_myself() {
+		if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+			return false;
+		}
+
+		try {
+			$pdo = new PDO("sqlite:../db.sqlite");
+
+			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
+			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
+
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+
+			$user_data = $stmt->fetch();
+
+			return array(
+				'success' => true,
+				'userId' => intval($user_data['ID']),
+				'type' => intval($user_data['type']),
+				'username' => $user_data['username'],
+				'email' => $user_data['email'],
+				'firstname' => $user_data['firstname'],
+				'lastname' => $user_data['lastname'],
+			);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
 ?>

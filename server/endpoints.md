@@ -50,12 +50,15 @@ Requires login
     - email: string
     - firstname: string
     - lastname: string
+    - city: string
+    - birthday: ISO-8601 string "-" separated
+    - SSN: string
 
 # All courses
 
 - **GET** /api/courses
   - *request params*
-    - empty
+    - *optional* ofLogged: no value
   - *response body*
     - success: bool
     - courses: [object]{
