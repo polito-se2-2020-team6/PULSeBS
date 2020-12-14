@@ -177,6 +177,21 @@ Require login as support officer
   - *response body*
     - success: bool
 
+- **POST** /api/courses/upload
+  - *request params*
+    - text: string *content of the csv file*
+  - *response body*
+    - success: bool
+
+# Upload students csv
+Require login as support officer
+
+- **POST** /api/students/upload
+  - *request params*
+    - student_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
+
 # Error
 If an error occurs, the *response body* is
 - success: bool

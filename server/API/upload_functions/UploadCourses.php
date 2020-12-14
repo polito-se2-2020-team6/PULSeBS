@@ -1,13 +1,14 @@
 <?php
 
-include_once '../functions.php';
-
 define("CODE", 'Code');
-define("STUDENT", 'Student');
+define("YEAR", 'Year');
+define("SEMESTER", 'Semester');
+define("COURSE", 'Course');
+define("TEACHER", 'Teacher');
 
-if (!function_exists("upload_enrollments")) {
+if (!function_exists("upload_courses")) {
 
-	function upload_enrollments($vars) {
+	function upload_courses($vars) {
 
 		try {
 			$userId = intval($_SESSION['user_id']);
@@ -42,30 +43,32 @@ if (!function_exists("upload_enrollments")) {
 
 			$positions = [
 				CODE => array_search(CODE, $titles),
-				STUDENT => array_search(STUDENT, $titles)
+				YEAR => array_search(YEAR, $titles),
+				SEMESTER => array_search(SEMESTER, $titles),
+				COURSE => array_search(COURSE, $titles),
+				TEACHER => array_search(TEACHER, $titles)
 			];
 
 			if (array_search(false, $positions) === FALSE) {
 				throw new Exception('Malformed input.');
 			}
 
-			$courses = get_list_of_course_codes();
-			$students = get_list_of_students();
+			$teachers = get_list_of_teachers();
 
 			$pdo->beginTransaction();
-			$stmt = $pdo->prepare('INSERT INTO course_subscriptions (user_id, course_id) VALUES (:studentId, :courseId);');
+			$stmt = $pdo->prepare('INSERT INTO courses (code, name, teacher_id, year, semester) VALUES (:code, :name, :teacherId, :year, :semester);');
 			foreach ($lines as $l) {
 				$fields = str_getcsv($l, ',', '"');
-				if (
-					array_key_exists($fields[$positions[CODE]], $courses) === FALSE ||
-					array_search($fields[$positions[STUDENT]], $students) === FALSE
-				) {
+				$teacherId = substr($fields[$positions[TEACHER]], 1);
+				if (array_search($teacherId, $teachers) === FALSE) {
 					$pdo->rollBack();
-
 					throw new Exception('Malformed input.');
 				}
-				$stmt->bindValue(':studentId', intval($fields[$positions[STUDENT]]), PDO::PARAM_INT);
-				$stmt->bindValue(':courseId', intval($courses[$fields[$positions[CODE]]]), PDO::PARAM_INT);
+				$stmt->bindValue(':code', $fields[$positions[CODE]], PDO::PARAM_STR);
+				$stmt->bindValue(':name', $fields[$positions[COURSE]], PDO::PARAM_STR);
+				$stmt->bindValue(':teacherId', intval($teacherId), PDO::PARAM_INT);
+				$stmt->bindValue(':year', intval($fields[$positions[YEAR]]), PDO::PARAM_INT);
+				$stmt->bindValue(':semester', intval($fields[$positions[SEMESTER]]), PDO::PARAM_INT);
 
 				if (!$stmt->execute()) {
 					$pdo->rollBack();
@@ -78,8 +81,7 @@ if (!function_exists("upload_enrollments")) {
 		} catch (Exception $e) {
 			echo json_encode([
 				'success' => false,
-				'reason' => $e->getMessage(),
-				'line' => $e->getLine()
+				'reason' => $e->getMessage()
 			]);
 		}
 	}

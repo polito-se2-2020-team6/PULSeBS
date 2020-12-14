@@ -3,8 +3,8 @@ require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 require_once "./StatsBookings.php";
-require_once "./UploadCourses.php";
-require_once "./UploadEnrollements.php";
+require_once "upload_functions/UploadCourses.php";
+require_once "upload_functions/UploadEnrollements.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -13,15 +13,6 @@ header("Content-Type: application/json");
 
 define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
-/* Constant defining */
-
-define("USER_TYPE_STUDENT", 0);
-define("USER_TYPE_TEACHER", 1);
-define("USER_TYPE_BOOK_MNGR", 2);
-define("USER_TYPE_SPRT_OFCR", 3);
-
-define('LECTURE_REMOTE', 0x1);
-define('LECTURE_CANCELLED', 0x2);
 
 /* Turning warning and notices into exceptions */
 
@@ -714,6 +705,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	$r->addRoute('POST', API_PATH . '/courses/upload', ['upload_courses', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/enrollments/upload', ['upload_enrollments', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/students/upload', ['upload_students', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere

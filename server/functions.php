@@ -2,6 +2,16 @@
 session_start();
 $server_default_timezone = date_default_timezone_get();  //needed to know which timezone the server uses
 date_default_timezone_set("UTC");
+
+/* Constant defining */
+
+define("USER_TYPE_STUDENT", 0);
+define("USER_TYPE_TEACHER", 1);
+define("USER_TYPE_BOOK_MNGR", 2);
+define("USER_TYPE_SPRT_OFCR", 3);
+
+define('LECTURE_REMOTE', 0x1);
+define('LECTURE_CANCELLED', 0x2);
 /* Utilities */
 
 if (!function_exists("check_login")) {
