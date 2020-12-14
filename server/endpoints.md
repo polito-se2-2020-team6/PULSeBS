@@ -50,6 +50,9 @@ Requires login
     - email: string
     - firstname: string
     - lastname: string
+    - city: string
+    - birthday: ISO-8601 string "-" separated
+    - SSN: string
 
 # All lectures of a user
 Requires login as student or teacher
