@@ -67,7 +67,7 @@ Requires login
       - name: string
       - year: int *(is the academical year: for example 1 for the first year)*
       - semester: int
-      - teacherID: int
+      - teacherId: int
       - teacherFirstName: string
       - teacherLastName: string
       - teacherEmail: string
