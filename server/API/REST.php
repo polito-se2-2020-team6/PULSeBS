@@ -524,6 +524,28 @@ if (!function_exists('set_lecture_online_status')) {
 	}
 }
 
+if(!function_exists('print_courses')){
+	function print_courses($vars){
+		try{
+			$pdo = new PDO('sqlite:../db.sqlite');
+
+			$stmt = $pdo->query("SELECT courses.*, users.firstname AS teacherFirstName, users.lastname AS teacherLastName, users.email AS teacherEmail, users.ID AS teacherId FROM courses, users WHERE courses.teacher_id = users.ID");
+
+			if(!$stmt){
+				throw new PDOException($pdo->errorInfo()[2]);
+			}
+
+			$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			echo json_encode(array("success" => true, "courses" => $courses));
+
+		}
+		catch (Exception $e){
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+		}
+	}
+}
+
 /*Documentation for FastRoute can be found here: https://github.com/nikic/FastRoute */
 
 /*Constants to define option for the routes*/
@@ -537,6 +559,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
+	$r->addRoute('GET', API_PATH . "/courses", "print_courses");
 	/* users route */
 	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
 

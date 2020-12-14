@@ -51,6 +51,25 @@ Requires login
     - firstname: string
     - lastname: string
 
+# All courses
+
+- **GET** /api/courses
+  - *request params*
+    - empty
+  - *response body*
+    - success: bool
+    - courses: [object]{
+      - ID: int
+      - code: string
+      - name: string
+      - year: int *(is the academical year: for example 1 for the first year)*
+      - semester: int
+      - teacherID: int
+      - teacherFirstName: string
+      - teacherLastName: string
+      - teacherEmail: string
+    }
+
 # All lectures of a student
 Requires login as student
 
