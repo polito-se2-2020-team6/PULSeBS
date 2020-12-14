@@ -165,6 +165,15 @@ Require login as support officer
   - *response body*
     - success: bool
 
+# Upload enrollments csv
+Require login as support officer
+
+- **POST** /api/enrollments/upload
+  - *request params*
+    - text: string *content of the csv file*
+  - *response body*
+    - success: bool
+
 # Error
 If an error occurs, the *response body* is
 - success: bool
