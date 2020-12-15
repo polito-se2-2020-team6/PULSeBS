@@ -5,6 +5,7 @@ require_once "../vendor/autoload.php";
 require_once "./StatsBookings.php";
 require_once "upload_functions/UploadCourses.php";
 require_once "upload_functions/UploadEnrollements.php";
+require_once "upload_functions/UploadStudents.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
