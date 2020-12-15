@@ -416,6 +416,18 @@ async function getStatesMonthly(idCourse, MonthNo, year) {
   }
 }
 
+async function getAllCourses() {
+  let url = "/courses";
+  const response = await fetch(baseURL + url);
+  const courses = await response.json();
+  if (response.ok) {
+    return courses;
+  } else {
+    let err = { status: response.status, errObj: courses };
+    throw err; // An object with the error coming from the server
+  }
+}
+
 const API = {
   getLectures,
   userLogin,
@@ -433,5 +445,6 @@ const API = {
   getStatesBookManager,
   getStatesWeekly,
   getStatesMonthly,
+  getAllCourses,
 };
 export default API;

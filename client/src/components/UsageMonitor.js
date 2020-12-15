@@ -19,6 +19,12 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
 } from "@material-ui/core";
 
@@ -47,6 +53,7 @@ class UsageMonitor extends React.Component {
       month: "",
       year: "",
       isSelected: false,
+      allCourses: [],
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -55,12 +62,22 @@ class UsageMonitor extends React.Component {
     // this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     // just to solve the problem of refreshing the page and prevent going to the login Page
     if (!this.props.isStillLogged) {
       this.props.isLogged(true);
     }
-  }
+    await API.getAllCourses().then((allCourses) => {
+      this.setState({
+        allCourses: allCourses.courses,
+      });
+    });
+    console.log(
+      this.state.allCourses.map((c) => {
+        console.log(c.name, c.ID);
+      })
+    );
+  };
 
   //   async handleChange(e) {
   //     // setAge(event.target.value);
@@ -106,15 +123,15 @@ class UsageMonitor extends React.Component {
         },
         {
           slice: "BookingsSD",
-          area: this.state.statistics.bookingsStdDev,
+          area: this.state.statistics.bookingsStdDev.toFixed(2),
         },
         {
           slice: "AttendancesSD",
-          area: this.state.statistics.attendancesStdDev,
+          area: this.state.statistics.attendancesStdDev.toFixed(2),
         },
         {
           slice: "CancellationsSD",
-          area: this.state.statistics.cancellationsStdDev,
+          area: this.state.statistics.cancellationsStdDev.toFixed(2),
         },
       ];
       this.setState({
@@ -152,8 +169,8 @@ class UsageMonitor extends React.Component {
     }
 
     if (this.state.filter === "weekly") {
-      for (let i = 0; i < 10; i++) {
-        const weekNo = (this.getWeek() - 10 + i) % 52;
+      for (let i = 0; i < 6; i++) {
+        const weekNo = (this.getWeek() - 6 + i) % 52;
         this.setState({
           weekNo,
           // isSelected: false,
@@ -258,15 +275,15 @@ class UsageMonitor extends React.Component {
         },
         {
           mStat: "Bookings Average",
-          mValue: this.state.monthlyStats.bookingsAvg,
+          mValue: this.state.monthlyStats.bookingsAvg.toFixed(2),
         },
         {
           mStat: "Cancellations Average",
-          mValue: this.state.monthlyStats.cancellationsAvg,
+          mValue: this.state.monthlyStats.cancellationsAvg.toFixed(2),
         },
         {
           mStat: "Attendances Average",
-          mValue: this.state.monthlyStats.attendancesAvg,
+          mValue: this.state.monthlyStats.attendancesAvg.toFixed(2),
         },
         {
           mStat: "Number of Lectures",
@@ -291,7 +308,48 @@ class UsageMonitor extends React.Component {
                 problem of having no data */}
                 Welcome Mr.{context.authUser?.lastname}
               </Typography>
-
+              <Row>
+                <Col>
+                  <TableContainer>
+                    <Table aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Course Name</TableCell>
+                          <TableCell align="center">
+                            Teacher First Name
+                          </TableCell>
+                          <TableCell align="center">
+                            Teacher Last Name
+                          </TableCell>
+                          <TableCell align="center">Teacher Email</TableCell>
+                          <TableCell align="center">Teacher ID</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {this.state.allCourses.map((row) => (
+                          <TableRow key={row.ID}>
+                            <TableCell component="th" scope="row">
+                              {row.name}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherFirstName}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherLastName}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherEmail}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherId}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Col>
+              </Row>
               <Row>
                 <Col className="center center mt-5" md={{ span: 4, offset: 4 }}>
                   <FormGroup>
@@ -307,11 +365,10 @@ class UsageMonitor extends React.Component {
                         onChange={this.handleChange}
                       >
                         <MenuItem value={0}>ALL Courses</MenuItem>
-                        <MenuItem value={1}>Software Engineering I</MenuItem>
-                        <MenuItem value={2}>Software Engineering</MenuItem>
-                        <MenuItem value={3}>APA`</MenuItem>
-                        <MenuItem value={4}>Data Science</MenuItem>
-                        <MenuItem value={5}>Web Application</MenuItem>
+                        {/* get data and fill DropDown Dynamically */}
+                        {this.state.allCourses.map((c) => {
+                          return <MenuItem value={c.ID}>{c.name}</MenuItem>;
+                        })}
                       </Select>
                     </FormControl>
                   </FormGroup>
