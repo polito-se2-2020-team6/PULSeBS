@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button"
+import Button from "react-bootstrap/Button";
+import API from "../API/API"
 class Upload extends Component {
-  state = {};
+  state = {
+  };
+ 
+
   render() {
     return (
       <>
@@ -10,11 +14,13 @@ class Upload extends Component {
             <h3>Please Select Your {this.props.section} File</h3>
           <Form.Group >
             <Form.File
-              id="exampleFormControlFile1"
-              label=""
+            onChange={this.onFileChangeHandler}
+              id="file"
+              name="files"
             />
           </Form.Group>
-          <Button variant="outline-success" type="submit">
+          <Button variant="outline-success" type="submit"
+          onClick={this.fileUploadHandler}>
             Upload
           </Button>
         </Form>
