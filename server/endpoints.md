@@ -168,7 +168,7 @@ Require login as support officer
   - *response body*
     - success: bool
 
-# Upload students csv
+# Upload teachers csv
 Require login as support officer
 
 - **POST** /api/teachers/upload
