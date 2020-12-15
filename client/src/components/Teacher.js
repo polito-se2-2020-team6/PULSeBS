@@ -76,6 +76,7 @@ class Teacher extends React.Component {
       studtable: true,
       online: false,
       range: 0,
+      user: {},
       
     };
     this.wrapper = React.createRef();
@@ -83,9 +84,25 @@ class Teacher extends React.Component {
 
 
   componentDidMount(){
+    this.user();
     this.getLectures(this.context.authUser.userId)
-  }
+    console.log(this.context.authUser)
+    
 
+  }
+  user = () => {
+    API.isLogged()
+      .then((user) => {
+        console.log("eccolooo")
+        console.log(user);
+        this.setState({user : user})
+        //this.getLectures(user.userId)
+        
+      })
+      .catch((errorObj) => {
+        console.log(errorObj);
+      });
+  };
 
   getLectures = (userId) => {
     API.getLecturesStartDate(userId)
@@ -212,7 +229,7 @@ class Teacher extends React.Component {
 
             <Container fluid className="mt-5 ">
               <Row className="justify-content-md-center">
-                <h1>Welcome back</h1>
+                <h1>Welcome back {this.state.user.firstname+" "+this.state.user.lastname}</h1>
               </Row>
 
               <Tabs
