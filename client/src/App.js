@@ -13,6 +13,7 @@ import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { ROLES } from "./data/consts";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SupportOfficer from "./components/SupportOfficer";
 
 class App extends React.Component {
   componentDidMount() {
@@ -90,6 +91,11 @@ class App extends React.Component {
             // this.props.history.push("/booking-manager/home?userId="+user.userId);
             this.props.history.push("/booking-manager/home");
             break;
+            case ROLES.SUPPORT_OFFICER:
+            this.setState({ authUser: user, authErr: null });
+            this.props.history.push("/support/home");
+            break;
+            
         }
       })
       .catch((errObj) => {
@@ -158,6 +164,9 @@ class App extends React.Component {
           </Route>
           <Route path="/student/home">
             <Student user={this.state.authUser} />
+          </Route>
+          <Route path="/support/home">
+            <SupportOfficer user={this.state.authUser} />
           </Route>
           <Route path="/booking-manager/home">
             <UsageMonitor
