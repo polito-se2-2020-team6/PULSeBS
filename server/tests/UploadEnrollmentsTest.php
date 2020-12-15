@@ -34,15 +34,18 @@ class UploadEnrollmentsTest extends TestCase {
 		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
 		$this->assertEquals(200, $response->getStatusCode());
 
-		$data = array(
-			'text' => 'Code,Student\n1234,1'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/enrollments/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'enrollment_file',
+						'contents' => "Code,Student\n1234,1",
+						'filename' => 'enrollment_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -64,15 +67,18 @@ class UploadEnrollmentsTest extends TestCase {
 		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
 		$this->assertEquals(200, $response->getStatusCode());
 
-		$data = array(
-			'text' => 'Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d3'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/enrollments/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'enrollment_file',
+						'contents' => "Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d3",
+						'filename' => 'enrollment_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -94,15 +100,18 @@ class UploadEnrollmentsTest extends TestCase {
 		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
 		$this->assertEquals(200, $response->getStatusCode());
 
-		$data = array(
-			'text' => 'Code,Student\n1234,2'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/enrollments/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'enrollment_file',
+						'contents' => "Code,Student\n1234,2",
+						'filename' => 'enrollment_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -124,15 +133,18 @@ class UploadEnrollmentsTest extends TestCase {
 		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
 		$this->assertEquals(200, $response->getStatusCode());
 
-		$data = array(
-			'text' => 'Code,Student\n865453435,1'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/enrollments/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'enrollment_file',
+						'contents' => "Code,Student\n865453435,1",
+						'filename' => 'enrollment_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -154,15 +166,18 @@ class UploadEnrollmentsTest extends TestCase {
 		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
 		$this->assertEquals(200, $response->getStatusCode());
 
-		$data = array(
-			'text' => 'Code,Student\n2,997416'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/enrollments/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'enrollment_file',
+						'contents' => "Code,Student\n2,997416",
+						'filename' => 'enrollment_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -203,15 +218,18 @@ class UploadEnrollmentsTest extends TestCase {
 		$client = new Client(array('http_errors' => false));
 		$jar = new \GuzzleHttp\Cookie\CookieJar;
 
-		$data = array(
-			'text' => 'Code,Student\n2,1'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/enrollments/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'enrollment_file',
+						'contents' => "Code,Student\n2,1",
+						'filename' => 'enrollment_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(403, $response->getStatusCode());

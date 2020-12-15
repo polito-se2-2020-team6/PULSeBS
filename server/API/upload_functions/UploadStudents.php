@@ -8,12 +8,12 @@ define("EMAIL", "OfficialEmail");
 define("BIRTHDAY", "Birthday");
 define("SSN", "SSN");
 
-if(!function_exists("upload_students")){
-	function upload_students($vars){
-		try{
+if (!function_exists("upload_students")) {
+	function upload_students($vars) {
+		try {
 			$logged_user = get_myself();
 
-			if(intval($logged_user['type']) != USER_TYPE_SPRT_OFCR){
+			if (intval($logged_user['type']) != USER_TYPE_SPRT_OFCR) {
 				throw new ErrorException("Wrong permissions");
 			}
 
@@ -21,14 +21,14 @@ if(!function_exists("upload_students")){
 			// Undefined | Multiple Files | $_FILES Corruption Attack
 			// If this request falls under any of them, treat it invalid.
 			if (
-				!isset($_FILES['upfile']['error']) ||
-				is_array($_FILES['upfile']['error'])
+				!isset($_FILES['student_file']['error']) ||
+				is_array($_FILES['student_file']['error'])
 			) {
 				throw new RuntimeException('Invalid parameters.');
 			}
 
-			// Check $_FILES['upfile']['error'] value.
-			switch ($_FILES['upfile']['error']) {
+			// Check $_FILES['student_file']['error'] value.
+			switch ($_FILES['student_file']['error']) {
 				case UPLOAD_ERR_OK:
 					break;
 				case UPLOAD_ERR_NO_FILE:
@@ -40,7 +40,7 @@ if(!function_exists("upload_students")){
 					throw new RuntimeException('Unknown errors.');
 			}
 
-			$csv_file = array_map('str_getcsv', str_getcsv($_FILES['student_file']['tmp_name'], "\n"));
+			$csv_file = array_map('str_getcsv', str_getcsv(file_get_contents($_FILES['student_file']['tmp_name']), "\n"));
 
 			$positions = array(
 				ID => array_search(ID, $csv_file[0]),
@@ -62,11 +62,11 @@ if(!function_exists("upload_students")){
 
 			array_splice($csv_file, 0, 1);
 
-			foreach($csv_file as $student){
+			foreach ($csv_file as $student) {
 				$stmt = $pdo->prepare("INSERT INTO users (ID, username, password, type, email, firstname, lastname, city, birthday, SSN) VALUES (:studentId, :username, :passw, :usertype, :email, :firstname, :lastname, :city, :birthday, :SSN)");
 
 				$stmt->bindValue(":studentId", $student[$positions[ID]], PDO::PARAM_INT);
-				$stmt->bindValue(":username", "s".$student[$positions[ID]]);
+				$stmt->bindValue(":username", "s" . $student[$positions[ID]]);
 				$stmt->bindValue(":passw", password_hash(bin2hex(random_bytes(8)), PASSWORD_BCRYPT));
 				$stmt->bindValue(":usertype", USER_TYPE_STUDENT, PDO::PARAM_INT);
 				$stmt->bindValue(":email", $student[$positions[EMAIL]]);
@@ -84,8 +84,7 @@ if(!function_exists("upload_students")){
 			$pdo->commit();
 
 			echo json_encode(array('success' => true));
-		}
-		catch(Exception $e){
+		} catch (Exception $e) {
 			echo json_encode(array(
 				'success' => false,
 				'reason' => $e->getMessage(),
@@ -94,4 +93,3 @@ if(!function_exists("upload_students")){
 		}
 	}
 }
-?>
