@@ -63,7 +63,7 @@ if (!function_exists("upload_teachers")) {
 			foreach ($csv_file as $student) {
 				$stmt = $pdo->prepare("INSERT INTO users (ID, username, password, type, email, firstname, lastname, SSN) VALUES (:teacherId, :username, :passw, :usertype, :email, :firstname, :lastname, :SSN)");
 
-				$stmt->bindValue(":teacherId", substr($student[$positions[TEACHER_ID]], 1), PDO::PARAM_INT);
+				$stmt->bindValue(":teacherId", intval(substr($student[$positions[TEACHER_ID]], 1)), PDO::PARAM_INT);
 				$stmt->bindValue(":username", $student[$positions[TEACHER_ID]]);
 				$stmt->bindValue(":passw", $password_tmp);
 				$stmt->bindValue(":usertype", USER_TYPE_TEACHER, PDO::PARAM_INT);
