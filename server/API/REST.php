@@ -3,8 +3,9 @@ require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 require_once "./StatsBookings.php";
-require_once "./UploadCourses.php";
-require_once "./UploadEnrollements.php";
+require_once "upload_functions/UploadCourses.php";
+require_once "upload_functions/UploadEnrollements.php";
+require_once "upload_functions/UploadStudents.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -13,15 +14,6 @@ header("Content-Type: application/json");
 
 define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
-/* Constant defining */
-
-define("USER_TYPE_STUDENT", 0);
-define("USER_TYPE_TEACHER", 1);
-define("USER_TYPE_BOOK_MNGR", 2);
-define("USER_TYPE_SPRT_OFCR", 3);
-
-define('LECTURE_REMOTE', 0x1);
-define('LECTURE_CANCELLED', 0x2);
 
 /* Turning warning and notices into exceptions */
 
@@ -282,26 +274,7 @@ if (!function_exists('print_types')) {
 if (!function_exists('print_myself')) {
 	function print_myself($vars) {
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
-
-			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
-
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$user_data = $stmt->fetch();
-
-			echo json_encode(array(
-				'success' => true,
-				'userId' => intval($user_data['ID']),
-				'type' => intval($user_data['type']),
-				'username' => $user_data['username'],
-				'email' => $user_data['email'],
-				'firstname' => $user_data['firstname'],
-				'lastname' => $user_data['lastname'],
-			));
+			echo json_encode(get_myself());
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
@@ -733,6 +706,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	$r->addRoute('POST', API_PATH . '/courses/upload', ['upload_courses', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/enrollments/upload', ['upload_enrollments', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/students/upload', ['upload_students', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere

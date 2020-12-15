@@ -34,15 +34,18 @@ class UploadCoursesTest extends TestCase {
 		$response = $client->request('POST', API_PATH . '/api/login', array('form_params' => $data, 'cookies' => $jar));
 		$this->assertEquals(200, $response->getStatusCode());
 
-		$data = array(
-			'text' => 'Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d3'
-		);
 		$response = $client->request(
 			'POST',
 			API_PATH . '/api/courses/upload',
 			array(
-				'form_params' => $data,
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'course_file',
+						'contents' => "Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d3",
+						'filename' => 'course_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -68,10 +71,14 @@ class UploadCoursesTest extends TestCase {
 			'POST',
 			API_PATH . '/api/courses/upload',
 			array(
-				'form_params' => array(
-					'text' => 'Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d1\nXY4911,1,1,Chimica,d3'
-				),
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'course_file',
+						'contents' => "Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d1\nXY4911,1,1,Chimica,d3",
+						'filename' => 'course_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -97,10 +104,14 @@ class UploadCoursesTest extends TestCase {
 			'POST',
 			API_PATH . '/api/courses/upload',
 			array(
-				'form_params' => array(
-					'text' => 'Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d444444'
-				),
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'course_file',
+						'contents' => "Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d444444",
+						'filename' => 'course_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(200, $response->getStatusCode());
@@ -119,10 +130,14 @@ class UploadCoursesTest extends TestCase {
 			'POST',
 			API_PATH . '/api/courses/upload',
 			array(
-				'form_params' => array(
-					'text' => 'Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d3'
-				),
-				'cookies' => $jar
+				'cookies' => $jar,
+				'multipart' => [
+					[
+						'name' => 'course_file',
+						'contents' => "Code,Year,Semester,Course,Teacher\nXY1211,1,1,Metodi di finanziamento delle imprese,d2\nXY4911,1,1,Chimica,d3",
+						'filename' => 'course_file'
+					]
+				]
 			)
 		);
 		$this->assertEquals(403, $response->getStatusCode());

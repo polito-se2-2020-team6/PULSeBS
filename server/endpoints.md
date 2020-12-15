@@ -50,6 +50,9 @@ Requires login
     - email: string
     - firstname: string
     - lastname: string
+    - city: string
+    - birthday: ISO-8601 string "-" separated
+    - SSN: string
 
 # All lectures of a user
 Requires login as student or teacher
@@ -156,12 +159,21 @@ Requires login as teacher or booking manager
       - attendance statistics are not present at the moment
       - cancellation statistics are present only for a booking manager
 
+# Upload students csv
+Require login as support officer
+
+- **POST** /api/students/upload
+  - *request params*
+    - student_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
+
 # Upload courses csv
 Require login as support officer
 
 - **POST** /api/courses/upload
   - *request params*
-    - text: string *content of the csv file*
+    - course_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - *response body*
     - success: bool
 
@@ -170,7 +182,7 @@ Require login as support officer
 
 - **POST** /api/enrollments/upload
   - *request params*
-    - text: string *content of the csv file*
+    - enrollment_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - *response body*
     - success: bool
 
