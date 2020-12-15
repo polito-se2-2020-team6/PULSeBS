@@ -173,7 +173,7 @@ Require login as support officer
 
 - **POST** /api/courses/upload
   - *request params*
-    - text: string *content of the csv file*
+    - course_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - *response body*
     - success: bool
 

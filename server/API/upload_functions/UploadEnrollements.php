@@ -24,7 +24,7 @@ if (!function_exists("upload_enrollments")) {
 				throw new RuntimeException('Invalid parameters.');
 			}
 
-			// Check $_FILES['upfile']['error'] value.
+			// Check $_FILES['enrollment_file']['error'] value.
 			switch ($_FILES['enrollment_file']['error']) {
 				case UPLOAD_ERR_OK:
 					break;
