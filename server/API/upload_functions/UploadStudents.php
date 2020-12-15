@@ -62,12 +62,14 @@ if (!function_exists("upload_students")) {
 
 			array_splice($csv_file, 0, 1);
 
+			$password_tmp = password_hash(bin2hex(random_bytes(8)), PASSWORD_BCRYPT); //THIS SHOULD NOT BE DONE. IS DONE ONLY FOR TESTING PURPOSE
+
 			foreach ($csv_file as $student) {
 				$stmt = $pdo->prepare("INSERT INTO users (ID, username, password, type, email, firstname, lastname, city, birthday, SSN) VALUES (:studentId, :username, :passw, :usertype, :email, :firstname, :lastname, :city, :birthday, :SSN)");
 
 				$stmt->bindValue(":studentId", $student[$positions[ID]], PDO::PARAM_INT);
 				$stmt->bindValue(":username", "s" . $student[$positions[ID]]);
-				$stmt->bindValue(":passw", password_hash(bin2hex(random_bytes(8)), PASSWORD_BCRYPT));
+				$stmt->bindValue(":passw", $password_tmp);
 				$stmt->bindValue(":usertype", USER_TYPE_STUDENT, PDO::PARAM_INT);
 				$stmt->bindValue(":email", $student[$positions[EMAIL]]);
 				$stmt->bindValue(":firstname", $student[$positions[NAME]]);
@@ -78,7 +80,7 @@ if (!function_exists("upload_students")) {
 
 				if (!$stmt->execute()) {
 					$pdo->rollBack();
-					throw new PDOException('Input rejected by database.');
+					throw new PDOException($stmt->errorInfo()[2]);
 				}
 			}
 			$pdo->commit();
