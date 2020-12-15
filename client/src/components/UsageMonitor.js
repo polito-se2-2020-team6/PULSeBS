@@ -27,6 +27,7 @@ import {
   TableRow,
   Typography,
 } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
 
 import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
@@ -303,31 +304,64 @@ class UsageMonitor extends React.Component {
           <>
             {context.authUser === null && <Redirect to="/login"></Redirect>}
             <Container className="center center mt-5 ">
-              <Typography variant="h1" component="h2" id="welcomeText">
+              <Typography
+                variant="h1"
+                component="h2"
+                id="welcomeText"
+                className="mb-5"
+              >
                 {/*  use ? to solve the
                 problem of having no data */}
                 Welcome Mr.{context.authUser?.lastname}
               </Typography>
               <Row>
                 <Col>
-                  <TableContainer>
-                    <Table aria-label="simple table">
+                  <TableContainer component={Paper}>
+                    <Table size="small">
                       <TableHead>
                         <TableRow>
-                          <TableCell>Course Name</TableCell>
-                          <TableCell align="center">
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Course Name
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
                             Teacher First Name
                           </TableCell>
-                          <TableCell align="center">
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
                             Teacher Last Name
                           </TableCell>
-                          <TableCell align="center">Teacher Email</TableCell>
-                          <TableCell align="center">Teacher ID</TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Teacher Email
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Teacher ID
+                          </TableCell>
                         </TableRow>
                       </TableHead>
-                      <TableBody>
+                      <TableBody stripedRows>
                         {this.state.allCourses.map((row) => (
-                          <TableRow key={row.ID}>
+                          <TableRow
+                            style={
+                              row.ID % 2
+                                ? { background: "#a3b687" }
+                                : { background: "white" }
+                            }
+                            key={row.ID}
+                          >
                             <TableCell component="th" scope="row">
                               {row.name}
                             </TableCell>
@@ -442,18 +476,23 @@ class UsageMonitor extends React.Component {
                     </ListItem>
                   </List> */}
                   {this.state.filter === "monthly" && (
-                    <FormGroup className="mt-5">
-                      <FormControl>
-                        <DatePicker
-                          id="monthDatePicker"
-                          selected={this.state.startDate}
-                          onChange={(date) => this.setStartDate(date)}
-                          dateFormat="MM/yyyy"
-                          showMonthYearPicker
-                          inline // for showing the specific calendar
-                        />
-                      </FormControl>
-                    </FormGroup>
+                    <>
+                      <p className="mt-4">
+                        Select the Month to generate the Report:{" "}
+                      </p>
+                      <FormGroup>
+                        <FormControl>
+                          <DatePicker
+                            id="monthDatePicker"
+                            selected={this.state.startDate}
+                            onChange={(date) => this.setStartDate(date)}
+                            dateFormat="MM/yyyy"
+                            showMonthYearPicker
+                            inline // for showing the specific calendar
+                          />
+                        </FormControl>
+                      </FormGroup>
+                    </>
                   )}
                 </Col>
               </Row>
