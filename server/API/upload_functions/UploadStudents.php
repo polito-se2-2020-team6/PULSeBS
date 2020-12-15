@@ -52,7 +52,7 @@ if (!function_exists("upload_students")) {
 				SSN => array_search(SSN, $csv_file[0])
 			);
 
-			if (array_search(false, $positions) === FALSE) {
+			if (array_search(FALSE, $positions, TRUE) !== FALSE) {
 				throw new ErrorException('Malformed input.');
 			}
 
