@@ -75,7 +75,7 @@ class Teacher extends React.Component {
       lecture: '',
       studtable: true,
       online: false,
-      range: 1,
+      range: 0,
       
     };
     this.wrapper = React.createRef();
@@ -90,6 +90,7 @@ class Teacher extends React.Component {
   getLectures = (userId) => {
     API.getLecturesStartDate(userId)
       .then((lectures) => {
+        console.log("Lezioni")
         console.log(lectures);
         this.setState({
           totalLectures: lectures || [],
@@ -185,7 +186,7 @@ class Teacher extends React.Component {
      console.log(courseId)
      console.log(lung)
      if(x<0){
-       (this.state.range-1)>0 ? range-- : console.log("non posso -1")   
+       (this.state.range-1)>=0 ? range-- : console.log("non posso -1")   
      }
      else if(x>0){
       (this.state.range+1)<(Math.ceil(lung/view)) ? range++ : console.log("non posso")   
@@ -217,7 +218,7 @@ class Teacher extends React.Component {
               <Tabs
                 defaultActiveKey={this.state.totalLectures[0]?.courseId}
                 id="noanim-tab-example"
-                onSelect={() => {this.clearStudentTable(); this.setState({range: 1})}}
+                onSelect={() => {this.clearStudentTable(); this.setState({range: 0})}}
               >
                 {corsi?.map((C_Id) => (
                   <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
@@ -227,7 +228,7 @@ class Teacher extends React.Component {
                       <Pagination>
                       
                       <Pagination.Prev onClick={() => this.changeRange(-1,C_Id)} />
-                      <Pagination.Item>{this.state.range}</Pagination.Item>
+                      <Pagination.Item disabled>{this.state.range+1}</Pagination.Item>
                       
                       <Pagination.Next onClick={() => this.changeRange(+1,C_Id)}/>
 
@@ -265,7 +266,7 @@ class Teacher extends React.Component {
                                   <DialogAlert 
                                   dialog={"turn"}
                                   courseName={C_Id}
-                                  startTs={c.startTS}
+                                  startTS={c.startTS}
                                   lectureId={c.lectureId}
                                   onConfirm={(lectureId)=>{this.turnLecture(lectureId)}} />
                                     }
@@ -274,7 +275,7 @@ class Teacher extends React.Component {
                                   <DialogAlert 
                                   dialog={"delete"}
                                   courseName={C_Id}
-                                  startTs={c.startTS}
+                                  startTS={c.startTS}
                                   deleteLecture={this.deleteLecture}
                                   lectureId={c.lectureId}
                                   onConfirm={(lectureId)=>{this.deleteLecture(lectureId)}} />
