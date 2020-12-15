@@ -6,6 +6,7 @@ require_once "./StatsBookings.php";
 require_once "upload_functions/UploadCourses.php";
 require_once "upload_functions/UploadEnrollements.php";
 require_once "upload_functions/UploadStudents.php";
+require_once "upload_functions/UploadTeachers.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -703,10 +704,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
 
-
 	$r->addRoute('POST', API_PATH . '/courses/upload', ['upload_courses', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/enrollments/upload', ['upload_enrollments', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/students/upload', ['upload_students', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/teachers/upload', ['upload_teachers', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere

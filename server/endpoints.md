@@ -168,6 +168,15 @@ Require login as support officer
   - *response body*
     - success: bool
 
+# Upload students csv
+Require login as support officer
+
+- **POST** /api/teachers/upload
+  - *request params*
+    - teacher_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
+
 # Upload courses csv
 Require login as support officer
 
