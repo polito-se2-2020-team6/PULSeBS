@@ -4,6 +4,7 @@
 import React, { Component } from "react";
 import { Bar } from 'react-chartjs-2';
 import API from "../../API/API";
+import moment from "moment";
 
 
 import  { Redirect } from 'react-router-dom'
@@ -147,15 +148,15 @@ getDateOfWeek = (w, y) => {
         data.labels[i]=0;
         let l = idLecture?idLecture + ' - ' +  this.state.allCourses.find(x => x.courseId === s.courseId).courseName: '';
         let m = month?months[month]+ ' ' +year:'';
-        console.log(this.getDateOfWeek(week, year));
-        data.labels[i]= m || week || l;
+        let w = week? moment(this.getDateOfWeek(week, year)).format("DD/MM/YYYY"): '';
+        data.labels[i]= m || w || l;
         console.log(data.labels[i]);
         data.datasets[0].data[i]=s.bookingsAvg;
         //console.log("stampe")
         //console.log(i);
         //console.log(this.state.detailLevel);
         //console.log(this.state.totalLectures.length);
-        tableData[i] = {labels: m || week || l, data: s.bookingsAvg}
+        tableData[i] = {labels: m || w || l, data: s.bookingsAvg}
         if(this.state.detailLevel==="Week"|| this.state.detailLevel==="Month"){
           n++;
           
