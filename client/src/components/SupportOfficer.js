@@ -31,6 +31,9 @@ class SupportOfficer extends Component {
                   <Tab eventKey="enrollments" title="Enrollments">
                     <Upload section="Enrollments"/>
                   </Tab>
+                  <Tab eventKey="schedules" title="Schedules">
+                    <Upload section="Schedules"/>
+                  </Tab>
                   
                 </Tabs>
               </>

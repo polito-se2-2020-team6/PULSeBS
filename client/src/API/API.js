@@ -427,6 +427,10 @@ async function uploadCsv(file, section) {
         url = baseURL + `/courses/upload`;
         data.append("course_file", file, "course_file.csv");
         break;
+        case "Schedules":
+        url = baseURL + `/schedule/upload`;
+        data.append("schedule_file", file, "schedule_file.csv");
+        break;
       case "Student":
         url = baseURL + `/students/upload`;
         data.append("student_file", file, "Students.csv");
