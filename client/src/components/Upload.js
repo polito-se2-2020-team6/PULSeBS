@@ -46,7 +46,7 @@ class Upload extends Component {
             ''
           )}
           {this.state.failure ? (
-            <h4 className="my-4 text-danger">There was a problem "{this.state.failureReason}", please try again!</h4>
+            <h4 className="my-4 text-danger">There was a problem, please try again!</h4>
           ):(
             ''
           )}
