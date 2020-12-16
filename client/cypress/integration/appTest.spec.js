@@ -60,6 +60,7 @@ context("Teacher Page", () => {
     cy.get(".tab-content").should("be.visible");
     cy.get("#historicaldata").click();
     cy.url().should("include", "/teacher/historicaldata");
+    cy.get("#dropdown-basic").should("be.visible");
     cy.get("#logout").click();
   });
 });
