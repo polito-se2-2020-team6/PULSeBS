@@ -416,6 +416,55 @@ async function getStatesMonthly(idCourse, MonthNo, year) {
   }
 }
 
+async function uploadCsv(csv,section) {
+    //let section="Student"
+    const data = new FormData() 
+    data.append('file', csv)
+    return new Promise(function (resolve, reject) {
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    let url
+    switch(section){
+      case "Courses":
+        url = baseURL + `/courses/upload`;
+        break;
+      case "Student":
+        url = baseURL + `/students/upload`;
+        break;
+      case "Teachers":
+        url = baseURL + `/teachers/upload`;
+        break;
+      case "Lectures":
+        url = baseURL + `/lectures/upload`;
+        break;
+      case "Classes":
+        url = baseURL + `/enrollments/upload`;
+        break;
+    }
+    //let data = `student_file=${csv}`;
+
+    req.open("POST", url,true);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    //req.setRequestHeader("Content-type", "multipart/form-data");
+    req.onload = function () {
+      console.log(req);
+      if (req.status === 200) {
+        //console.log("cipolla");
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
+      } else {
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
+  });
+}
+
 const API = {
   getLectures,
   userLogin,
@@ -433,5 +482,6 @@ const API = {
   getStatesBookManager,
   getStatesWeekly,
   getStatesMonthly,
+  uploadCsv,
 };
 export default API;
