@@ -76,9 +76,12 @@ class HistoricalData extends React.Component {
         return !duplicate;
         });
         
-        this.setState({allCourses: filteredArr});
-        this.setState({detailLevelCourse: this.state.allCourses[0].courseName});
+        if(this.state.totalLectures.length!==0){
+          this.setState({allCourses: filteredArr});
+          this.setState({detailLevelCourse: this.state.allCourses[0].courseName});
+        }
         this.setState({progress: 0});
+        
       })
       .catch((errorObj) => {
         console.log(errorObj);
@@ -218,92 +221,100 @@ class HistoricalData extends React.Component {
         {(context) => (
             <>
             {context.authUser ? (
+              
           
         <>
-        {this.state.progress === 1 ?  <Row className="justify-content-md-center mt-5" ><Spinner animation="border" variant="primary" /></Row>: 
-        <Container className="mt-5">
-            <Row> 
-              <Col md={2}>
-            <Dropdown>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                {this.state.detailLevel}
-              </Dropdown.Toggle>
+        
 
-              <Dropdown.Menu>
-                <Dropdown.Item id="d1" onClick={(e) => this.setOffset(e.target.textContent)}>Lecture</Dropdown.Item>
-                <Dropdown.Item id="d2" onClick={(e) => this.setOffset(e.target.textContent)}>Week</Dropdown.Item>
-                <Dropdown.Item id="d3" onClick={(e) => this.setOffset(e.target.textContent)}>Month</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-            </Col>
-            <Col md={8}>
-              {this.state.detailLevel==="Lecture"||this.state.detailLevel==="Select detail"? <></> : 
-              <Dropdown>
-                        <Dropdown.Toggle variant="success" id="dropdown-basic1">
-                          {this.state.detailLevelCourse}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                        {this.state.allCourses?.map((c) =>(
-                          <Dropdown.Item id={c.courseId+'1'} key={c.courseId}  onClick={(e) => {this.setState({detailLevelCourse: e.target.textContent}); this.setOffset(this.state.detailLevel)}}>{c.courseName}</Dropdown.Item>
-                        ))}
-                        </Dropdown.Menu>
-              </Dropdown>
-              }
-           </Col>
-            <Col>
-            {this.state.detailLevel==="Select detail"? <></> :
-               <Pagination id="pagId2">
-                      {this.state.offset>=this.state.maxOffset && this.state.detailLevel==="Lecture" ? <></>: <Pagination.Prev id="pagPrevId2" onClick={() => this.changeRange(-1)}/>}
-                      <Pagination.Item disabled>{this.state.offset}</Pagination.Item>
-                      
-                      {this.state.offset<=1 ? <></>: <Pagination.Next id="pagNextId2" onClick={() => this.changeRange(+1)}/>}
+    {this.state.progress === 1 ?  <Row className="justify-content-md-center mt-5" ><Spinner animation="border" variant="primary" /></Row>: 
+    <>
+        {this.state.totalLectures.length!==0 ? 
+          ( <>
+                      <Container className="mt-5">
+                          <Row> 
+                            <Col md={2}>
+                          <Dropdown>
+                            <Dropdown.Toggle variant="success" id="dropdown-basic">
+                              {this.state.detailLevel}
+                            </Dropdown.Toggle>
 
-                </Pagination>
-              }
-              </Col>
-            </Row>
-            <Row className="mt-3">
-              <Col><h2 className="text-center">Table Data</h2></Col>
-            </Row>
-            <Table striped bordered hover size="sm" className="mt-2" id="tabIdd">
-              <thead>
-                <tr>
-                  
-                  <th>{this.state.detailLevel}</th>
-                  <th>Average bookings</th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.lectures?.map((l) =>(
-                  <tr>
-                    
-                    <td>{l.labels}</td>
-                    <td>{l.data}</td>
-                  </tr>
-                )
-                )}
-              </tbody>
-            </Table>
-            <br></br>
-            <br></br>
-            <br></br>
-            <Row >
-              <Col><h2 className="text-center">Graph Data</h2>              
-              <div className="flex flex-col items-center w-full max-w-md" >
-                <form name="myForm">
-                  <Bar
-                      data={this.state.dataState}
-                      width={100}
-                      height={50}
-                      options={{}}
-                      id="barId"
-                  />
-                  </form>
-               </div>
-              
-              </Col>
-            </Row>
-        </Container>
+                            <Dropdown.Menu>
+                              <Dropdown.Item id="d1" onClick={(e) => this.setOffset(e.target.textContent)}>Lecture</Dropdown.Item>
+                              <Dropdown.Item id="d2" onClick={(e) => this.setOffset(e.target.textContent)}>Week</Dropdown.Item>
+                              <Dropdown.Item id="d3" onClick={(e) => this.setOffset(e.target.textContent)}>Month</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                          </Col>
+                          <Col md={8}>
+                            {this.state.detailLevel==="Lecture"||this.state.detailLevel==="Select detail"? <></> : 
+                            <Dropdown>
+                                      <Dropdown.Toggle variant="success" id="dropdown-basic1">
+                                        {this.state.detailLevelCourse}
+                                      </Dropdown.Toggle>
+                                      <Dropdown.Menu>
+                                      {this.state.allCourses?.map((c) =>(
+                                        <Dropdown.Item id={c.courseId+'1'} key={c.courseId}  onClick={(e) => {this.setState({detailLevelCourse: e.target.textContent}); this.setOffset(this.state.detailLevel)}}>{c.courseName}</Dropdown.Item>
+                                      ))}
+                                      </Dropdown.Menu>
+                            </Dropdown>
+                            }
+                        </Col>
+                          <Col>
+                          {this.state.detailLevel==="Select detail"? <></> :
+                            <Pagination id="pagId2">
+                                    {this.state.offset>=this.state.maxOffset && this.state.detailLevel==="Lecture" ? <></>: <Pagination.Prev id="pagPrevId2" onClick={() => this.changeRange(-1)}/>}
+                                    <Pagination.Item disabled>{this.state.offset}</Pagination.Item>
+                                    
+                                    {this.state.offset<=1 ? <></>: <Pagination.Next id="pagNextId2" onClick={() => this.changeRange(+1)}/>}
+
+                              </Pagination>
+                            }
+                            </Col>
+                          </Row>
+                          <Row className="mt-3">
+                            <Col><h2 className="text-center">Table Data</h2></Col>
+                          </Row>
+                          <Table striped bordered hover size="sm" className="mt-2" id="tabIdd">
+                            <thead>
+                              <tr>
+                                
+                                <th>{this.state.detailLevel}</th>
+                                <th>Average bookings</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {this.state.lectures?.map((l) =>(
+                                <tr>
+                                  
+                                  <td>{l.labels}</td>
+                                  <td>{l.data}</td>
+                                </tr>
+                              )
+                              )}
+                            </tbody>
+                          </Table>
+                          <br></br>
+                          <br></br>
+                          <br></br>
+                          <Row >
+                            <Col><h2 className="text-center">Graph Data</h2>              
+                            <div className="flex flex-col items-center w-full max-w-md" >
+                              <form name="myForm">
+                                <Bar
+                                    data={this.state.dataState}
+                                    width={100}
+                                    height={50}
+                                    options={{}}
+                                    id="barId"
+                                />
+                                </form>
+                            </div>
+                            
+                            </Col>
+                          </Row>
+                      </Container>
+      </>) :(<><Row className="justify-content-md-center mt-5"><h2>No data available</h2></Row></>)}
+      </>
   }
         </>
      ) : (
