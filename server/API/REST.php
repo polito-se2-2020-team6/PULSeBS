@@ -3,7 +3,10 @@ require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 require_once "./StatsBookings.php";
-require_once './ListLectures.php';
+require_once "upload_functions/UploadCourses.php";
+require_once "upload_functions/UploadEnrollements.php";
+require_once "upload_functions/UploadStudents.php";
+require_once "upload_functions/UploadTeachers.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -12,14 +15,6 @@ header("Content-Type: application/json");
 
 define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
-/* Constant defining */
-
-define("USER_TYPE_STUDENT", 0);
-define("USER_TYPE_TEACHER", 1);
-define("USER_TYPE_BOOK_MNGR", 2);
-
-define('LECTURE_REMOTE', 0x1);
-define('LECTURE_CANCELLED', 0x2);
 
 /* Turning warning and notices into exceptions */
 
@@ -88,6 +83,185 @@ if (!function_exists('do_logout')) {
 		echo json_encode(array('success' => true));
 	}
 }
+
+if (!function_exists('list_lectures')) {
+
+	function list_lectures($vars) {
+
+		$userId = intval($vars['userId']);
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		// Get type of user
+		$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId');
+		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+		$userData = $stmt->fetch();
+
+		if (!$userData) {
+			// User doesn't exist, but is logged in ❓❓❓
+			echo json_encode(array('success' => false));
+			return;
+		}
+
+		$userType = intval($userData['type']);
+
+		$query = 'SELECT * FROM lectures L';
+
+		// Allow only for 0 (student) and 1 (teacher)
+		if ($userType == 0) { // Student
+			$query .= ', course_subscriptions CS WHERE L.course_id = CS.Course_id AND CS.user_id = :userId';
+		} else if ($userType == 1) { // Teacher
+			$query .= ', courses C WHERE C.ID = L.course_id AND C.teacher_id = :userId';
+		} else { // Everyone else
+			// Not authorized
+			echo json_encode(array('success' => false));
+			return;
+		}
+
+		// Filter out cancelled lectures
+		$query .= ' AND settings & :cancelled = 0';
+
+		// Add optional ranges to query
+		if (isset($_GET['startDate'])) {
+			$query .= ' AND start_ts >= :startDate';
+		}
+		if (isset($_GET['endDate'])) {
+			$query .= ' AND start_ts <= :endDate';
+		}
+
+		// Get list of lectures, ordered
+		$query .= ' ORDER BY start_ts, ID ASC';
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+		$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
+
+		if (isset($_GET['startDate'])) {
+			$Ymd = explode('-', $_GET['startDate']);
+			$ts = mktime(0, 0, 0, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
+			$stmt->bindValue(':startDate', $ts, PDO::PARAM_INT);
+		}
+		if (isset($_GET['endDate'])) {
+			$Ymd = explode('-', $_GET['endDate']);
+			$ts = mktime(59, 59, 23, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
+			$stmt->bindValue(':endDate', $ts, PDO::PARAM_INT);
+		}
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$lectures = array();
+		while ($l = $stmt->fetch()) {
+			$lecture = array(
+				'lectureId' => intval($l['0']),
+				'courseId' => intval($l['course_id']),
+				'startTS' => intval($l['start_ts']),
+				'endTS' => intval($l['end_ts']),
+				'online' => boolval($l['settings'] & LECTURE_REMOTE),
+			);
+
+			// Get roomName, totalSeats
+			$stmt_inner = $pdo->prepare('SELECT * FROM rooms WHERE ID = :roomId');
+			$stmt_inner->bindValue(':roomId', intval($l['room_id']), PDO::PARAM_INT);
+
+			if (!$stmt_inner->execute()) {
+				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+			}
+
+			$room = $stmt_inner->fetch();
+			if (!$room) {
+				// Room does not exist
+				echo json_encode(array('success' => false));
+				return;
+			}
+
+			$lecture['roomName'] = $room['name'];
+			$lecture['totalSeats'] = intval($room['seats']);
+
+			// Compute bookedSeats
+			$stmt_inner = $pdo->prepare('SELECT COUNT(*) AS n_bookings FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL');
+			$stmt_inner->bindValue(':lectureId', $lecture['lectureId'], PDO::PARAM_INT);
+
+			if (!$stmt_inner->execute()) {
+				throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+			}
+
+			$lecture["inWaitingList"] = check_user_in_waiting_list($lecture["lectureId"]);
+
+			$bookedSeats = $stmt_inner->fetch();
+			if (!$bookedSeats) {
+				// wtf does this even mean?
+				echo json_encode(array('success' => false));
+				return;
+			}
+
+			$lecture['bookedSeats'] = intval($bookedSeats['n_bookings']);
+
+			// Get courseName, teacherName
+			if ($userType == 1) {
+				$lecture['courseName'] = $l['name'];
+				$lecture['teacherName'] = $userData['lastname'] . ' ' . $userData['firstname'];
+			} else {
+				$stmt_inner = $pdo->prepare('SELECT * FROM courses WHERE ID = :courseId');
+				$stmt_inner->bindValue(':courseId', $lecture['courseId'], PDO::PARAM_INT);
+
+				if (!$stmt_inner->execute()) {
+					throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+				}
+
+				$course = $stmt_inner->fetch();
+				if (!$course) {
+					// Course does not exist
+					echo json_encode(array('success' => false));
+					return;
+				}
+
+				$lecture['courseName'] = $course['name'];
+
+				$stmt_inner = $pdo->prepare('SELECT * FROM users WHERE ID = :teacherId');
+				$stmt_inner->bindValue(':teacherId', intval($course['teacher_id']), PDO::PARAM_INT);
+
+				if (!$stmt_inner->execute()) {
+					throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+				}
+
+				$teacher = $stmt_inner->fetch();
+				if (!$teacher || intval($teacher['type']) !== 1) {
+					// Teacher does not exist, or is not a teacher
+					echo json_encode(array('success' => false));
+					return;
+				}
+
+				// Compute bookedSelf
+				if ($userType == 1) { // Teacher
+					// Cannot book lectures, always false
+					$lectures['bookedSelf'] = false;
+				} else {
+					$stmt_inner = $pdo->prepare('SELECT * FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL AND user_id == :userId');
+					$stmt_inner->bindValue(':lectureId', $lecture['lectureId'], PDO::PARAM_INT);
+					$stmt_inner->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+					if (!$stmt_inner->execute()) {
+						throw new PDOException($stmt_inner->errorInfo(), $stmt_inner->errorCode());
+					}
+
+					$lecture['bookedSelf'] = boolval($stmt_inner->fetch());
+				}
+
+				$lecture['teacherName'] = $teacher['lastname'] . ' ' . $teacher['firstname'];
+			}
+
+			array_push($lectures, $lecture);
+		}
+
+		// Send stuff
+		echo json_encode(array('success' => true, 'lectures' => $lectures));
+	}
+}
+
 
 if (!function_exists('print_types')) {
 	function print_types($vars) {
@@ -367,7 +541,7 @@ if (!function_exists('book_lecture')) {
 			$in_wait_list = check_user_in_waiting_list($lectureId);
 			//I send a confirmation email
 			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
-			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .".". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
+			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] . "." . ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
 			$mail_result = @mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
 				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
@@ -393,6 +567,10 @@ if (!function_exists('cancel_booking')) {
 
 			$lectureId = intval($_DELETE['lectureId']);
 
+			//getting the next in line to notify later
+			$next_waiting_student = get_waiting_list_by_lecture($lectureId, 1);
+			$is_cancelling_user_in_waiting_list = check_user_in_waiting_list($lectureId, $userId);
+
 			$pdo = new PDO('sqlite:../db.sqlite');
 
 			// Check user exists and is student
@@ -409,8 +587,9 @@ if (!function_exists('cancel_booking')) {
 			// Check lecture exists, is in future and is booked by student
 			$now = time();
 			$stmt = $pdo->prepare('SELECT * 
-								   FROM lectures L, bookings B
+								   FROM lectures L, bookings B, courses C
 								   WHERE L.ID = B.lecture_id
+								       AND L.course_id = C.ID
 									   AND L.ID = :lectureId
 									   AND L.start_ts > :currentTs
 									   AND B.user_id = :userId
@@ -418,6 +597,14 @@ if (!function_exists('cancel_booking')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':currentTs', $now, PDO::PARAM_INT);	// Check for timezones discrepancies
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			if (!$lecture = $stmt->fetch()) {
+				throw new PDOException('Lecture ' . $userId . ' not found.');
+			}
+
 			// Delete (via update)
 			$stmt = $pdo->prepare('UPDATE bookings 
 								   SET cancellation_ts = :currentTs 
@@ -428,6 +615,13 @@ if (!function_exists('cancel_booking')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
+			}
+
+			//notifying the next student in line, if any
+			if(!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list){
+				$student_info = get_user($next_waiting_student[0]);
+				$start_time = new DateTime("@".$lecture['start_ts']);
+				@mail($student_info['email'], "Moving out of waiting list for ".$lecture['name'], "You have been moved out from waiting list for the lecture of ".$lecture." scheduled for ".$start_time->format("Y-m-d h:i"));
 			}
 
 			// Success
@@ -584,6 +778,11 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 
 	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
+
+	$r->addRoute('POST', API_PATH . '/courses/upload', ['upload_courses', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/enrollments/upload', ['upload_enrollments', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/students/upload', ['upload_students', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/teachers/upload', ['upload_teachers', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere

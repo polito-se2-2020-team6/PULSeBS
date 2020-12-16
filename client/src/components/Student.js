@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import API from "../API/API";
 import LectureList from "./Lectures";
 import { AuthContext } from "../auth/AuthContext";
-import { ROLES } from "../data/consts";
 
 class Student extends Component {
   constructor(props) {

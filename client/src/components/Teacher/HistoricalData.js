@@ -1,9 +1,10 @@
 // filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
 // scompare la tab
 
-import React, { Component } from "react";
+import React from "react";
 import { Bar } from 'react-chartjs-2';
 import API from "../../API/API";
+import moment from "moment";
 
 
 import  { Redirect } from 'react-router-dom'
@@ -18,38 +19,11 @@ import {
 } from "react-bootstrap";
 import { AuthContext } from "../../auth/AuthContext";
 
-
-var lecturesDetailDay = [
-  {
-    course: "History",
-    lecture: "HY-01",
-    averge: 4.9,
-  },
-  {
-    course: "Hello",
-    lecture: "HY-02",
-    averge: 7.123456,
-  }];
-
-  var lecturesDetailMonth = [
-    {
-      course: "History",
-      lecture: "HY-01",
-      averge: 1,
-    },
-    {
-      course: "Hello",
-      lecture: "HY-02",
-      averge: 3,
-    }];
-
 var n = 0;
-//////////////////////////////////// variabili prova max
+
 var months = [ "January", "February", "March", "April", "May", "June", 
 "July", "August", "September", "October", "November", "December" ];
 
-
-//////////////////////////////////// fine variabili max
 
 class HistoricalData extends React.Component {
   constructor(props) {
@@ -68,23 +42,29 @@ class HistoricalData extends React.Component {
       range: 5,
       progress: 0,
       maxOffset: 0,
+      authUser: {}
     };
     this.wrapper = React.createRef();
   }
 
-  componentDidMount(){
-    console.log("Modulo")
-    console.log(Math.floor((-10)/12))
-    this.getLectures(this.context.authUser.userId)
+  async componentDidMount(){
+    await this.isLogged()
+    console.log(this.state.authUser)
+    this.getLectures(this.state.authUser.userId)
     
   }
-  /*
-  getDateOfWeek(w, y) {
-    var d = (1 + (w - 1) * 7); // 1st of January + 7 days for each week
 
-    return new Date(y, 0, d);
-}
-*/
+  isLogged = async () => {
+    const response = await API.isLogged();
+    try {
+      this.setState({ authUser: response, authErr: null });
+      
+    } catch (errorObj) {
+      this.props.history.push("/login");
+      // this.setState({ authErr: err.errorObj });
+    }
+  };
+  
 
   getLectures = (userId) => {
     API.getAllLectures(userId)
@@ -128,31 +108,32 @@ class HistoricalData extends React.Component {
                           - 3 + (week1.getDay() + 6) % 7) / 7);
   }
 
+  getDateOfWeek = (w, y) => {
+    var d = (1 + (w - 1) * 7); // 1st of January + 7 days for each week
+    return new Date(y, 0, d);
+  }
+  
+
   getStats = (idLecture, idCourse, period, week, month, year, i, data, tableData) => {
     API.getStats(idLecture, idCourse, period, week, month, year)
       .then((s) => {
-        console.log(s);
-        //this.setState({
-        //  totalLectures: lectures || [],
-        //});
         console.log(month);
         console.log(week);
         console.log(idLecture);
         data.labels[i]=0;
-        data.labels[i]= months[month] || week || idLecture;
-        console.log(data.labels[i]);
+        let l = idLecture?idLecture + ' - ' +  this.state.allCourses.find(x => x.courseId === s.courseId).courseName: '';
+        let m = month?months[month]+ ' ' +year:'';
+        let w = week? moment(this.getDateOfWeek(week, year)).format("DD/MM/YYYY"):'';
+        data.labels[i]= m || w || l;
         data.datasets[0].data[i]=s.bookingsAvg;
-        //console.log("stampe")
-        //console.log(i);
-        //console.log(this.state.detailLevel);
-        //console.log(this.state.totalLectures.length);
-        tableData[i] = {labels: months[month] || week || idLecture, data: s.bookingsAvg}
+        tableData[i] = {labels: m || w || l , data: s.bookingsAvg}
+
         if(this.state.detailLevel==="Week"|| this.state.detailLevel==="Month"){
           n++;
-          console.log("primo")
+          
           if(n>=10){
             n=0;
-            console.log("patasta");
+            
             this.setState({dataState : data, lectures : tableData});
             this.setState({progress : 0});
             
@@ -160,11 +141,10 @@ class HistoricalData extends React.Component {
         }
         if(this.state.detailLevel==="Lecture"){
           n++;
-          console.log("LEZIONI");
-          console.log(n);
+          
           if(n>=this.state.totalLectures.length-10*(this.state.offset-1)){
             n=0;
-            console.log("patasta");
+            
             this.setState({dataState : data, lectures : tableData});
             this.setState({progress : 0});
           }
@@ -208,16 +188,15 @@ class HistoricalData extends React.Component {
       }
     }else if (text === 'Week'){
       for(i=0;i<10;i++){
-        console.log("dentro")
+        
         let week= ((this.getWeek()-10*this.state.offset+i)%52+52)%52; 
         console.log(this.state.offset);
         let year=date.getFullYear() - Math.abs(Math.floor( (this.getWeek()-10*this.state.offset+i)/52) );
                 this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', week, '', year, i, data, tableData) 
             }
     }else if (text === 'Month'){
-      var tableData = [];
+      
       for(i=0;i<10;i++){
-        //testare modulo -30
         let month= ((date.getMonth()-10*this.state.offset+i)%12+12)%12; 
         let year=date.getFullYear() - Math.abs(Math.floor( (date.getMonth()-10*this.state.offset+i)/12) );
          this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'month', '',month , year, i, data, tableData)
@@ -228,7 +207,6 @@ class HistoricalData extends React.Component {
   }
 
   async changeRange(x){
-    console.log(x);
  
     if(x>0){
        await this.setState({offset: this.state.offset-1})
@@ -238,8 +216,6 @@ class HistoricalData extends React.Component {
 
    }
    this.changeValue(this.state.detailLevel);
-   //console.log(range);
-    //this.setState({range: range});
   }
 
   async setOffset(detail){
@@ -256,19 +232,9 @@ class HistoricalData extends React.Component {
             {context.authUser ? (
           
         <>
-        {this.state.progress == 1 ?  <Row className="justify-content-md-center mt-5" ><Spinner animation="border" variant="primary" /></Row>: 
+        {this.state.progress === 1 ?  <Row className="justify-content-md-center mt-5" ><Spinner animation="border" variant="primary" /></Row>: 
         <Container className="mt-5">
-            <Row className="justify-content-md-center">
-            {this.state.detailLevel==="Select detail"? <></> :
-               <Pagination>
-                      
-                      {this.state.offset>=this.state.maxOffset && this.state.detailLevel==="Lecture" ? <></>: <Pagination.Prev  onClick={() => this.changeRange(-1)}/>}
-                      <Pagination.Item disabled>{this.state.offset}</Pagination.Item>
-                      
-                      {this.state.offset<=1 ? <></>: <Pagination.Next onClick={() => this.changeRange(+1)}/>}
-
-                </Pagination>
-              } 
+            <Row> 
               <Col md={2}>
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -282,8 +248,8 @@ class HistoricalData extends React.Component {
               </Dropdown.Menu>
             </Dropdown>
             </Col>
-            <Col md={2}>
-              {this.state.detailLevel==="Lecture"? <></> : 
+            <Col md={8}>
+              {this.state.detailLevel==="Lecture"||this.state.detailLevel==="Select detail"? <></> : 
               <Dropdown>
                         <Dropdown.Toggle variant="success" id="dropdown-basic">
                           {this.state.detailLevelCourse}
@@ -296,6 +262,17 @@ class HistoricalData extends React.Component {
               </Dropdown>
               }
            </Col>
+            <Col>
+            {this.state.detailLevel==="Select detail"? <></> :
+               <Pagination>
+                      {this.state.offset>=this.state.maxOffset && this.state.detailLevel==="Lecture" ? <></>: <Pagination.Prev  onClick={() => this.changeRange(-1)}/>}
+                      <Pagination.Item disabled>{this.state.offset}</Pagination.Item>
+                      
+                      {this.state.offset<=1 ? <></>: <Pagination.Next onClick={() => this.changeRange(+1)}/>}
+
+                </Pagination>
+              }
+              </Col>
             </Row>
             <Row className="mt-3">
               <Col><h2 className="text-center">Table Data</h2></Col>

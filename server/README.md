@@ -4,4 +4,5 @@
 - antoniov, 987654321
 - alessandrob, passw2
 - mostafat, helloworld
-- bookman, 123123123
+- boookman, 123123123
+- suppofr, passw1

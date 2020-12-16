@@ -27,10 +27,10 @@ function DialogAlert(props) {
         <Modal.Body>Are you sure you want to delete the lecture of {props.courseName} at {moment(props.startTS).format("DD/MM/YYYY HH:mm")}?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            No
           </Button>
           <Button variant="danger" onClick={()=>{handleClose();props.onConfirm(props.lectureId);}}>
-            Delete
+            Yes, I am
           </Button>
         </Modal.Footer>
       </Modal>
@@ -51,10 +51,10 @@ else if(props.dialog==="turn"){
   <Modal.Body>Are you sure you want to turn the lecture of {props.courseName} at {moment(props.startTS).format("DD/MM/YYYY HH:mm")}?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Back
+            No
           </Button>
           <Button variant="primary" onClick={()=>{handleClose();props.onConfirm(props.lectureId);}}>
-            Turn
+            Yes, I am
           </Button>
         </Modal.Footer>
       </Modal>

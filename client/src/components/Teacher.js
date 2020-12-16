@@ -83,25 +83,23 @@ class Teacher extends React.Component {
   }
 
 
-  componentDidMount(){
-    this.user();
-    this.getLectures(this.context.authUser.userId)
-    console.log(this.context.authUser)
+  async componentDidMount(){
+    await this.isLogged();
+    console.log(this.state.user.userId);
+    this.getLectures(this.state.user.userId)
+   
     
 
   }
-  user = () => {
-    API.isLogged()
-      .then((user) => {
-        console.log("eccolooo")
-        console.log(user);
-        this.setState({user : user})
-        //this.getLectures(user.userId)
-        
-      })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
+  isLogged = async () => {
+    const response = await API.isLogged();
+    try {
+      this.setState({ user: response});
+      
+    } catch (errorObj) {
+      this.props.history.push("/login");
+      // this.setState({ authErr: err.errorObj });
+    }
   };
 
   getLectures = (userId) => {
