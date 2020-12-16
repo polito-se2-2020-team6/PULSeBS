@@ -81,7 +81,11 @@ if (!function_exists("upload_schedules")) {
 
 				$start = new DateTime($_POST['startDay']);
 				$end = new DateTime($_POST['endDay']);
-				$times = explode('-', $l[$positions[SCHEDULE_TIME]]);
+				$correctFormat = preg_replace('/(\d{2}:\d{2})(:)(\d{2}:\d{2})/', '$1-$3', $l[$positions[SCHEDULE_TIME]]);
+				if (!preg_match('/\d{2}:\d{2}-\d{2}:\d{2}/', $correctFormat)) {
+					continue;
+				}
+				$times = explode('-', $correctFormat);
 
 				$start->modify($l[$positions[SCHEDULE_DAY]]);
 				$start->modify($times[0]);
