@@ -12,7 +12,9 @@ import {
   Container,
   Row,
   Table,
-  Dropdown
+  Dropdown,
+  Pagination,
+  Spinner,
 } from "react-bootstrap";
 import { AuthContext } from "../../auth/AuthContext";
 
@@ -63,6 +65,9 @@ class HistoricalData extends React.Component {
       totalLectures: [],
       allCourses: [],
       offset: 1,
+      range: 5,
+      progress: 0,
+      maxOffset: 0,
     };
     this.wrapper = React.createRef();
   }
@@ -90,8 +95,9 @@ class HistoricalData extends React.Component {
         this.setState({
           totalLectures: lectures.filter(l => new Date(l.startTS)<today)  || [],
         });
-        
         console.log(this.state.totalLectures);
+
+        this.setState({maxOffset :   Math.ceil(this.state.totalLectures.length/10)})
         
         const seen = new Set();
         const filteredArr = this.state.totalLectures.filter(l => {
@@ -99,8 +105,10 @@ class HistoricalData extends React.Component {
         seen.add(l.courseId);
         return !duplicate;
         });
+        console.log("filter")
         console.log(filteredArr);
         this.setState({allCourses: filteredArr});
+
         this.setState({detailLevelCourse: this.state.allCourses[0].courseName});
       })
       .catch((errorObj) => {
@@ -146,16 +154,19 @@ class HistoricalData extends React.Component {
             n=0;
             console.log("patasta");
             this.setState({dataState : data, lectures : tableData});
+            this.setState({progress : 0});
+            
           }
         }
         if(this.state.detailLevel==="Lecture"){
           n++;
           console.log("LEZIONI");
           console.log(n);
-          if(n>=this.state.totalLectures.length){
+          if(n>=this.state.totalLectures.length-10*(this.state.offset-1)){
             n=0;
             console.log("patasta");
             this.setState({dataState : data, lectures : tableData});
+            this.setState({progress : 0});
           }
         }
 
@@ -166,6 +177,7 @@ class HistoricalData extends React.Component {
   };
 
   changeValue(text) {
+    this.setState({progress : 1});
     var i;
     var data = {
       labels: [],
@@ -187,14 +199,18 @@ class HistoricalData extends React.Component {
     
     if (text === 'Lecture'){
       
-      for(i=0;i<this.state.totalLectures.length;i++){
-        
-        this.getStats(this.state.totalLectures[i].lectureId, this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, '','', '', '', i, data, tableData);
+      for(i=0;i<10;i++){
+        let j = this.state.totalLectures.length-(10*this.state.offset)+i;
+        if(j>=0){
+        this.getStats(this.state.totalLectures[j].lectureId, this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, '','', '', '', i, data, tableData);
+        }
+
       }
     }else if (text === 'Week'){
       for(i=0;i<10;i++){
         console.log("dentro")
         let week= ((this.getWeek()-10*this.state.offset+i)%52+52)%52; 
+        console.log(this.state.offset);
         let year=date.getFullYear() - Math.abs(Math.floor( (this.getWeek()-10*this.state.offset+i)/52) );
                 this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', week, '', year, i, data, tableData) 
             }
@@ -211,6 +227,26 @@ class HistoricalData extends React.Component {
     this.setState({detailLevel: text})
   }
 
+  async changeRange(x){
+    console.log(x);
+ 
+    if(x>0){
+       await this.setState({offset: this.state.offset-1})
+    }
+    else if(x<0){
+      await this.setState({offset: this.state.offset+1})
+
+   }
+   this.changeValue(this.state.detailLevel);
+   //console.log(range);
+    //this.setState({range: range});
+  }
+
+  async setOffset(detail){
+    await this.setState({offset : 1});
+    this.changeValue(detail);
+  }
+
   render() {
    
     return (
@@ -220,8 +256,19 @@ class HistoricalData extends React.Component {
             {context.authUser ? (
           
         <>
+        {this.state.progress == 1 ?  <Row className="justify-content-md-center mt-5" ><Spinner animation="border" variant="primary" /></Row>: 
         <Container className="mt-5">
             <Row className="justify-content-md-center">
+            {this.state.detailLevel==="Select detail"? <></> :
+               <Pagination>
+                      
+                      {this.state.offset>=this.state.maxOffset && this.state.detailLevel==="Lecture" ? <></>: <Pagination.Prev  onClick={() => this.changeRange(-1)}/>}
+                      <Pagination.Item disabled>{this.state.offset}</Pagination.Item>
+                      
+                      {this.state.offset<=1 ? <></>: <Pagination.Next onClick={() => this.changeRange(+1)}/>}
+
+                </Pagination>
+              } 
               <Col md={2}>
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -229,13 +276,14 @@ class HistoricalData extends React.Component {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Lecture</Dropdown.Item>
-                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Week</Dropdown.Item>
-                <Dropdown.Item  onClick={(e) => this.changeValue(e.target.textContent)}>Month</Dropdown.Item>
+                <Dropdown.Item  onClick={(e) => this.setOffset(e.target.textContent)}>Lecture</Dropdown.Item>
+                <Dropdown.Item  onClick={(e) => this.setOffset(e.target.textContent)}>Week</Dropdown.Item>
+                <Dropdown.Item  onClick={(e) => this.setOffset(e.target.textContent)}>Month</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             </Col>
             <Col md={2}>
+              {this.state.detailLevel==="Lecture"? <></> : 
               <Dropdown>
                         <Dropdown.Toggle variant="success" id="dropdown-basic">
                           {this.state.detailLevelCourse}
@@ -246,6 +294,7 @@ class HistoricalData extends React.Component {
                         ))}
                         </Dropdown.Menu>
               </Dropdown>
+              }
            </Col>
             </Row>
             <Row className="mt-3">
@@ -289,6 +338,7 @@ class HistoricalData extends React.Component {
               </Col>
             </Row>
         </Container>
+  }
         </>
      ) : (
       <><Redirect to='/login'  /></>

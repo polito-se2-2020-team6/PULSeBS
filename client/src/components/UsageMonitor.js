@@ -19,8 +19,15 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   Typography,
 } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
 
 import { Col, Container, Row } from "react-bootstrap";
 import API from "../API/API";
@@ -47,6 +54,7 @@ class UsageMonitor extends React.Component {
       month: "",
       year: "",
       isSelected: false,
+      allCourses: [],
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -55,12 +63,22 @@ class UsageMonitor extends React.Component {
     // this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     // just to solve the problem of refreshing the page and prevent going to the login Page
     if (!this.props.isStillLogged) {
       this.props.isLogged(true);
     }
-  }
+    await API.getAllCourses().then((allCourses) => {
+      this.setState({
+        allCourses: allCourses.courses,
+      });
+    });
+    console.log(
+      this.state.allCourses.map((c) => {
+        console.log(c.name, c.ID);
+      })
+    );
+  };
 
   //   async handleChange(e) {
   //     // setAge(event.target.value);
@@ -106,15 +124,15 @@ class UsageMonitor extends React.Component {
         },
         {
           slice: "BookingsSD",
-          area: this.state.statistics.bookingsStdDev,
+          area: this.state.statistics.bookingsStdDev.toFixed(2),
         },
         {
           slice: "AttendancesSD",
-          area: this.state.statistics.attendancesStdDev,
+          area: this.state.statistics.attendancesStdDev.toFixed(2),
         },
         {
           slice: "CancellationsSD",
-          area: this.state.statistics.cancellationsStdDev,
+          area: this.state.statistics.cancellationsStdDev.toFixed(2),
         },
       ];
       this.setState({
@@ -152,8 +170,8 @@ class UsageMonitor extends React.Component {
     }
 
     if (this.state.filter === "weekly") {
-      for (let i = 0; i < 10; i++) {
-        const weekNo = (this.getWeek() - 10 + i) % 52;
+      for (let i = 0; i < 6; i++) {
+        const weekNo = (this.getWeek() - 6 + i) % 52;
         this.setState({
           weekNo,
           // isSelected: false,
@@ -258,15 +276,15 @@ class UsageMonitor extends React.Component {
         },
         {
           mStat: "Bookings Average",
-          mValue: this.state.monthlyStats.bookingsAvg,
+          mValue: this.state.monthlyStats.bookingsAvg.toFixed(2),
         },
         {
           mStat: "Cancellations Average",
-          mValue: this.state.monthlyStats.cancellationsAvg,
+          mValue: this.state.monthlyStats.cancellationsAvg.toFixed(2),
         },
         {
           mStat: "Attendances Average",
-          mValue: this.state.monthlyStats.attendancesAvg,
+          mValue: this.state.monthlyStats.attendancesAvg.toFixed(2),
         },
         {
           mStat: "Number of Lectures",
@@ -286,12 +304,86 @@ class UsageMonitor extends React.Component {
           <>
             {context.authUser === null && <Redirect to="/login"></Redirect>}
             <Container className="center center mt-5 ">
-              <Typography variant="h1" component="h2">
+              <Typography
+                variant="h1"
+                component="h2"
+                id="welcomeText"
+                className="mb-5"
+              >
                 {/*  use ? to solve the
                 problem of having no data */}
                 Welcome Mr.{context.authUser?.lastname}
               </Typography>
-
+              <Row>
+                <Col>
+                  <TableContainer component={Paper}>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Course Name
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Teacher First Name
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Teacher Last Name
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Teacher Email
+                          </TableCell>
+                          <TableCell
+                            style={{ fontWeight: "bold" }}
+                            align="center"
+                          >
+                            Teacher ID
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody stripedRows>
+                        {this.state.allCourses.map((row) => (
+                          <TableRow
+                            style={
+                              row.ID % 2
+                                ? { background: "#a3b687" }
+                                : { background: "white" }
+                            }
+                            key={row.ID}
+                          >
+                            <TableCell component="th" scope="row">
+                              {row.name}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherFirstName}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherLastName}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherEmail}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.teacherId}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Col>
+              </Row>
               <Row>
                 <Col className="center center mt-5" md={{ span: 4, offset: 4 }}>
                   <FormGroup>
@@ -307,11 +399,10 @@ class UsageMonitor extends React.Component {
                         onChange={this.handleChange}
                       >
                         <MenuItem value={0}>ALL Courses</MenuItem>
-                        <MenuItem value={1}>Software Engineering I</MenuItem>
-                        <MenuItem value={2}>Software Engineering</MenuItem>
-                        <MenuItem value={3}>APA`</MenuItem>
-                        <MenuItem value={4}>Data Science</MenuItem>
-                        <MenuItem value={5}>Web Application</MenuItem>
+                        {/* get data and fill DropDown Dynamically */}
+                        {this.state.allCourses.map((c) => {
+                          return <MenuItem value={c.ID}>{c.name}</MenuItem>;
+                        })}
                       </Select>
                     </FormControl>
                   </FormGroup>
@@ -385,17 +476,23 @@ class UsageMonitor extends React.Component {
                     </ListItem>
                   </List> */}
                   {this.state.filter === "monthly" && (
-                    <FormGroup className="mt-5">
-                      <FormControl>
-                        <DatePicker
-                          selected={this.state.startDate}
-                          onChange={(date) => this.setStartDate(date)}
-                          dateFormat="MM/yyyy"
-                          showMonthYearPicker
-                          inline // for showing the specific calendar
-                        />
-                      </FormControl>
-                    </FormGroup>
+                    <>
+                      <p className="mt-4">
+                        Select the Month to generate the Report:{" "}
+                      </p>
+                      <FormGroup>
+                        <FormControl>
+                          <DatePicker
+                            id="monthDatePicker"
+                            selected={this.state.startDate}
+                            onChange={(date) => this.setStartDate(date)}
+                            dateFormat="MM/yyyy"
+                            showMonthYearPicker
+                            inline // for showing the specific calendar
+                          />
+                        </FormControl>
+                      </FormGroup>
+                    </>
                   )}
                 </Col>
               </Row>
