@@ -73,12 +73,6 @@ if (!function_exists("upload_schedules")) {
 				) {
 					$pdo->rollBack();
 
-					var_dump($l[$positions[SCHEDULE_CODE]]);
-					var_dump($rooms);
-					var_dump($l[$positions[SCHEDULE_ROOM]]);
-					var_dump($courses);
-
-
 					throw new Exception('Malformed input.');
 				}
 
