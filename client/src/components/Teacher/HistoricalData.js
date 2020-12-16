@@ -1,6 +1,3 @@
-// filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
-// scompare la tab
-
 import React from "react";
 import { Bar } from 'react-chartjs-2';
 import API from "../../API/API";
@@ -34,12 +31,10 @@ class HistoricalData extends React.Component {
       detailLevel: 'Select detail',
       detailLevelCourse: 'Select Course',
       detailLevelPeriod: 'Select Period',
-      prova: 'defaaalt',
       dataState : {},
       totalLectures: [],
       allCourses: [],
       offset: 1,
-      range: 5,
       progress: 0,
       maxOffset: 0,
       authUser: {}
@@ -51,8 +46,6 @@ class HistoricalData extends React.Component {
     this.setState({progress: 1})
     await this.isLogged()
     this.getLectures(this.state.authUser.userId)
-    
-    
   }
 
   isLogged = async () => {
@@ -71,13 +64,9 @@ class HistoricalData extends React.Component {
     API.getAllLectures(userId)
       .then((lectures) => {
         var today = new Date();
-        
-       
         this.setState({
           totalLectures: lectures.filter(l => new Date(l.startTS)<today)  || [],
         });
-        console.log(this.state.totalLectures);
-
         this.setState({maxOffset :   Math.ceil(this.state.totalLectures.length/10)})
         
         const seen = new Set();
@@ -86,8 +75,7 @@ class HistoricalData extends React.Component {
         seen.add(l.courseId);
         return !duplicate;
         });
-        console.log("filter")
-        console.log(filteredArr);
+        
         this.setState({allCourses: filteredArr});
         this.setState({detailLevelCourse: this.state.allCourses[0].courseName});
         this.setState({progress: 0});
@@ -118,7 +106,6 @@ class HistoricalData extends React.Component {
   getStats = (idLecture, idCourse, period, week, month, year, i, data, tableData) => {
     API.getStats(idLecture, idCourse, period, week, month, year)
       .then((s) => {
-        console.log(s);
         
         data.labels[i]=0;
         let l = (idLecture || idLecture===0)?idLecture + ' - ' +  this.state.allCourses.find(x => x.courseId === idCourse).courseName: '';
@@ -142,7 +129,7 @@ class HistoricalData extends React.Component {
         if(this.state.detailLevel==="Lecture"){
           n++;
           let x = 10;
-          console.log('numero'+n)
+          
           this.state.totalLectures.length-10*(this.state.offset-1)>=10?x=10:x=this.state.totalLectures.length-10*(this.state.offset-1);
           if(n>=x){
             n=0;
@@ -192,7 +179,6 @@ class HistoricalData extends React.Component {
       for(i=0;i<10;i++){
         
         let week= ((this.getWeek()-10*this.state.offset+i)%52+52)%52; 
-        console.log(this.state.offset);
         let year=date.getFullYear() - Math.abs(Math.floor( (this.getWeek()-10*this.state.offset+i)/52) );
                 this.getStats('', this.state.allCourses.find(x => x.courseName === this.state.detailLevelCourse).courseId, 'week', week, '', year, i, data, tableData) 
             }
