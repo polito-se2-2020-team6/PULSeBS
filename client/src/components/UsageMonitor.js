@@ -73,6 +73,7 @@ class UsageMonitor extends React.Component {
         allCourses: allCourses.courses,
       });
     });
+    console.log(this.state.allCourses);
   };
 
   //   async handleChange(e) {
@@ -447,7 +448,7 @@ class UsageMonitor extends React.Component {
                   )}
                   {this.state.filter === "weekly" && (
                     <Chart
-                      id="chart"
+                      id="weeklyChart"
                       palette="Soft"
                       title="Weekly Statistics"
                       dataSource={this.state.weeklyDataSource}
@@ -491,7 +492,7 @@ class UsageMonitor extends React.Component {
                         title="Monthly Statistics"
                         dataSource={this.state.mDataSource}
                         rotated={true}
-                        id="chart"
+                        id="monthlyChart"
                       >
                         <ArgumentAxis>
                           <Label customizeText={this.customizeText} />
