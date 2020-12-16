@@ -416,6 +416,19 @@ async function getStatesMonthly(idCourse, MonthNo, year) {
   }
 }
 
+async function getAllCourses(){
+  const url = "/courses";
+  const response = await fetch(baseURL + url);
+  const courses = await response.json();
+  if(response.ok){
+    return courses;
+  }
+  else{
+    let err = { status: response.status, errObj: courses };
+    throw err; //An object with error coming from the server
+  }
+}
+
 async function uploadCsv(file, section) {
   return new Promise(function (resolve, reject) {
     //the received file will be formatted
@@ -486,5 +499,6 @@ const API = {
   getStatesWeekly,
   getStatesMonthly,
   uploadCsv,
+  getAllCourses
 };
 export default API;
