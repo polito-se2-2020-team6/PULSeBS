@@ -253,7 +253,7 @@ Require login as support officer
 # Upload schedule csv
 Requiire login as support officer
 
-- **POST** /api/schedule/upload
+- **POST** /api/schedules/upload
   - *request params*
     - schedule_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
     - startDay: string YYYY-mm-dd
