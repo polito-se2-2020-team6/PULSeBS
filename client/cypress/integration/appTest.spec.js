@@ -75,6 +75,7 @@ context("Booking Manager Page", () => {
       .should("be.visible")
       .should("have.text", "Welcome Mr.");
     // cy.get("#course").select("ALL Courses").should("have.value", "0");
+    cy.get("#teachersTable").should("be.visible");
     cy.get("#course").click();
     cy.get("li")
       .first()

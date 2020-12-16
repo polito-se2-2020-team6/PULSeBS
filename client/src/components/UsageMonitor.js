@@ -73,11 +73,6 @@ class UsageMonitor extends React.Component {
         allCourses: allCourses.courses,
       });
     });
-    console.log(
-      this.state.allCourses.map((c) => {
-        console.log(c.name, c.ID);
-      })
-    );
   };
 
   //   async handleChange(e) {
@@ -140,21 +135,6 @@ class UsageMonitor extends React.Component {
       });
     });
   };
-
-  // handleToggle = (value) => () => {
-  //   console.log(value);
-  //   const currentIndex = this.state.checked.indexOf(value);
-  //   const newChecked = [...this.state.checked];
-  //   if (currentIndex === -1) {
-  //     newChecked.push(value);
-  //   } else {
-  //     newChecked.splice(currentIndex, 1);
-  //   }
-  //   this.setState({
-  //     checked: newChecked,
-  //   });
-  //   console.log(this.state.checked);
-  // };
 
   handleFilterChange = async (event) => {
     console.log(event.target.value);
@@ -316,7 +296,7 @@ class UsageMonitor extends React.Component {
               </Typography>
               <Row>
                 <Col>
-                  <TableContainer component={Paper}>
+                  <TableContainer id="teachersTable" component={Paper}>
                     <Table size="small">
                       <TableHead>
                         <TableRow>
@@ -424,57 +404,6 @@ class UsageMonitor extends React.Component {
                     </FormControl>
                   </FormGroup>
 
-                  {/* <FormControl className="mt-5" component="fieldset">
-                    <FormLabel component="legend">Filters</FormLabel>
-                    <RadioGroup
-                      aria-label="gender"
-                      name="gender1"
-                      value={this.state.filter}
-                      onChange={this.handleFilterChange}
-                    >
-                      <FormControlLabel
-                        value="weekly"
-                        control={<Radio />}
-                        label="Weekly"
-                      />
-                      <FormControlLabel
-                        value="monthly"
-                        control={<Radio />}
-                        label="Monthly"
-                      />
-                    </RadioGroup>
-                  </FormControl> */}
-                  {/* <List
-                    className="mt-5"
-                    subheader={<ListSubheader>Filters</ListSubheader>}
-                  >
-                    <ListItem>
-                      <ListItemText id="Weekly" primary="Weekly Statistics" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          edge="end"
-                          onChange={this.handleToggle("weekly")}
-                          checked={this.state.checked.indexOf("weekly") !== -1}
-                          inputProps={{
-                            "aria-labelledby": "switch-list-label-wifi",
-                          }}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText id="Monthly" primary="Monthly Statistics" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          edge="end"
-                          onChange={this.handleToggle("Monthly")}
-                          checked={this.state.checked.indexOf("Monthly") !== -1}
-                          inputProps={{
-                            "aria-labelledby": "switch-list-label-bluetooth",
-                          }}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  </List> */}
                   {this.state.filter === "monthly" && (
                     <>
                       <p className="mt-4">
@@ -505,9 +434,6 @@ class UsageMonitor extends React.Component {
                       id="pie"
                       dataSource={this.state.areas}
                       palette="Bright"
-                      //   title="Area of Countries"
-                      //   onPointClick={this.pointClickHandler}
-                      //   onLegendClick={this.legendClickHandler}
                     >
                       <Series argumentField="slice" valueField="area">
                         <Label visible={true}>
@@ -532,7 +458,6 @@ class UsageMonitor extends React.Component {
                           displayMode="rotate"
                           format="yyyy-MM-dd"
                           rotationAngle="65"
-                          // alignment="right"
                         />
                       </ArgumentAxis>
 
@@ -558,20 +483,11 @@ class UsageMonitor extends React.Component {
                         verticalAlignment="bottom"
                         horizontalAlignment="center"
                       />
-                      {/* <Export enabled={true} /> */}
                     </Chart>
                   )}
                   {/* the below item should be visible once the week and year from Datepicker is selected */}
                   {this.state.isSelected === true && (
                     <>
-                      {/* <DatePicker
-                        selected={this.state.startDate}
-                        onChange={(date) => this.setStartDate(date)}
-                        dateFormat="MM/yyyy"
-                        showMonthYearPicker
-                        inline // for showing the specific calendar
-                      /> */}
-
                       <Chart
                         title="Monthly Statistics"
                         dataSource={this.state.mDataSource}
@@ -597,8 +513,6 @@ class UsageMonitor extends React.Component {
                         </Series>
 
                         <Legend visible={false} />
-
-                        {/* <Export enabled={true} /> */}
                       </Chart>
                     </>
                   )}
