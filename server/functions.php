@@ -87,16 +87,18 @@ if (!function_exists("check_user_in_waiting_list")) {
 	}
 }
 
-if (!function_exists("get_waiting_list_by_lecture")) {
-	function get_waiting_list_by_lecture($lecture_id) {
+
+if(!function_exists("get_waiting_list_by_lecture")){
+	function get_waiting_list_by_lecture($lecture_id, $limit = -1){
 		$seats = get_seats_by_lecture($lecture_id);
 
 		$pdo = new PDO("sqlite:../db.sqlite");
 
-		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT -1 OFFSET :seats");
-
+		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT :limit OFFSET :seats");
+		
 		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
+		$stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
 
 		if (!$stmt->execute()) {
 			throw new PDOException($stmt->errorInfo()[2]);
@@ -109,7 +111,6 @@ if (!function_exists("get_waiting_list_by_lecture")) {
 		return $waitlist;
 	}
 }
-
 
 if (!function_exists('get_list_of_teachers')) {
 	function get_list_of_teachers() {
@@ -194,6 +195,15 @@ if(!function_exists("get_myself")){
 			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
+if(!function_exists("get_user")){
+	function get_user($id) {
+		try {
+			$pdo = new PDO("sqlite:../db.sqlite");
+
+			$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE ID = :userId");
+			$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
+
+
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
@@ -211,7 +221,6 @@ if(!function_exists("get_myself")){
 				'city' => $user_data['city'],
 				'birthday' => $user_data['birthday'],
 				'SSN' => $user_data['SSN']
-				
 			);
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
