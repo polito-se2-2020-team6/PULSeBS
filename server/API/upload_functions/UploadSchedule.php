@@ -76,7 +76,7 @@ if (!function_exists("upload_schedules")) {
 					throw new Exception('Malformed input.');
 				}
 
-				$stmt->bindValue(':courseId', $l[$positions[SCHEDULE_CODE]], PDO::PARAM_INT);
+				$stmt->bindValue(':courseId', $courses[$l[$positions[SCHEDULE_CODE]]], PDO::PARAM_INT);
 				$stmt->bindValue(':roomId', $l[$positions[SCHEDULE_ROOM]], PDO::PARAM_INT);
 
 				$start = new DateTime($_POST['startDay']);
