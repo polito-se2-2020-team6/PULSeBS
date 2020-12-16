@@ -107,7 +107,7 @@ class HistoricalData extends React.Component {
     API.getStats(idLecture, idCourse, period, week, month, year)
       .then((s) => {
         
-        data.labels[i]=0;
+        //data.labels[i]=0;
         let l = (idLecture || idLecture===0)?idLecture + ' - ' +  this.state.allCourses.find(x => x.courseId === idCourse).courseName: '';
         let m = (month||month===0)?months[month]+ ' ' +year:'';
         let w = (week||week===0)? moment(this.getDateOfWeek(week, year)).format("DD/MM/YYYY"):'';
