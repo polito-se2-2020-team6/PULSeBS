@@ -595,6 +595,7 @@ if (!function_exists('cancel_booking')) {
 
 			//getting the next in line to notify later
 			$next_waiting_student = get_waiting_list_by_lecture($lectureId, 1);
+			$is_cancelling_user_in_waiting_list = check_user_in_waiting_list($lectureId, $userId);
 
 			$pdo = new PDO('sqlite:../db.sqlite');
 
@@ -643,10 +644,10 @@ if (!function_exists('cancel_booking')) {
 			}
 
 			//notifying the next student in line, if any
-			if(!empty($next_waiting_student)){
+			if(!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list){
 				$student_info = get_user($next_waiting_student[0]);
 				$start_time = new DateTime("@".$lecture['start_ts']);
-				@mail($student_info['email'], "Moving out of waiting list for ".$lecture['name'], "You have been moved out from waiting list for the lecture of ".$lecture['name']." scheduled for ".$start_time->format("Y-m-d h:i"));
+				@mail($student_info['email'], "Moving out of waiting list for ".$lecture['name'], "You have been moved out from waiting list for the lecture of ".$lecture." scheduled for ".$start_time->format("Y-m-d h:i"));
 			}
 
 			// Success
