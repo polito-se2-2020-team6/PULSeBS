@@ -73,6 +73,12 @@ if (!function_exists("upload_schedules")) {
 				) {
 					$pdo->rollBack();
 
+					var_dump($l[$positions[SCHEDULE_CODE]]);
+					var_dump($rooms);
+					var_dump($l[$positions[SCHEDULE_ROOM]]);
+					var_dump($courses);
+
+
 					throw new Exception('Malformed input.');
 				}
 
@@ -81,7 +87,7 @@ if (!function_exists("upload_schedules")) {
 
 				$start = new DateTime($_POST['startDay']);
 				$end = new DateTime($_POST['endDay']);
-				$times = str_split($l[$positions[SCHEDULE_TIME]], '-');
+				$times = explode('-', $l[$positions[SCHEDULE_TIME]]);
 
 				$start->modify($l[$positions[SCHEDULE_DAY]]);
 				$start->modify($times[0]);
@@ -91,7 +97,7 @@ if (!function_exists("upload_schedules")) {
 					$start->modify($times[1]);
 					$endTs = $start->getTimestamp();
 
-					$stmt->bindValue(':starTs', $startTs, PDO::PARAM_INT);
+					$stmt->bindValue(':startTs', $startTs, PDO::PARAM_INT);
 					$stmt->bindValue(':endTs', $endTs, PDO::PARAM_INT);
 
 					if (!$stmt->execute()) {

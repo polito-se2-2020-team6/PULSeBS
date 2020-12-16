@@ -193,7 +193,7 @@ if (!function_exists('get_list_of_rooms')) {
 			throw new PDOException($stmt->errorInfo()[2]);
 		}
 
-		$roomsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$roomsList = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
 		if ($roomsList === false) {
 			$roomsList = array();
