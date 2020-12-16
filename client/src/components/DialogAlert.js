@@ -24,7 +24,7 @@ function DialogAlert(props) {
         <Modal.Header closeButton>
           <Modal.Title>Warning</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete the lecture of {props.courseName} at {props.startTs}?</Modal.Body>
+        <Modal.Body>Are you sure you want to delete the lecture of {props.courseName} at {moment(props.startTS).format("DD/MM/YYYY HH:mm")}?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
@@ -48,7 +48,7 @@ else if(props.dialog==="turn"){
         <Modal.Header closeButton>
           <Modal.Title>Turn Lecture</Modal.Title>
         </Modal.Header>
-  <Modal.Body>Are you sure you want to turn the lecture of {props.courseName} at {props.startTs}?</Modal.Body>
+  <Modal.Body>Are you sure you want to turn the lecture of {props.courseName} at {moment(props.startTS).format("DD/MM/YYYY HH:mm")}?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Back

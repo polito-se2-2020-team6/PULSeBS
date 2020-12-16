@@ -482,6 +482,10 @@ const API = {
   getStatesBookManager,
   getStatesWeekly,
   getStatesMonthly,
+<<<<<<< HEAD
   uploadCsv,
+=======
+  getAllCourses,
+>>>>>>> origin/front-v2
 };
 export default API;
