@@ -128,7 +128,7 @@ class HistoricalData extends React.Component {
         }
         if(this.state.detailLevel==="Lecture"){
           n++;
-          let x = 10;
+          let x;
           
           this.state.totalLectures.length-10*(this.state.offset-1)>=10?x=10:x=this.state.totalLectures.length-10*(this.state.offset-1);
           if(n>=x){
