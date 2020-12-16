@@ -109,7 +109,7 @@ if (!function_exists("upload_schedules")) {
 			}
 
 			$pdo->commit();
-			echo json_encode(['success' => true]);
+			echo json_encode(['success' => true], JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
 			echo json_encode([
 				'success' => false,

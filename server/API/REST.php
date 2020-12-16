@@ -46,7 +46,7 @@ if (!function_exists("do_login")) {
 
 			if (!password_verify($_POST["password"], $user_data["password"])) {
 				http_response_code(403);
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			} else {
 				//TODO da trasformare in un vero nonce da salvare nel db
@@ -61,7 +61,7 @@ if (!function_exists("do_login")) {
 				return;
 			}
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -70,9 +70,9 @@ if (!function_exists('am_i_logged')) {
 	function am_i_logged() {
 		if (!check_login()) {
 			http_response_code(403);
-			echo json_encode(array('success' => true, 'loggedIn' => false));
+			echo json_encode(array('success' => true, 'loggedIn' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 		} else
-			echo json_encode(array('success' => true, 'loggedIn' => true));
+			echo json_encode(array('success' => true, 'loggedIn' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -81,7 +81,7 @@ if (!function_exists('do_logout')) {
 		unset($_SESSION['nonce']);
 		unset($_SESSION['user_id']);
 
-		echo json_encode(array('success' => true));
+		echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -103,7 +103,7 @@ if (!function_exists('list_lectures')) {
 
 		if (!$userData) {
 			// User doesn't exist, but is logged in ❓❓❓
-			echo json_encode(array('success' => false));
+			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 			return;
 		}
 
@@ -118,7 +118,7 @@ if (!function_exists('list_lectures')) {
 			$query .= ', courses C WHERE C.ID = L.course_id AND C.teacher_id = :userId';
 		} else { // Everyone else
 			// Not authorized
-			echo json_encode(array('success' => false));
+			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 			return;
 		}
 
@@ -175,7 +175,7 @@ if (!function_exists('list_lectures')) {
 			$room = $stmt_inner->fetch();
 			if (!$room) {
 				// Room does not exist
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			}
 
@@ -195,7 +195,7 @@ if (!function_exists('list_lectures')) {
 			$bookedSeats = $stmt_inner->fetch();
 			if (!$bookedSeats) {
 				// wtf does this even mean?
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			}
 
@@ -216,7 +216,7 @@ if (!function_exists('list_lectures')) {
 				$course = $stmt_inner->fetch();
 				if (!$course) {
 					// Course does not exist
-					echo json_encode(array('success' => false));
+					echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 					return;
 				}
 
@@ -232,7 +232,7 @@ if (!function_exists('list_lectures')) {
 				$teacher = $stmt_inner->fetch();
 				if (!$teacher || intval($teacher['type']) !== 1) {
 					// Teacher does not exist, or is not a teacher
-					echo json_encode(array('success' => false));
+					echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 					return;
 				}
 
@@ -259,7 +259,7 @@ if (!function_exists('list_lectures')) {
 		}
 
 		// Send stuff
-		echo json_encode(array('success' => true, 'lectures' => $lectures));
+		echo json_encode(array('success' => true, 'lectures' => $lectures), JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -276,9 +276,9 @@ if (!function_exists('print_types')) {
 if (!function_exists('print_myself')) {
 	function print_myself($vars) {
 		try {
-			echo json_encode(get_myself());
+			echo json_encode(get_myself(), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -369,9 +369,9 @@ if (!function_exists('cancel_lecture')) {
 				@mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
 			}
 			// Success
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -441,9 +441,9 @@ if (!function_exists('booked_students')) {
 			}
 
 			// Send stuff
-			echo json_encode(array('success' => true, 'students' => $students));
+			echo json_encode(array('success' => true, 'students' => $students), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -545,12 +545,12 @@ if (!function_exists('book_lecture')) {
 			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] . "." . ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
 			$mail_result = @mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
-				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()), JSON_INVALID_UTF8_SUBSTITUTE);
 			} else {
-				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result,));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result,), JSON_INVALID_UTF8_SUBSTITUTE);
 			}
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -626,9 +626,9 @@ if (!function_exists('cancel_booking')) {
 			}
 
 			// Success
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -693,9 +693,9 @@ if (!function_exists('set_lecture_online_status')) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
 			// Success
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -744,9 +744,9 @@ if (!function_exists('print_courses')) {
 				$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 			}
 
-			echo json_encode(array("success" => true, "courses" => $courses));
+			echo json_encode(array("success" => true, "courses" => $courses), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -817,7 +817,7 @@ switch ($routeInfo[0]) {
 						if (!check_login()) {
 							$ok = false;
 							http_response_code(403);
-							echo json_encode(array('success' => false, 'reason' => 'Authentication required'));
+							echo json_encode(array('success' => false, 'reason' => 'Authentication required'), JSON_INVALID_UTF8_SUBSTITUTE);
 						}
 						break;
 					default:

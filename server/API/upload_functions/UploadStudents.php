@@ -87,7 +87,7 @@ if (!function_exists("upload_students")) {
 			}
 			$pdo->commit();
 
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
 			echo json_encode(array(
 				'success' => false,

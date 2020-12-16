@@ -174,7 +174,7 @@ if (!function_exists('list_lectures')) {
 
 			if (!$userData) {
 				// User doesn't exist, but is logged in ❓❓❓
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			}
 
@@ -237,7 +237,7 @@ if (!function_exists('list_lectures')) {
 							'semester' => intval($e['semester']),
 							*/
 							'startTS' => intval($e["startTS"]),
-							
+
 							'endTS' => intval($e["endTS"]),
 							'online' => boolval($e["online"]),
 							'teacherName' => $e["teacherName"],

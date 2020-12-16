@@ -237,7 +237,7 @@ if (!function_exists("get_myself")) {
 				'SSN' => $user_data['SSN'],
 			);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -270,7 +270,7 @@ if (!function_exists("get_user")) {
 				'SSN' => $user_data['SSN'],
 			);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
