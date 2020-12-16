@@ -593,6 +593,10 @@ if (!function_exists('cancel_booking')) {
 
 			$lectureId = intval($_DELETE['lectureId']);
 
+			//getting the next in line to notify later
+			$next_waiting_student = get_waiting_list_by_lecture($lectureId, 1);
+			$is_cancelling_user_in_waiting_list = check_user_in_waiting_list($lectureId, $userId);
+
 			$pdo = new PDO('sqlite:../db.sqlite');
 
 			// Check user exists and is student
@@ -609,8 +613,9 @@ if (!function_exists('cancel_booking')) {
 			// Check lecture exists, is in future and is booked by student
 			$now = time();
 			$stmt = $pdo->prepare('SELECT * 
-								   FROM lectures L, bookings B
+								   FROM lectures L, bookings B, courses C
 								   WHERE L.ID = B.lecture_id
+								       AND L.course_id = C.ID
 									   AND L.ID = :lectureId
 									   AND L.start_ts > :currentTs
 									   AND B.user_id = :userId
@@ -618,6 +623,14 @@ if (!function_exists('cancel_booking')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			$stmt->bindValue(':currentTs', $now, PDO::PARAM_INT);	// Check for timezones discrepancies
 			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			if (!$lecture = $stmt->fetch()) {
+				throw new PDOException('Lecture ' . $userId . ' not found.');
+			}
+
 			// Delete (via update)
 			$stmt = $pdo->prepare('UPDATE bookings 
 								   SET cancellation_ts = :currentTs 
@@ -628,6 +641,13 @@ if (!function_exists('cancel_booking')) {
 			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
 			if (!$stmt->execute()) {
 				throw new PDOException($stmt->errorInfo()[2]);
+			}
+
+			//notifying the next student in line, if any
+			if(!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list){
+				$student_info = get_user($next_waiting_student[0]);
+				$start_time = new DateTime("@".$lecture['start_ts']);
+				@mail($student_info['email'], "Moving out of waiting list for ".$lecture['name'], "You have been moved out from waiting list for the lecture of ".$lecture." scheduled for ".$start_time->format("Y-m-d h:i"));
 			}
 
 			// Success
