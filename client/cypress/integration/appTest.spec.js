@@ -65,6 +65,21 @@ context("Teacher Page", () => {
   });
 });
 
+context("ُSupport Officer Page", () => {
+  it("Login Test for Support Officer Component", () => {
+    cy.visit(baseURL);
+    cy.get("#username").type("suppofr");
+    cy.get("#password").type("passw1");
+    cy.get("#login").click();
+    cy.url().should("include", "/support/home");
+    cy.get(".tab-content").should("be.visible");
+    // cy.get("#historicaldata").click();
+    // cy.url().should("include", "/teacher/historicaldata");
+    // cy.get("#dropdown-basic").should("be.visible");
+    // cy.get("#logout").click();
+  });
+});
+
 context("Booking Manager Page", () => {
   it("Automated test for Booking Manager Component", () => {
     cy.visit(baseURL);

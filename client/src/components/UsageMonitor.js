@@ -24,6 +24,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from "@material-ui/core";
@@ -55,6 +56,8 @@ class UsageMonitor extends React.Component {
       year: "",
       isSelected: false,
       allCourses: [],
+      page: 0,
+      rowsPerPage: 10,
     };
 
     // Warning: findDOMNode is deprecated in StrictMode. findDOMNode was passed an instance of Transition which is inside StrictMode. Instead, add a ref directly to the element you want to reference.
@@ -69,8 +72,13 @@ class UsageMonitor extends React.Component {
       this.props.isLogged(true);
     }
     await API.getAllCourses().then((allCourses) => {
+      const folterCourses = allCourses.courses.filter(
+        (ele, ind) =>
+          ind === allCourses.courses.findIndex((elem) => elem.name === ele.name)
+      );
+
       this.setState({
-        allCourses: allCourses.courses,
+        allCourses: folterCourses,
       });
     });
     console.log(this.state.allCourses);
@@ -278,6 +286,24 @@ class UsageMonitor extends React.Component {
     });
   }
 
+  handleChangePage = (event, newPage) => {
+    console.log(newPage);
+    // setPage(newPage);
+    this.setState({
+      page: newPage,
+    });
+  };
+
+  handleChangeRowsPerPage = (event) => {
+    // setRowsPerPage(+event.target.value);
+    // setPage(0);
+    // console.log(event.target.value);
+    this.setState({
+      rowsPerPage: +event.target.value,
+      page: 0,
+    });
+  };
+
   render() {
     return (
       <AuthContext.Consumer>
@@ -334,35 +360,54 @@ class UsageMonitor extends React.Component {
                         </TableRow>
                       </TableHead>
                       <TableBody stripedRows>
-                        {this.state.allCourses.map((row) => (
-                          <TableRow
-                            style={
-                              row.ID % 2
-                                ? { background: "#a3b687" }
-                                : { background: "white" }
-                            }
-                            key={row.ID}
-                          >
-                            <TableCell component="th" scope="row">
-                              {row.name}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.teacherFirstName}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.teacherLastName}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.teacherEmail}
-                            </TableCell>
-                            <TableCell align="center">
-                              {row.teacherId}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {this.state.allCourses
+                          .slice(
+                            this.state.page * this.state.rowsPerPage,
+                            this.state.page * this.state.rowsPerPage +
+                              this.state.rowsPerPage
+                          )
+                          .map((row) => (
+                            <TableRow
+                              // style={
+                              //   row.ID % 2
+                              //     ? { background: "#a3b687" }
+                              //     : { background: "white" }
+                              // }
+                              key={row.ID}
+                            >
+                              <TableCell
+                                align="center"
+                                component="th"
+                                scope="row"
+                              >
+                                {row.name}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.teacherFirstName}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.teacherLastName}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.teacherEmail}
+                              </TableCell>
+                              <TableCell align="center">
+                                {row.teacherId}
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 100]}
+                    component="div"
+                    count={this.state.allCourses.length}
+                    rowsPerPage={this.state.rowsPerPage}
+                    page={this.state.page}
+                    onChangePage={this.handleChangePage}
+                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                  />
                 </Col>
               </Row>
               <Row>
