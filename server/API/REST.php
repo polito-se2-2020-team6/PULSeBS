@@ -619,10 +619,10 @@ if (!function_exists('cancel_booking')) {
 			}
 
 			//notifying the next student in line, if any
-			if(!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list){
+			if (!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list) {
 				$student_info = get_user($next_waiting_student[0]);
-				$start_time = new DateTime("@".$lecture['start_ts']);
-				@mail($student_info['email'], "Moving out of waiting list for ".$lecture['name'], "You have been moved out from waiting list for the lecture of ".$lecture." scheduled for ".$start_time->format("Y-m-d h:i"));
+				$start_time = new DateTime("@" . $lecture['start_ts']);
+				@mail($student_info['email'], "Moving out of waiting list for " . $lecture['name'], "You have been moved out from waiting list for the lecture of " . $lecture . " scheduled for " . $start_time->format("Y-m-d h:i"));
 			}
 
 			// Success
@@ -761,7 +761,7 @@ define("NEED_AUTH", 0); //if set, the route needs $_SESSION['nonce'] to be set a
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
 	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
-	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/logout', 'do_logout');
 	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
 	$r->addRoute('GET', API_PATH . "/courses", "print_courses");
