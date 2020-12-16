@@ -88,14 +88,14 @@ if (!function_exists("check_user_in_waiting_list")) {
 }
 
 
-if(!function_exists("get_waiting_list_by_lecture")){
-	function get_waiting_list_by_lecture($lecture_id, $limit = -1){
+if (!function_exists("get_waiting_list_by_lecture")) {
+	function get_waiting_list_by_lecture($lecture_id, $limit = -1) {
 		$seats = get_seats_by_lecture($lecture_id);
 
 		$pdo = new PDO("sqlite:../db.sqlite");
 
 		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT :limit OFFSET :seats");
-		
+
 		$stmt->bindValue(":lectureId", $lecture_id, PDO::PARAM_INT);
 		$stmt->bindValue(":seats", $seats, PDO::PARAM_INT);
 		$stmt->bindValue(":limit", $limit, PDO::PARAM_INT);
@@ -183,9 +183,32 @@ if (!function_exists('get_list_of_course_codes')) {
 		return array_combine(array_column($codesList, 'code'), array_column($codesList, 'ID'));
 	}
 }
-if(!function_exists("get_myself")){
+
+if (!function_exists('get_list_of_rooms')) {
+	function get_list_of_rooms() {
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare('SELECT ID FROM rooms');
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$roomsList = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+
+		if ($roomsList === false) {
+			$roomsList = array();
+		} else if (!is_array($roomsList)) {
+			$roomsList = array($roomsList);
+		}
+
+		return $roomsList;
+	}
+}
+
+if (!function_exists("get_myself")) {
 	function get_myself() {
-		if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
 			return false;
 		}
 
@@ -219,7 +242,7 @@ if(!function_exists("get_myself")){
 	}
 }
 
-if(!function_exists("get_user")){
+if (!function_exists("get_user")) {
 	function get_user($id) {
 		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
