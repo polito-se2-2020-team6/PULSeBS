@@ -30,13 +30,13 @@ class Upload extends Component {
           console.log(res.reason)
           switch(res.reason){
             case "UNIQUE constraint failed: users.ID":
-              reason="you can't upload the same file twice"
+              reason=": you can't upload the same file twice"
               break;
             case "Malformed input.":
-              reason="the file's format is not correct"
+              reason=": the file's format is not correct"
               break;
             default :
-              reason=res.reason
+              reason=""
               break;
           }
           this.setState({ success: false, failure:true ,failureReason:reason});
@@ -60,7 +60,7 @@ class Upload extends Component {
             ''
           )}
           {this.state.failure ? (
-            <h4 className="my-4 text-danger">There was a problem: "{this.state.failureReason}" please try again!</h4>
+            <h4 className="my-4 text-danger">There was a problem {this.state.failureReason}, please try again!</h4>
           ):(
             ''
           )}
