@@ -182,9 +182,32 @@ if (!function_exists('get_list_of_course_codes')) {
 		return array_combine(array_column($codesList, 'code'), array_column($codesList, 'ID'));
 	}
 }
-if(!function_exists("get_myself")){
+
+if (!function_exists('get_list_of_rooms')) {
+	function get_list_of_rooms() {
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare('SELECT ID FROM rooms');
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$roomsList = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+		if ($roomsList === false) {
+			$roomsList = array();
+		} else if (!is_array($roomsList)) {
+			$roomsList = array($roomsList);
+		}
+
+		return $roomsList;
+	}
+}
+
+if (!function_exists("get_myself")) {
 	function get_myself() {
-		if(!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])){
+		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
 			return false;
 		}
 
@@ -211,11 +234,9 @@ if(!function_exists("get_myself")){
 				'city' => $user_data['city'],
 				'birthday' => $user_data['birthday'],
 				'SSN' => $user_data['SSN']
-				
 			);
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
 		}
 	}
 }
-?>
