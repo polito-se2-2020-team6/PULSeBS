@@ -1,7 +1,7 @@
-// filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
-// scompare la tab
 
-import React, { useReducer } from "react";
+import React from "react";
+import moment from "moment";
+import Pagination from 'react-bootstrap/Pagination'
 import  { Redirect } from 'react-router-dom'
 import {
   Col,
@@ -9,80 +9,51 @@ import {
   Row,
   Tabs,
   Tab,
-  ListGroup,
-  Button,
+  ListGroup
 } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from ".././API/API";
-
-/*  listaLezione -> getLectures
-    corso -> courseId
-    lezione -> lectureId
-    studenti -> vector of Students
+import DialogAlert from "./DialogAlert"
 
 
-var listaLezioni = [
-  {
-    corso: "History",
-    lezione: "HY-01",
-    studenti: new Array("ettore", "carlo", "luca", "camarcorlo"),
-  },
-  {
-    courseId: "History",
-    lectureId: "HY-01",
-    studenti: new Array("ettore", "carlo", "luca", "camarcorlo"),
-  },
-  {
-    courseId: "Geometry",
-    lectureId: "GY-01",
-    studenti: new Array("ettore", "carlo"),
-  },
-  {
-    courseId: "History",
-    lectureId: "HY-02",
-    studenti: new Array("ettore", "camarcorlo"),
-  },
-  {
-    courseId: "Software Engineering 2",
-    lectureId: "SE2-01",
-    studenti: [],
-  },
-  {
-    courseId: "Software Engineering 2",
-    lectureId: "SE2-02",
-    studenti: new Array("Marco", "Luca"),
-  },
-  {
-    courseId: "Analisi",
-    lectureId: "AI-01",
-    studenti: new Array("ludo", "carlo", "max"),
-  },
-]; */
+const view = 5; //number of lectures per pagination
 
 class Teacher extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      //lectureUpdated: true,
       totalLectures: [],
       course: '',
       students: [],
       lecture: '',
       studtable: true,
       online: false,
+      range: 0,
+      user: {},
     };
+    this.wrapper = React.createRef();
   }
 
-  componentDidMount(){
-    this.getLectures(this.context.authUser.userId)
-  }
 
+  async componentDidMount(){
+    await this.isLogged();
+    this.getLectures(this.state.user.userId)
+
+  }
+  isLogged = async () => {
+    const response = await API.isLogged();
+    try {
+      this.setState({ user: response});
+      
+    } catch (errorObj) {
+      this.props.history.push("/login");
+    }
+  };
 
   getLectures = (userId) => {
     API.getLecturesStartDate(userId)
       .then((lectures) => {
-        console.log(lectures);
         this.setState({
           totalLectures: lectures || [],
         });
@@ -92,17 +63,14 @@ class Teacher extends React.Component {
       });
   };
 
-  getStudentsBooked(lectureId) {
+  getStudentsBooked(lectureId, online) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
-        console.log("studenti")
-          console.log(students);
         this.setState({
-          students: students.students || [],
+          students: students.students || [],online: online
         });
       })
       .catch((errorObj) => {
-        console.log('no');
         console.log(errorObj);
       });
   }
@@ -111,32 +79,18 @@ class Teacher extends React.Component {
   deleteLecture(lectureId) {
     API.deleteLecture(lectureId)
       .then(() => {
-        //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-        //this.setState({lectureUpdated: true})
         this.getLectures(this.context.authUser.userId)
-        //aggiunto io
         this.setState({students : []});
         this.setState({studtable: false});
       })
       .catch((errorObj) => {
         console.log(errorObj);
-      });
-      //console.log("prima");
-      //console.log(this.state.totalLectures);
-      //console.log(this.state.students);
-      //await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-      //await this.setState({students : []})
-      //console.log("dopo");
-      //console.log(this.state.totalLectures);
-      //console.log(this.state.students);
-      
+      });      
   }
 
   updateLectures(userId) {
-    //if (this.state.lectureUpdated) {
-    //  this.setState({ lectureUpdated: false });
       this.getLectures(userId);
-    //}
+
   }
 
   clearStudentTable() {
@@ -147,28 +101,25 @@ class Teacher extends React.Component {
     //chiamata API per modificare stato lezione online/in presence
     API.turnLecture(lectureId,online_s)
     .then(() => {
-      //andato a buon fine
-      console.log("giusto")
       this.getLectures(this.context.authUser.userId)
-      //aggiunto io
       
     })
     .catch((errorObj) => {
-      console.log("errore")
       console.log(errorObj);
-    });
-    
-    //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
-  /*
-    if(online){
-      this.setState({online: false});
+    });}
+
+   changeRange(x,courseId){
+     var range=this.state.range; //range va da 1 a x in base a quanto seleziono  1->0-9     2->10-19   ecc
+     var lung= this.state.totalLectures.filter(l => l.courseName === courseId).length;
+     if(x<0){
+       if(this.state.range-1>=0) {range--}   
+     }
+     else if(x>0){
+      if((this.state.range+1)<(Math.ceil(lung/view))){range++} 
     }
-    else{
-      this.setState({online: true});
-    }
-    */
-    
-  }
+     this.setState({range: range});
+   }
+  
 
   render() {
     const corsi = this.state.totalLectures
@@ -186,27 +137,36 @@ class Teacher extends React.Component {
 
             <Container fluid className="mt-5 ">
               <Row className="justify-content-md-center">
-                <h1>Welcome back</h1>
+                <h1>Welcome back {this.state.user.firstname+" "+this.state.user.lastname}</h1>
               </Row>
 
               <Tabs
                 defaultActiveKey={this.state.totalLectures[0]?.courseId}
                 id="noanim-tab-example"
-                onSelect={() => this.clearStudentTable()}
+                onSelect={() => {this.clearStudentTable(); this.setState({range: 0})}}
               >
                 {corsi?.map((C_Id) => (
-                  <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
+                  <Tab eventKey={C_Id} title={C_Id} key={C_Id} >
                     <Row className="mt-5 ">
                       <Col md={1}></Col>
                       <Col md={5}>
+                      <Pagination id="pagId">
+                      
+                      <Pagination.Prev onClick={() => this.changeRange(-1,C_Id)} id="pagPrevId"/>
+                      <Pagination.Item disabled>{this.state.range+1}</Pagination.Item>
+                      
+                      <Pagination.Next onClick={() => this.changeRange(+1,C_Id)} id="pagNextId"/>
+
+                    </Pagination>
                         <Tab.Container id="list-group-tabs-example">
-                          <ListGroup className="mt-2">
+                          <ListGroup className="mt-2" id="lgId2">
                             <ListGroup.Item as="li" active>
                               <h3>lecture</h3>
                             </ListGroup.Item>
 
                             {this.state.totalLectures
                               .filter((l) => l.courseName === C_Id)
+                              ?.slice(this.state.range*view,this.state.range*view+view)
                               ?.map((c) => (
                                 <ListGroup.Item
                                   action
@@ -222,32 +182,30 @@ class Teacher extends React.Component {
                                       lecture: c.lectureId,
                                       studtable: true,
                                     });
-                                    this.getStudentsBooked(c.lectureId);
+                                    this.getStudentsBooked(c.lectureId,c.online);
                                   }}
                                 >
                                   <Row>
-                                <Col md={2}>{c.startTS}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
-                                    <Button type="button" variant="outline-secondary" onClick={() => {
-                                      this.turnLecture(c.lectureId,c.online); 
-                                    }}>
-
-                                      {/*controllo va fatto su c.online*/}
-                                      
-                                      turn to {c.online? "presence": "online"}
-                                    </Button>
+                                <Col md={2}>{moment(c.startTS).format("DD/MM/YYYY HH:mm")}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
+                                {   c.online? <></> :
+                                  <DialogAlert 
+                                  id="alID"
+                                  dialog={"turn"}
+                                  courseName={C_Id}
+                                  startTS={c.startTS}
+                                  lectureId={c.lectureId}
+                                  onConfirm={(lectureId)=>{this.turnLecture(lectureId)}} />
+                                    }
                                     <Col></Col>
                                   
-
-                                  <Button
-                                    variant="danger"
-                                    className="mr-2"
-                                    
-                                    onClick={() => {
-                                      this.deleteLecture(c.lectureId);
-                                    }}
-                                  >
-                                   delete
-                                  </Button>
+                                  <DialogAlert 
+                                  id="alID1"
+                                  dialog={"delete"}
+                                  courseName={C_Id}
+                                  startTS={c.startTS}
+                                  deleteLecture={this.deleteLecture}
+                                  lectureId={c.lectureId}
+                                  onConfirm={(lectureId)=>{this.deleteLecture(lectureId)}} />
                                   
                                   </Row>
                                 </ListGroup.Item>
@@ -259,35 +217,27 @@ class Teacher extends React.Component {
                       <Col md={1}></Col>
                       <Col md={4}>
                       {this.state.studtable?
-                        <ListGroup as="ul" className="mt-2">
-                          <ListGroup.Item as="li" active>
-                            <h3>students booked</h3>
-                          </ListGroup.Item>
-                          
-                          
-                            {this.state.students.length?
+                        <ListGroup as="ul" className="mt-2" id="lgId">
+                            {(this.state.students.length&&!this.state.online)?
+
+                                    <><ListGroup.Item as="li" active>
+                                    <h3>students booked</h3>
+                                  </ListGroup.Item>
                                     <ListGroup.Item ><h5>number of students:
                                           {" "}{this.state.students.length}</h5>
-                                      </ListGroup.Item>:
-                                      <></>
-                            }
-                            {this.state.students?.map((s) => (
+                                      </ListGroup.Item>
+                                      {this.state.students?.map((s) => (
                               <ListGroup.Item as="li" key={s}>
                                 {"S"+s.studentId + " - " +s.studentName}
                               </ListGroup.Item>
                             ))}
-                          
-
-
-
-                        </ListGroup>:
-                        <ListGroup>
-                          <ListGroup.Item as="li" active>
-                            <h3>students booked</h3>
-                          </ListGroup.Item>
-                      </ListGroup>
+                                      </>:
+                                      <></>
+                            }
+                            
+                          </ListGroup>:
+                        <></>
                         }
-                        
                       </Col>
                     </Row>
                   </Tab>

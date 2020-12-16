@@ -13,25 +13,58 @@ import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { ROLES } from "./data/consts";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SupportOfficer from "./components/SupportOfficer";
 
 class App extends React.Component {
   componentDidMount() {
-    API.isLogged()
-      .then((user) => {
-        this.setState({ authUser: user });
-      })
-      .catch((err) => {
-        this.props.history.push("/login");
-        this.setState({ authErr: err.errorObj });
-      });
+    // API.isLogged()
+    //   .then((user) => {
+    //     this.setState({ authUser: user });
+    //   })
+    //   .catch((err) => {
+    //     this.props.history.push("/login");
+    //     this.setState({ authErr: err.errorObj });
+    //   });
+    // this.isLogged();
   }
 
   constructor(props) {
     super(props);
     this.state = {
+      isStillLogged: false,
       // calendar: [],
     };
   }
+
+  isLogged = async (logged) => {
+    // this.setState({
+    //   isLogged: logged,
+    // });
+    // API.isLogged()
+    //   .then((user) => {
+    //     this.setState({ authUser: user });
+    //   })
+    //   .catch((err) => {
+    //     this.props.history.push("/login");
+    //     this.setState({ authErr: err.errorObj });
+    //   });
+
+    this.setState({
+      isLogged: logged,
+    });
+    const response = await API.isLogged();
+    try {
+      setTimeout(() => {
+        this.setState({
+          isLogged: false,
+        });
+      }, 200);
+      this.setState({ authUser: response, authErr: null });
+    } catch (errorObj) {
+      this.props.history.push("/login");
+      // this.setState({ authErr: err.errorObj });
+    }
+  };
 
   login = (username, password) => {
     // this.state.users.map((e) => {
@@ -50,14 +83,19 @@ class App extends React.Component {
           case ROLES.STUDENT:
             this.setState({ authUser: user, authErr: null });
             // this.getCalendar(this.state.authUser.userId);
-            this.props.history.push("/student/home?userId="+user.userId);
+            this.props.history.push("/student/home?userId=" + user.userId);
             break;
-            case ROLES.BOOKING_MANAGER:
+          case ROLES.BOOKING_MANAGER:
             this.setState({ authUser: user, authErr: null });
             // this.getCalendar(this.state.authUser.userId);
             // this.props.history.push("/booking-manager/home?userId="+user.userId);
             this.props.history.push("/booking-manager/home");
             break;
+            case ROLES.SUPPORT_OFFICER:
+            this.setState({ authUser: user, authErr: null });
+            this.props.history.push("/support/home");
+            break;
+            
         }
       })
       .catch((errObj) => {
@@ -127,8 +165,15 @@ class App extends React.Component {
           <Route path="/student/home">
             <Student user={this.state.authUser} />
           </Route>
+          <Route path="/support/home">
+            <SupportOfficer user={this.state.authUser} />
+          </Route>
           <Route path="/booking-manager/home">
-            <UsageMonitor />
+            <UsageMonitor
+              isLogged={this.isLogged}
+              isStillLogged={this.state.isStillLogged}
+              // user={this.state.authUser}
+            />
           </Route>
           <Redirect from="/" exact to="login" />
         </Switch>

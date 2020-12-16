@@ -3,6 +3,11 @@ require_once "../functions.php";
 require_once "../vendor/autoload.php";
 
 require_once "./StatsBookings.php";
+require_once "upload_functions/UploadCourses.php";
+require_once "upload_functions/UploadEnrollements.php";
+require_once "upload_functions/UploadStudents.php";
+require_once "upload_functions/UploadTeachers.php";
+require_once "upload_functions/UploadSchedule.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -11,14 +16,6 @@ header("Content-Type: application/json");
 
 define("API_PATH", $_SERVER["SCRIPT_NAME"] . "/api");
 
-/* Constant defining */
-
-define("USER_TYPE_STUDENT", 0);
-define("USER_TYPE_TEACHER", 1);
-define("USER_TYPE_BOOK_MNGR", 2);
-
-define('LECTURE_REMOTE', 0x1);
-define('LECTURE_CANCELLED', 0x2);
 
 /* Turning warning and notices into exceptions */
 
@@ -49,7 +46,7 @@ if (!function_exists("do_login")) {
 
 			if (!password_verify($_POST["password"], $user_data["password"])) {
 				http_response_code(403);
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			} else {
 				//TODO da trasformare in un vero nonce da salvare nel db
@@ -64,7 +61,7 @@ if (!function_exists("do_login")) {
 				return;
 			}
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -73,9 +70,9 @@ if (!function_exists('am_i_logged')) {
 	function am_i_logged() {
 		if (!check_login()) {
 			http_response_code(403);
-			echo json_encode(array('success' => true, 'loggedIn' => false));
+			echo json_encode(array('success' => true, 'loggedIn' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 		} else
-			echo json_encode(array('success' => true, 'loggedIn' => true));
+			echo json_encode(array('success' => true, 'loggedIn' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -84,7 +81,7 @@ if (!function_exists('do_logout')) {
 		unset($_SESSION['nonce']);
 		unset($_SESSION['user_id']);
 
-		echo json_encode(array('success' => true));
+		echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -106,7 +103,7 @@ if (!function_exists('list_lectures')) {
 
 		if (!$userData) {
 			// User doesn't exist, but is logged in ❓❓❓
-			echo json_encode(array('success' => false));
+			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 			return;
 		}
 
@@ -121,7 +118,7 @@ if (!function_exists('list_lectures')) {
 			$query .= ', courses C WHERE C.ID = L.course_id AND C.teacher_id = :userId';
 		} else { // Everyone else
 			// Not authorized
-			echo json_encode(array('success' => false));
+			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 			return;
 		}
 
@@ -178,7 +175,7 @@ if (!function_exists('list_lectures')) {
 			$room = $stmt_inner->fetch();
 			if (!$room) {
 				// Room does not exist
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			}
 
@@ -198,7 +195,7 @@ if (!function_exists('list_lectures')) {
 			$bookedSeats = $stmt_inner->fetch();
 			if (!$bookedSeats) {
 				// wtf does this even mean?
-				echo json_encode(array('success' => false));
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 				return;
 			}
 
@@ -219,7 +216,7 @@ if (!function_exists('list_lectures')) {
 				$course = $stmt_inner->fetch();
 				if (!$course) {
 					// Course does not exist
-					echo json_encode(array('success' => false));
+					echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 					return;
 				}
 
@@ -235,7 +232,7 @@ if (!function_exists('list_lectures')) {
 				$teacher = $stmt_inner->fetch();
 				if (!$teacher || intval($teacher['type']) !== 1) {
 					// Teacher does not exist, or is not a teacher
-					echo json_encode(array('success' => false));
+					echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
 					return;
 				}
 
@@ -262,7 +259,7 @@ if (!function_exists('list_lectures')) {
 		}
 
 		// Send stuff
-		echo json_encode(array('success' => true, 'lectures' => $lectures));
+		echo json_encode(array('success' => true, 'lectures' => $lectures), JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -279,31 +276,9 @@ if (!function_exists('print_types')) {
 if (!function_exists('print_myself')) {
 	function print_myself($vars) {
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
-
-			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
-
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$user_data = $stmt->fetch();
-
-			echo json_encode(array(
-				'success' => true,
-				'userId' => intval($user_data['ID']),
-				'type' => intval($user_data['type']),
-				'username' => $user_data['username'],
-				'email' => $user_data['email'],
-				'firstname' => $user_data['firstname'],
-				'lastname' => $user_data['lastname'],
-				'city' => $user_data['city'],
-				'birthday' => $user_data['birthday'],
-				'SSN' => $user_data['SSN']
-			));
+			echo json_encode(get_myself(), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -394,9 +369,9 @@ if (!function_exists('cancel_lecture')) {
 				@mail($student["email"], "Cancellation of " . $lecture['name'] . " lecture of " . $lecture_time->format("Y-m-d H:i"), "The lecture of the course " . $lecture['name'] . " that should had taken place in " . $lecture_time->format("D Y-m-d H:i") . " has been cancelled\nKind regards");
 			}
 			// Success
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -466,9 +441,9 @@ if (!function_exists('booked_students')) {
 			}
 
 			// Send stuff
-			echo json_encode(array('success' => true, 'students' => $students));
+			echo json_encode(array('success' => true, 'students' => $students), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -567,15 +542,15 @@ if (!function_exists('book_lecture')) {
 			$in_wait_list = check_user_in_waiting_list($lectureId);
 			//I send a confirmation email
 			$mail_subject = "Confirmation of " . $lecture["name"] . " lecture booking";
-			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] .".". ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
+			$mail_body = "You succesfully booked for the lecture of " . $lecture["name"] . "." . ($in_wait_list ? " The room is currently at full capacity, you have been placed in a waiting list." : "");
 			$mail_result = @mail($user_data["email"], $mail_subject, $mail_body);
 			if (!$mail_result) {
-				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, 'mailError' => error_get_last()), JSON_INVALID_UTF8_SUBSTITUTE);
 			} else {
-				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result, ));
+				echo json_encode(array('success' => true, 'inWaitingList' => $in_wait_list, 'mailSent' => $mail_result,), JSON_INVALID_UTF8_SUBSTITUTE);
 			}
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -644,16 +619,16 @@ if (!function_exists('cancel_booking')) {
 			}
 
 			//notifying the next student in line, if any
-			if(!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list){
+			if (!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list) {
 				$student_info = get_user($next_waiting_student[0]);
-				$start_time = new DateTime("@".$lecture['start_ts']);
-				@mail($student_info['email'], "Moving out of waiting list for ".$lecture['name'], "You have been moved out from waiting list for the lecture of ".$lecture." scheduled for ".$start_time->format("Y-m-d h:i"));
+				$start_time = new DateTime("@" . $lecture['start_ts']);
+				@mail($student_info['email'], "Moving out of waiting list for " . $lecture['name'], "You have been moved out from waiting list for the lecture of " . $lecture . " scheduled for " . $start_time->format("Y-m-d h:i"));
 			}
 
 			// Success
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -718,9 +693,60 @@ if (!function_exists('set_lecture_online_status')) {
 				throw new PDOException($stmt->errorInfo()[2]);
 			}
 			// Success
-			echo json_encode(array('success' => true));
+			echo json_encode(array('success' => true), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()));
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
+
+if (!function_exists('print_courses')) {
+	function print_courses($vars) {
+		try {
+			$pdo = new PDO('sqlite:../db.sqlite');
+
+			if (isset($_GET["ofLogged"])) {
+				$logged_user = get_myself();
+				switch ($logged_user["type"]) {
+					case USER_TYPE_TEACHER:
+						$stmt = $pdo->prepare("SELECT courses.*, users.firstname AS teacherFirstName, users.lastname AS teacherLastName, users.email AS teacherEmail, users.ID AS teacherId FROM courses, users WHERE courses.teacher_id = users.ID AND courses.teacher_id = :teacherID");
+
+						$stmt->bindValue(":teacherID", $logged_user["userId"]);
+
+						if (!$stmt->execute()) {
+							throw new PDOException($stmt->errorInfo()[2]);
+						}
+
+						$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+						break;
+					case USER_TYPE_STUDENT:
+						$stmt = $pdo->prepare("SELECT courses.*, users.firstname AS teacherFirstName, users.lastname AS teacherLastName, users.email AS teacherEmail, users.ID AS teacherId FROM courses, users WHERE courses.teacher_id = users.ID AND courses.ID IN ( SELECT course_id FROM course_subscriptions WHERE user_id = :studentID)");
+
+						$stmt->bindValue(":studentID", $logged_user["userId"]);
+
+						if (!$stmt->execute()) {
+							throw new PDOException($stmt->errorInfo()[2]);
+						}
+
+						$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+						break;
+					default:
+						throw new ErrorException("Your user type does not have assigned courses");
+						break;
+				}
+			} else {
+				$stmt = $pdo->query("SELECT courses.*, users.firstname AS teacherFirstName, users.lastname AS teacherLastName, users.email AS teacherEmail, users.ID AS teacherId FROM courses, users WHERE courses.teacher_id = users.ID");
+
+				if (!$stmt) {
+					throw new PDOException($pdo->errorInfo()[2]);
+				}
+
+				$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			}
+
+			echo json_encode(array("success" => true, "courses" => $courses), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }
@@ -735,9 +761,10 @@ define("NEED_AUTH", 0); //if set, the route needs $_SESSION['nonce'] to be set a
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 	$r->addRoute('POST', API_PATH . '/login', 'do_login');
 	$r->addRoute('GET', API_PATH . '/logged', 'am_i_logged');
-	$r->addRoute('POST', API_PATH . '/logout', ['do_logout', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/logout', 'do_logout');
 	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
+	$r->addRoute('GET', API_PATH . "/courses", "print_courses");
 	/* users route */
 	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
 
@@ -749,6 +776,12 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 
 	$r->addRoute('GET', API_PATH . '/stats', ['stats_bookings', NEED_AUTH]);
+
+	$r->addRoute('POST', API_PATH . '/courses/upload', ['upload_courses', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/enrollments/upload', ['upload_enrollments', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/students/upload', ['upload_students', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/teachers/upload', ['upload_teachers', NEED_AUTH]);
+	$r->addRoute('POST', API_PATH . '/schedules/upload', ['upload_schedules', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
@@ -784,7 +817,7 @@ switch ($routeInfo[0]) {
 						if (!check_login()) {
 							$ok = false;
 							http_response_code(403);
-							echo json_encode(array('success' => false, 'reason' => 'Authentication required'));
+							echo json_encode(array('success' => false, 'reason' => 'Authentication required'), JSON_INVALID_UTF8_SUBSTITUTE);
 						}
 						break;
 					default:

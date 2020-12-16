@@ -91,9 +91,9 @@ if (!function_exists('stats_bookings')) {
 				$data['totalAttendances'] = intval($stats['totalAttendances']);
 			}
 
-			echo json_encode($data);
+			echo json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
-			echo json_encode(['success' => false, 'reason' => $e->getMessage()]);
+			echo json_encode(['success' => false, 'reason' => $e->getMessage()], JSON_INVALID_UTF8_SUBSTITUTE);
 		}
 	}
 }

@@ -2,9 +2,8 @@ import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
 async function getAllLectures(userId) {
-  let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -35,7 +34,9 @@ async function getAllLectures(userId) {
 async function getLectures(userId) {
   let data = new Date();
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
-  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${data.getMonth() + 1}-${data.getDate()}`;
+  let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
+    data.getMonth() + 1
+  }-${data.getDate()}`;
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -71,8 +72,7 @@ async function getLecturesStartDate(userId) {
   let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
     data.getMonth() + 1
   }-${data.getDate()}`;
-  console.log("URL startDate");
-  console.log(url);
+  
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -102,8 +102,14 @@ async function getLecturesStartDate(userId) {
 
 //API for stats
 async function getStats(idLecture, idCourse, period, week, month, year) {
-  let url = `/stats?lecture=${idLecture}&course=${idCourse}&period=${period}&week=${week}&month=${month}&year=${year}`;
-  console.log(url);
+  let l = idLecture ? `lecture=${idLecture}&` : "";
+  let c = idCourse || idCourse === 0 ? `course=${idCourse}&` : "";
+  let w = week || week === 0 ? `week=${week}&` : "";
+  let m = month || month === 0 ? `month=${month}&` : "";
+
+  let url = "/stats?" + l + c + `period=${period}&` + w + m + `year=${year}`;
+
+  
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -179,7 +185,7 @@ async function getStudentsBooked(lectureId) {
     const queryParams = lectureId + "/students";
     url += queryParams;
   }
-  console.log(url);
+  
   const response = await fetch(baseURL + url);
 
   const studentsList = await response.json();
@@ -204,20 +210,20 @@ async function deleteLecture(lectureId) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      console.log(req);
+      
       if (req.status === 200) {
-        console.log("cipolla");
+        
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
       } else {
-        console.log("carota");
+        
         reject(Error(req.statusText));
       }
     };
     // handle network errors
     req.onerror = function () {
-      console.log("cane");
+    
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
@@ -235,17 +241,17 @@ async function userLogin(username, password) {
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    console.log(req);
+   
     req.onload = function () {
-      console.log(req);
+      
       const status = JSON.parse(req.response);
-      // console.log(status.success);
+    
       if (status.success === true) {
         const response = req.response;
         let user = JSON.parse(response);
         resolve(user);
       } else {
-        console.log(status.success);
+        
         reject(status.success);
       }
     };
@@ -261,10 +267,11 @@ async function userLogin(username, password) {
 
 //Check login **GET** /api/logged
 async function isLogged() {
-  const response = await fetch(`${baseURL}/logged`);
+  const response = await fetch(`${baseURL}/user/me`);
   const userJson = await response.json();
-  console.log(userJson.user.loggedIn);
+  
   if (response.ok) {
+    
     return userJson;
   } else {
     let err = { status: response.status, errObj: userJson };
@@ -306,33 +313,31 @@ async function turnLecture2(lectureId, online) {
 }
 // let url = baseURL + `/lectures/${lectureId}/online`;
 async function turnLecture(lectureId, online) {
-  console.log(lectureId);
-  console.log(online);
+  
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}/online`;
     let data = `value=${!online}`;
-    console.log(url);
-    console.log(data);
+    
     req.open("PATCH", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      console.log(req);
+     
       if (req.status === 200) {
-        console.log("cipolla");
+      
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
       } else {
-        console.log("carota");
+        
         reject(Error(req.statusText));
       }
     };
     // handle network errors
     req.onerror = function () {
-      console.log("cane");
+      
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
@@ -368,7 +373,7 @@ async function userLogout() {
 
 async function getStatesBookManager(idCourse) {
   let url = `/stats?course=${idCourse}`;
-  console.log(url);
+  
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -377,6 +382,123 @@ async function getStatesBookManager(idCourse) {
     let err = { status: response.status, errObj: stats };
     throw err; // An object with the error coming from the server
   }
+}
+
+async function getStatesWeekly(idCourse, WeekNo) {
+  const year = new Date().getFullYear();
+  let url = `/stats?course=${idCourse}&period=week&week=${WeekNo}&year=${year}`;
+ 
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
+async function getStatesMonthly(idCourse, MonthNo, year) {
+  
+  let url = `/stats?course=${idCourse}&period=month&month=${MonthNo}&year=${year}`;
+  
+  const response = await fetch(baseURL + url);
+  const stats = await response.json();
+  if (response.ok) {
+    return stats;
+  } else {
+    let err = { status: response.status, errObj: stats };
+    throw err; // An object with the error coming from the server
+  }
+}
+
+async function getAllCourses() {
+  const url = "/courses";
+  const response = await fetch(baseURL + url);
+  const courses = await response.json();
+  if (response.ok) {
+    return courses;
+  } else {
+    let err = { status: response.status, errObj: courses };
+    throw err; //An object with error coming from the server
+  }
+}
+
+async function uploadCsv(file, section) {
+  return new Promise(async function (resolve, reject) {
+    //the received file will be formatted
+    var data = new FormData();
+    let url;
+    //based on the selected file url will be different , the switch will assign different urls here
+    switch (section) {
+      case "Courses":
+        url = baseURL + `/courses/upload`;
+        data.append("course_file", file, "course_file.csv");
+        break;
+        case "Schedules":
+        console.log("schecule")
+        url = baseURL + `/schedules/upload`;
+        data.append("schedule_file", file, "schedule_file.csv");
+        data.append("startDay","2020-12-21");
+        data.append("endDay","2020-12-26");
+        break;
+      case "Student":
+        url = baseURL + `/students/upload`;
+        data.append("student_file", file, "Students.csv");
+        break;
+      case "Teachers":
+        url = baseURL + `/teachers/upload`;
+        data.append("teacher_file", file, "teacher_file.csv");
+        break;
+      case "Enrollments":
+        url = baseURL + `/enrollments/upload`;
+        data.append("enrollment_file", file, "enrollment_file.csv");
+        break;
+      case "Classes":
+        url = baseURL + `/enrollments/upload`;
+        data.append("enrollment_file", file, "enrollment_file.csv");
+        break;
+      default:
+        break;
+    }
+    const res= await fetch(url, {
+      method: 'POST',
+      body: data
+    })
+    const lectureJson = await res.json();
+    if (res.ok) {
+      console.log("ok")
+      resolve(lectureJson);
+    }
+    else{
+      reject(Error("Network Error upload"));
+    }
+
+    // do the usual XHR stuff
+    /*
+    var req = new XMLHttpRequest();
+
+    req.open("post", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.onload = function () {
+      if (req.status === 200) {
+        console.log("buono")
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
+      } else {
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      console.log("male")
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
+    */
+  });
+  
 }
 
 const API = {
@@ -394,5 +516,9 @@ const API = {
   getStats,
   getAllLectures,
   getStatesBookManager,
+  getStatesWeekly,
+  getStatesMonthly,
+  uploadCsv,
+  getAllCourses,
 };
 export default API;

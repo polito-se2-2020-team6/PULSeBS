@@ -1,7 +1,12 @@
-# Login datas
+# Login data
 - francescop, 123456789
 - marcot, passw1 
 - antoniov, 987654321
 - alessandrob, passw2
 - mostafat, helloworld
-- bookman, 123123123
+- boookman, 123123123
+- suppofr, passw1
+- For student uploaded via .csv file
+  - s*Id*, abc123
+- For teachers uploaded via .csv file
+  - *Number*, 123abc
