@@ -72,13 +72,13 @@ class UsageMonitor extends React.Component {
       this.props.isLogged(true);
     }
     await API.getAllCourses().then((allCourses) => {
-      const folterCourses = allCourses.courses.filter(
+      const filterCourses = allCourses.courses.filter(
         (ele, ind) =>
           ind === allCourses.courses.findIndex((elem) => elem.name === ele.name)
       );
 
       this.setState({
-        allCourses: folterCourses,
+        allCourses: filterCourses,
       });
     });
     console.log(this.state.allCourses);
