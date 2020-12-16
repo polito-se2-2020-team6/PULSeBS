@@ -6,6 +6,8 @@ define("TEACHER_SURNAME", "Surname");
 define("TEACHER_EMAIL", "OfficialEmail");
 define("TEACHER_SSN", "SSN");
 
+define('DEFAULT_TEACHER_PASSWORD', "123abc");
+
 if (!function_exists("upload_teachers")) {
 	function upload_teachers($vars) {
 		try {
@@ -58,7 +60,7 @@ if (!function_exists("upload_teachers")) {
 
 			array_splice($csv_file, 0, 1);
 
-			$password_tmp = password_hash(bin2hex(random_bytes(8)), PASSWORD_BCRYPT); //THIS SHOULD NOT BE DONE. IS DONE ONLY FOR TESTING PURPOSE
+			$password_tmp = password_hash(DEFAULT_TEACHER_PASSWORD, PASSWORD_BCRYPT); //THIS SHOULD NOT BE DONE. IS DONE ONLY FOR TESTING PURPOSE
 
 			foreach ($csv_file as $student) {
 				$stmt = $pdo->prepare("INSERT INTO users (ID, username, password, type, email, firstname, lastname, SSN) VALUES (:teacherId, :username, :passw, :usertype, :email, :firstname, :lastname, :SSN)");

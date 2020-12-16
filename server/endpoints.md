@@ -1,48 +1,53 @@
 # Login
+
 Will set a cookie with a string used to authentication
 
 - **POST** /api/login
-  - *request params*
+  - _request params_
     - username: string
     - password: string
-  - *response body*
+  - _response body_
     - success: bool
     - userId: int
     - type: int
 
 # Meaning of field type
+
 - **GET** /api/types
-  - *request params*
+  - _request params_
     - empty
-  - *response params*
+  - _response params_
     - success: bool
     - list: [array(object)]
       - typeId: int
-      - typeDesc: string *(student, teacher, booking manager)*
+      - typeDesc: string _(student, teacher, booking manager)_
 
 # Check login
+
 - **GET** /api/logged
-  - *request params*
+  - _request params_
     - empty
-  - *response body*
+  - _response body_
     - success: bool
     - loggedIn: bool
-  - *if not logged the response code will be 403*
+  - _if not logged the response code will be 403_
 
 # Logout
+
 - **POST** /api/logout
-  - *request params*
+  - _request params_
     - empty
-  - *response body*
+  - _response body_
     - success: bool
 
 # Current user
+
 Requires login
 
 - **GET** /api/user/me
-  - *request params*
+  - _request params_
     - empty
-  - *response body*
+  - _response body_
     - success: bool
     - userId: int
     - type: int
@@ -57,36 +62,56 @@ Requires login
 # All courses
 
 - **GET** /api/courses
-  - *request params*
-    - *optional* ofLogged: no value
-  - *response body*
+  - _request params_
+    - _optional_ ofLogged: no value
+  - _response body_
     - success: bool
     - courses: [object]{
       - ID: int
       - code: string
       - name: string
-      - year: int *(is the academical year: for example 1 for the first year)*
+      - year: int _(is the academical year: for example 1 for the first year)_
       - semester: int
       - teacherId: int
       - teacherFirstName: string
       - teacherLastName: string
       - teacherEmail: string
-    }
+        }
+
+# All courses
+
+- **GET** /api/courses
+  - _request params_
+    - _optional_ ofLogged: no value
+  - _response body_
+    - success: bool
+    - courses: [object]{
+      - ID: int
+      - code: string
+      - name: string
+      - year: int _(is the academical year: for example 1 for the first year)_
+      - semester: int
+      - teacherId: int
+      - teacherFirstName: string
+      - teacherLastName: string
+      - teacherEmail: string
+        }
 
 # All lectures of a user
+
 Requires login as student or teacher
 
-- **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
-  - *request params*
+- **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][enddate=yyyy-mm-dd]
+  - _request params_
     - empty
-  - *response body*
+  - _response body_
     - success: bool
     - lectures: [object]
       - lectureId: int
       - courseId: int
       - courseName: string
-      - startTS: int *(GMT timezone)*
-      - endTS: int *(GMT timezone)*
+      - startTS: int _(GMT timezone)_
+      - endTS: int _(GMT timezone)_
       - online: bool
       - teacherName: string
       - roomName: string
@@ -96,23 +121,25 @@ Requires login as student or teacher
       - inWaitingList: bool
 
 # Book a lecture
+
 Requires login as student
 
 - **POST** /api/users/{userId}/book
-  - *request params*
+  - _request params_
     - lectureId: int
-  - *response body*
+  - _response body_
     - success: bool
     - inWaitingList: bool
     - mailSent: bool
 
 # Students booked to a lecture
+
 Requires login as teacher
 
 - **GET** /api/lectures/{lectureId}/students
-  - *request params*
+  - _request params_
     - empty
-  - *response body*
+  - _response body_
     - success: bool
     - students: [object]
       - studentId: int
@@ -121,36 +148,41 @@ Requires login as teacher
       - inWaitingList : bool
 
 # Cancel a booking
+
 Requires login as student
 
 - **DELETE** /api/users/{userId}/book
-  - *request params*
+  - _request params_
     - lectureId: int
-  - *response body*
+  - _response body_
     - success: bool
 
 # Cancel a lecture
+
 Requires login as teacher
 
 - **DELETE** /api/lectures/{lectureId}
-  - *request params*
+  - _request params_
     - empty
-  - *response body*
+  - _response body_
     - success: bool
 
 # Edit a lecture online status
+
 Requires login as teacher
+
 - **PATCH** /api/lectures/{lectureId}/online
-  - *request params*
+  - _request params_
     - value: bool
-  - *response body*
+  - _response body_
     - success: bool
 
 # Booking statistics
+
 Requires login as teacher or booking manager
 
 - **GET** /api/stats?lecture=LL&course=XXX&period=PPPP&week=WW&month=MM&year=YYYY
-  - *URL params details*
+  - _URL params details_
     - lecture: id of lecture
     - course: id of course | all
       - if lecture not present, defaults to all, ignored otherwise
@@ -162,7 +194,7 @@ Requires login as teacher or booking manager
       - mandatory if period = month, ignored otherwise
     - year: year > 0
       - mandatory if period = week | month, ignored otherwise
-  - *response body*
+  - _response body_
     - success: bool
     - courseId: int | null
     - bookingsAvg: float
@@ -179,39 +211,43 @@ Requires login as teacher or booking manager
       - cancellation statistics are present only for a booking manager
 
 # Upload students csv
+
 Require login as support officer
 
 - **POST** /api/students/upload
-  - *request params*
-    - student_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
-  - *response body*
+  - _request params_
+    - student_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+  - _response body_
     - success: bool
 
 # Upload teachers csv
+
 Require login as support officer
 
 - **POST** /api/teachers/upload
-  - *request params*
-    - teacher_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
-  - *response body*
+  - _request params_
+    - teacher_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+  - _response body_
     - success: bool
 
 # Upload courses csv
+
 Require login as support officer
 
 - **POST** /api/courses/upload
-  - *request params*
-    - course_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
-  - *response body*
+  - _request params_
+    - course_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+  - _response body_
     - success: bool
 
 # Upload enrollments csv
+
 Require login as support officer
 
 - **POST** /api/enrollments/upload
-  - *request params*
-    - enrollment_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
-  - *response body*
+  - _request params_
+    - enrollment_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+  - _response body_
     - success: bool
 
 # Upload schedule csv
@@ -226,7 +262,9 @@ Requiire login as support officer
     - success: bool
 
 # Error
-If an error occurs, the *response body* is
+
+If an error occurs, the _response body_ is
+
 - success: bool
 - reason: string
 
