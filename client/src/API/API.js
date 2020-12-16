@@ -486,6 +486,5 @@ const API = {
   getStatesWeekly,
   getStatesMonthly,
   uploadCsv,
-  getAllCourses,
 };
 export default API;
