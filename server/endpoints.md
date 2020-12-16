@@ -73,10 +73,10 @@ Requires login
       - teacherEmail: string
     }
 
-# All lectures of a student
-Requires login as student
+# All lectures of a user
+Requires login as student or teacher
 
-- **GET** /api/users/{studentId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
+- **GET** /api/users/{userId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
   - *request params*
     - empty
   - *response body*
@@ -85,8 +85,6 @@ Requires login as student
       - lectureId: int
       - courseId: int
       - courseName: string
-      - year: int
-      - semester: int
       - startTS: int *(GMT timezone)*
       - endTS: int *(GMT timezone)*
       - online: bool
@@ -96,54 +94,6 @@ Requires login as student
       - totalSeats: int
       - bookedSelf: bool
       - inWaitingList: bool
-
-# All lectures of a teacher
-Requires login teacher
-
-- **GET** /api/users/{teacherId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
-  - *request params*
-    - empty
-  - *response body*
-    - success: bool
-    - lectures: [object]
-      - lectureId: int
-      - courseId: int
-      - courseName: string
-      - year: int
-      - semester: int
-      - startTS: int *(GMT timezone)*
-      - endTS: int *(GMT timezone)*
-      - online: bool
-      - teacherName: string
-      - roomName: string
-      - bookedSeats: int
-      - waitingUsers: int
-      - totalSeats: int
-
-
-# All lectures of a booking manager
-Requires login as booking manager
-
-- **GET** /api/users/{studentId}/lectures?[startDate=YYYY-mm-dd][endDate=YYYY-mm-dd]
-  - *request params*
-    - empty
-  - *response body*
-    - success: bool
-    - lectures: [object]
-      - lectureId: int
-      - courseId: int
-      - courseName: string
-      - year: int
-      - semester: int
-      - startTS: int *(GMT timezone)*
-      - endTS: int *(GMT timezone)*
-      - online: bool
-      - teacherName: string
-      - roomName: string
-      - bookedSeats: int
-      - waitingUsers: int
-      - cancelledBookings: int
-      - totalSeats: int
 
 # Book a lecture
 Requires login as student
@@ -227,6 +177,42 @@ Requires login as teacher or booking manager
     - nLectures: int
       - attendance statistics are not present at the moment
       - cancellation statistics are present only for a booking manager
+
+# Upload students csv
+Require login as support officer
+
+- **POST** /api/students/upload
+  - *request params*
+    - student_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
+
+# Upload teachers csv
+Require login as support officer
+
+- **POST** /api/teachers/upload
+  - *request params*
+    - teacher_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
+
+# Upload courses csv
+Require login as support officer
+
+- **POST** /api/courses/upload
+  - *request params*
+    - course_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
+
+# Upload enrollments csv
+Require login as support officer
+
+- **POST** /api/enrollments/upload
+  - *request params*
+    - enrollment_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - *response body*
+    - success: bool
 
 # Error
 If an error occurs, the *response body* is

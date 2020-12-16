@@ -5,7 +5,7 @@ context("loginAPITest", () => {
     cy.request({
       method: "POST",
       url: `http://localhost:8080/API/REST.php/api/login`,
-      form: true, // because I want to send request in XHR format(xmlhttprequest) not JSON, so this fields should be TRUE
+      form: true,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -61,48 +61,5 @@ context("Teacher Page", () => {
     cy.get("#historicaldata").click();
     cy.url().should("include", "/teacher/historicaldata");
     cy.get("#logout").click();
-  });
-});
-
-context("Booking Manager Page", () => {
-  it("Automated test for Booking Manager Component", () => {
-    cy.visit(baseURL);
-    cy.get("#username").type("boookman");
-    cy.get("#password").type("123123123");
-    cy.get("#login").click();
-    cy.url().should("include", "/booking-manager/home");
-    cy.get("#welcomeText")
-      .should("be.visible")
-      .should("have.text", "Welcome Mr.");
-    // cy.get("#course").select("ALL Courses").should("have.value", "0");
-    cy.get("#course").click();
-    cy.get("li")
-      .first()
-      .should("have.value", 0)
-      .should("have.text", "ALL Courses")
-      .click();
-    cy.get("#filter").click();
-    cy.get("li")
-      .first()
-      .should("have.value", 0)
-      .should("have.text", "Total Statistics")
-      .click();
-    cy.get("#pie").should("be.visible");
-    cy.get("#filter").click();
-    cy.get("li")
-      .eq(1)
-      .should("have.value", 0)
-      .should("have.text", "Weekly Statistics")
-      .click();
-    cy.get("#weeklyChart").should("be.visible");
-    cy.get("#filter").click();
-    cy.get("li")
-      .eq(2)
-      .should("have.value", 0)
-      .should("have.text", "Monthly Statistics")
-      .click();
-    cy.get(".react-datepicker").should("be.visible");
-    cy.get(".react-datepicker__month-11").click();
-    cy.get("#monthlyChart").should("be.visible");
   });
 });

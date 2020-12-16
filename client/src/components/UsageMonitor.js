@@ -521,7 +521,7 @@ class UsageMonitor extends React.Component {
                   )}
                   {this.state.filter === "weekly" && (
                     <Chart
-                      id="weeklyChart"
+                      id="chart"
                       palette="Soft"
                       title="Weekly Statistics"
                       dataSource={this.state.weeklyDataSource}
@@ -561,7 +561,6 @@ class UsageMonitor extends React.Component {
                       {/* <Export enabled={true} /> */}
                     </Chart>
                   )}
-                  {/* the below item should be visible once the week and year from Datepicker is selected */}
                   {this.state.isSelected === true && (
                     <>
                       {/* <DatePicker
@@ -576,7 +575,7 @@ class UsageMonitor extends React.Component {
                         title="Monthly Statistics"
                         dataSource={this.state.mDataSource}
                         rotated={true}
-                        id="monthlyChart"
+                        id="chart"
                       >
                         <ArgumentAxis>
                           <Label customizeText={this.customizeText} />
