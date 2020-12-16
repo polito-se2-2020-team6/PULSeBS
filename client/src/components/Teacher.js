@@ -236,20 +236,20 @@ class Teacher extends React.Component {
                 onSelect={() => {this.clearStudentTable(); this.setState({range: 0})}}
               >
                 {corsi?.map((C_Id) => (
-                  <Tab eventKey={C_Id} title={C_Id} key={C_Id}>
+                  <Tab eventKey={C_Id} title={C_Id} key={C_Id} >
                     <Row className="mt-5 ">
                       <Col md={1}></Col>
                       <Col md={5}>
-                      <Pagination>
+                      <Pagination id="pagId">
                       
-                      <Pagination.Prev onClick={() => this.changeRange(-1,C_Id)} />
+                      <Pagination.Prev onClick={() => this.changeRange(-1,C_Id)} id="pagPrevId"/>
                       <Pagination.Item disabled>{this.state.range+1}</Pagination.Item>
                       
-                      <Pagination.Next onClick={() => this.changeRange(+1,C_Id)}/>
+                      <Pagination.Next onClick={() => this.changeRange(+1,C_Id)} id="pagNextId"/>
 
                     </Pagination>
                         <Tab.Container id="list-group-tabs-example">
-                          <ListGroup className="mt-2">
+                          <ListGroup className="mt-2" id="lgId2">
                             <ListGroup.Item as="li" active>
                               <h3>lecture</h3>
                             </ListGroup.Item>
@@ -279,6 +279,7 @@ class Teacher extends React.Component {
                                 <Col md={2}>{moment(c.startTS).format("DD/MM/YYYY HH:mm")}</Col><Col>{c.online? "Virtual Lesson":c.roomName}</Col>
                                 {   c.online? <></> :
                                   <DialogAlert 
+                                  id="alID"
                                   dialog={"turn"}
                                   courseName={C_Id}
                                   startTS={c.startTS}
@@ -288,6 +289,7 @@ class Teacher extends React.Component {
                                     <Col></Col>
                                   
                                   <DialogAlert 
+                                  id="alID1"
                                   dialog={"delete"}
                                   courseName={C_Id}
                                   startTS={c.startTS}
@@ -305,7 +307,7 @@ class Teacher extends React.Component {
                       <Col md={1}></Col>
                       <Col md={4}>
                       {this.state.studtable?
-                        <ListGroup as="ul" className="mt-2">
+                        <ListGroup as="ul" className="mt-2" id="lgId">
                             {(this.state.students.length&&!this.state.online)?
 
                                     <><ListGroup.Item as="li" active>
