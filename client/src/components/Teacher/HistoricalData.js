@@ -127,6 +127,11 @@ class HistoricalData extends React.Component {
                           - 3 + (week1.getDay() + 6) % 7) / 7);
   }
 
+getDateOfWeek = (w, y) => {
+    var d = (1 + (w - 1) * 7); // 1st of January + 7 days for each week
+
+    return new Date(y, 0, d);
+}
   
 
   getStats = (idLecture, idCourse, period, week, month, year, i, data, tableData) => {
@@ -142,8 +147,8 @@ class HistoricalData extends React.Component {
         data.labels[i]=0;
         let l = idLecture?idLecture + ' - ' +  this.state.allCourses.find(x => x.courseId === s.courseId).courseName: '';
         let m = month?months[month]+ ' ' +year:'';
-        
-        data.labels[i]=m || week || l;
+        console.log(this.getDateOfWeek(week, year));
+        data.labels[i]= m || week || l;
         console.log(data.labels[i]);
         data.datasets[0].data[i]=s.bookingsAvg;
         //console.log("stampe")
