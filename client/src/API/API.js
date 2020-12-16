@@ -425,7 +425,7 @@ async function getAllCourses() {
 }
 
 async function uploadCsv(file, section) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     //the received file will be formatted
     var data = new FormData();
     let url;
@@ -436,8 +436,11 @@ async function uploadCsv(file, section) {
         data.append("course_file", file, "course_file.csv");
         break;
         case "Schedules":
-        url = baseURL + `/schedule/upload`;
+        console.log("schecule")
+        url = baseURL + `/schedules/upload`;
         data.append("schedule_file", file, "schedule_file.csv");
+        data.append("startDay","2020-12-21");
+        data.append("endDay","2020-12-26");
         break;
       case "Student":
         url = baseURL + `/students/upload`;
@@ -458,13 +461,28 @@ async function uploadCsv(file, section) {
       default:
         break;
     }
+    const res= await fetch(url, {
+      method: 'POST',
+      body: data
+    })
+    const lectureJson = await res.json();
+    if (res.ok) {
+      console.log("ok")
+      resolve(lectureJson);
+    }
+    else{
+      reject(Error("Network Error upload"));
+    }
+
     // do the usual XHR stuff
+    /*
     var req = new XMLHttpRequest();
 
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.onload = function () {
       if (req.status === 200) {
+        console.log("buono")
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
@@ -474,10 +492,13 @@ async function uploadCsv(file, section) {
     };
     // handle network errors
     req.onerror = function () {
+      console.log("male")
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
+    */
   });
+  
 }
 
 const API = {

@@ -3,6 +3,7 @@ import { AuthContext } from "../auth/AuthContext";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Upload from "./Upload"
+import  { Redirect } from 'react-router-dom'
 class SupportOfficer extends Component {
   constructor(props) {
     super(props);
@@ -38,7 +39,7 @@ class SupportOfficer extends Component {
                 </Tabs>
               </>
             ) : (
-              <></>
+              <><Redirect to='/login'  /></>
             )}
           </>
         )}

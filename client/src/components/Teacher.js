@@ -9,8 +9,7 @@ import {
   Row,
   Tabs,
   Tab,
-  ListGroup,
-  Button,
+  ListGroup
 } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from ".././API/API";
@@ -113,10 +112,10 @@ class Teacher extends React.Component {
      var range=this.state.range; //range va da 1 a x in base a quanto seleziono  1->0-9     2->10-19   ecc
      var lung= this.state.totalLectures.filter(l => l.courseName === courseId).length;
      if(x<0){
-       (this.state.range-1)>=0 ? range-- : range=range   
+       if(this.state.range-1>=0) {range--}   
      }
      else if(x>0){
-      (this.state.range+1)<(Math.ceil(lung/view)) ? range++ : range=range   
+      if((this.state.range+1)<(Math.ceil(lung/view))){range++} 
     }
      this.setState({range: range});
    }
