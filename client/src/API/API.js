@@ -72,8 +72,6 @@ async function getLecturesStartDate(userId) {
   let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
     data.getMonth() + 1
   }-${data.getDate()}`;
-  console.log("URL startDate");
-  console.log(url);
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {

@@ -1,5 +1,3 @@
-// filtro fatto su courseName invece che coureId, se cancelli tutte le lezioni 
-// scompare la tab
 
 import React from "react";
 import moment from "moment";
@@ -18,49 +16,7 @@ import { AuthContext } from "../auth/AuthContext";
 import API from ".././API/API";
 import DialogAlert from "./DialogAlert"
 
-/*  listaLezione -> getLectures
-    corso -> courseId
-    lezione -> lectureId
-    studenti -> vector of Students
 
-
-var listaLezioni = [
-  {
-    corso: "History",
-    lezione: "HY-01",
-    studenti: new Array("ettore", "carlo", "luca", "camarcorlo"),
-  },
-  {
-    courseId: "History",
-    lectureId: "HY-01",
-    studenti: new Array("ettore", "carlo", "luca", "camarcorlo"),
-  },
-  {
-    courseId: "Geometry",
-    lectureId: "GY-01",
-    studenti: new Array("ettore", "carlo"),
-  },
-  {
-    courseId: "History",
-    lectureId: "HY-02",
-    studenti: new Array("ettore", "camarcorlo"),
-  },
-  {
-    courseId: "Software Engineering 2",
-    lectureId: "SE2-01",
-    studenti: [],
-  },
-  {
-    courseId: "Software Engineering 2",
-    lectureId: "SE2-02",
-    studenti: new Array("Marco", "Luca"),
-  },
-  {
-    courseId: "Analisi",
-    lectureId: "AI-01",
-    studenti: new Array("ludo", "carlo", "max"),
-  },
-]; */
 const view = 5; //number of lectures per pagination
 
 class Teacher extends React.Component {
@@ -68,7 +24,6 @@ class Teacher extends React.Component {
     super(props);
 
     this.state = {
-      //lectureUpdated: true,
       totalLectures: [],
       course: '',
       students: [],
@@ -77,7 +32,6 @@ class Teacher extends React.Component {
       online: false,
       range: 0,
       user: {},
-      
     };
     this.wrapper = React.createRef();
   }
@@ -85,10 +39,7 @@ class Teacher extends React.Component {
 
   async componentDidMount(){
     await this.isLogged();
-    console.log(this.state.user.userId);
     this.getLectures(this.state.user.userId)
-   
-    
 
   }
   isLogged = async () => {
@@ -98,15 +49,12 @@ class Teacher extends React.Component {
       
     } catch (errorObj) {
       this.props.history.push("/login");
-      // this.setState({ authErr: err.errorObj });
     }
   };
 
   getLectures = (userId) => {
     API.getLecturesStartDate(userId)
       .then((lectures) => {
-        console.log("Lezioni")
-        console.log(lectures);
         this.setState({
           totalLectures: lectures || [],
         });
@@ -119,49 +67,31 @@ class Teacher extends React.Component {
   getStudentsBooked(lectureId, online) {
     API.getStudentsBooked(lectureId)
       .then((students) => {
-        console.log("studenti")
-          console.log(students);
         this.setState({
           students: students.students || [],online: online
         });
       })
       .catch((errorObj) => {
-        console.log('no');
         console.log(errorObj);
       });
   }
 
   //delete a lecture as teacher
   deleteLecture(lectureId) {
-    console.log(lectureId);
     API.deleteLecture(lectureId)
       .then(() => {
-        //this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-        //this.setState({lectureUpdated: true})
         this.getLectures(this.context.authUser.userId)
-        //aggiunto io
         this.setState({students : []});
         this.setState({studtable: false});
       })
       .catch((errorObj) => {
         console.log(errorObj);
-      });
-      //console.log("prima");
-      //console.log(this.state.totalLectures);
-      //console.log(this.state.students);
-      //await this.setState({totalLectures : this.state.totalLectures.filter(c => c.lectureId !== lectureId)});
-      //await this.setState({students : []})
-      //console.log("dopo");
-      //console.log(this.state.totalLectures);
-      //console.log(this.state.students);
-      
+      });      
   }
 
   updateLectures(userId) {
-    //if (this.state.lectureUpdated) {
-    //  this.setState({ lectureUpdated: false });
       this.getLectures(userId);
-    //}
+
   }
 
   clearStudentTable() {
@@ -172,41 +102,22 @@ class Teacher extends React.Component {
     //chiamata API per modificare stato lezione online/in presence
     API.turnLecture(lectureId,online_s)
     .then(() => {
-      //andato a buon fine
-      console.log("giusto")
       this.getLectures(this.context.authUser.userId)
-      //aggiunto io
       
     })
     .catch((errorObj) => {
-      console.log("errore")
       console.log(errorObj);
     });}
 
-   
-    
-    //this.state.totalLectures.filter(l => l.lectureId === lectureId).online = !this.state.totalLectures.filter(l => l.lectureId === lectureId).online;
-  /*
-    if(online){
-      this.setState({online: false});
-    }
-    else{
-      this.setState({online: true});
-    }
-    */
    changeRange(x,courseId){
-     console.log(x);
      var range=this.state.range; //range va da 1 a x in base a quanto seleziono  1->0-9     2->10-19   ecc
      var lung= this.state.totalLectures.filter(l => l.courseName === courseId).length;
-     console.log(courseId)
-     console.log(lung)
      if(x<0){
-       (this.state.range-1)>=0 ? range-- : console.log("non posso -1")   
+       (this.state.range-1)>=0 ? range-- : range=range   
      }
      else if(x>0){
-      (this.state.range+1)<(Math.ceil(lung/view)) ? range++ : console.log("non posso")   
+      (this.state.range+1)<(Math.ceil(lung/view)) ? range++ : range=range   
     }
-    console.log(range);
      this.setState({range: range});
    }
   
