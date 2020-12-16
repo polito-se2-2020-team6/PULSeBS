@@ -214,6 +214,17 @@ Require login as support officer
   - *response body*
     - success: bool
 
+# Upload schedule csv
+Requiire login as support officer
+
+- **POST** /api/schedule/upload
+  - *request params*
+    - schedule_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+    - startDay: string YYYY-mm-dd
+    - endDay: string YYYY-mm-dd
+  - *response body*
+    - success: bool
+
 # Error
 If an error occurs, the *response body* is
 - success: bool
