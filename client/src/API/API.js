@@ -72,6 +72,7 @@ async function getLecturesStartDate(userId) {
   let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
     data.getMonth() + 1
   }-${data.getDate()}`;
+  
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -108,7 +109,7 @@ async function getStats(idLecture, idCourse, period, week, month, year) {
 
   let url = "/stats?" + l + c + `period=${period}&` + w + m + `year=${year}`;
 
-  console.log(url);
+  
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -184,7 +185,7 @@ async function getStudentsBooked(lectureId) {
     const queryParams = lectureId + "/students";
     url += queryParams;
   }
-  console.log(url);
+  
   const response = await fetch(baseURL + url);
 
   const studentsList = await response.json();
@@ -209,20 +210,20 @@ async function deleteLecture(lectureId) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      console.log(req);
+      
       if (req.status === 200) {
-        console.log("cipolla");
+        
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
       } else {
-        console.log("carota");
+        
         reject(Error(req.statusText));
       }
     };
     // handle network errors
     req.onerror = function () {
-      console.log("cane");
+    
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
@@ -240,17 +241,17 @@ async function userLogin(username, password) {
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    console.log(req);
+   
     req.onload = function () {
-      console.log(req);
+      
       const status = JSON.parse(req.response);
-      // console.log(status.success);
+    
       if (status.success === true) {
         const response = req.response;
         let user = JSON.parse(response);
         resolve(user);
       } else {
-        console.log(status.success);
+        
         reject(status.success);
       }
     };
@@ -268,9 +269,9 @@ async function userLogin(username, password) {
 async function isLogged() {
   const response = await fetch(`${baseURL}/user/me`);
   const userJson = await response.json();
-  // console.log(userJson.user.loggedIn);
+  
   if (response.ok) {
-    console.log(userJson);
+    
     return userJson;
   } else {
     let err = { status: response.status, errObj: userJson };
@@ -312,33 +313,31 @@ async function turnLecture2(lectureId, online) {
 }
 // let url = baseURL + `/lectures/${lectureId}/online`;
 async function turnLecture(lectureId, online) {
-  console.log(lectureId);
-  console.log(online);
+  
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}/online`;
     let data = `value=${!online}`;
-    console.log(url);
-    console.log(data);
+    
     req.open("PATCH", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      console.log(req);
+     
       if (req.status === 200) {
-        console.log("cipolla");
+      
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
       } else {
-        console.log("carota");
+        
         reject(Error(req.statusText));
       }
     };
     // handle network errors
     req.onerror = function () {
-      console.log("cane");
+      
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
@@ -374,7 +373,7 @@ async function userLogout() {
 
 async function getStatesBookManager(idCourse) {
   let url = `/stats?course=${idCourse}`;
-  // console.log(url);
+  
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -388,7 +387,7 @@ async function getStatesBookManager(idCourse) {
 async function getStatesWeekly(idCourse, WeekNo) {
   const year = new Date().getFullYear();
   let url = `/stats?course=${idCourse}&period=week&week=${WeekNo}&year=${year}`;
-  // console.log(url);
+ 
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -400,9 +399,9 @@ async function getStatesWeekly(idCourse, WeekNo) {
 }
 
 async function getStatesMonthly(idCourse, MonthNo, year) {
-  // const year = new Date().getFullYear();
+  
   let url = `/stats?course=${idCourse}&period=month&month=${MonthNo}&year=${year}`;
-  // console.log(url);
+  
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
