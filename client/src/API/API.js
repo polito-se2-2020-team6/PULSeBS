@@ -2,7 +2,7 @@ import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
 async function getAllLectures(userId) {
-  let data = new Date();
+  
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
   let url = `/users/${userId}/lectures`;
   const response = await fetch(baseURL + url);
@@ -416,6 +416,58 @@ async function getStatesMonthly(idCourse, MonthNo, year) {
   }
 }
 
+async function uploadCsv(file, section) {
+  return new Promise(function (resolve, reject) {
+    //the received file will be formatted
+    var data = new FormData();
+    let url;
+    //based on the selected file url will be different , the switch will assign different urls here
+    switch(section){
+      case "Courses":
+        url = baseURL + `/courses/upload`;
+        data.append("course_file", file, "course_file.csv");
+        break;
+      case "Student":
+        url = baseURL + `/students/upload`;
+        data.append("student_file", file, "Students.csv");
+        break;
+      case "Teachers":
+        url = baseURL + `/teachers/upload`;
+        data.append("teacher_file", file, "teacher_file.csv");
+        break;
+      case "Enrollments":
+        url = baseURL + `/enrollments/upload`;
+        data.append("enrollment_file", file, "enrollment_file.csv");
+        break;
+      case "Classes":
+        url = baseURL + `/enrollments/upload`;
+        data.append("enrollment_file", file, "enrollment_file.csv");
+        break;
+        default:
+          break;
+    }
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    
+    req.open("post", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.onload = function () {
+      if (req.status === 200) {
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
+      } else {
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
+  });
+}
+
 const API = {
   getLectures,
   userLogin,
@@ -433,5 +485,6 @@ const API = {
   getStatesBookManager,
   getStatesWeekly,
   getStatesMonthly,
+  uploadCsv,
 };
 export default API;
