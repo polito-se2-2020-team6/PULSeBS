@@ -73,8 +73,7 @@ class HistoricalData extends React.Component {
   }
 
   componentDidMount(){
-    console.log("Modulo")
-    console.log(Math.floor((-10)/12))
+    
     this.getLectures(this.context.authUser.userId)
     
   }
@@ -128,6 +127,8 @@ class HistoricalData extends React.Component {
                           - 3 + (week1.getDay() + 6) % 7) / 7);
   }
 
+  
+
   getStats = (idLecture, idCourse, period, week, month, year, i, data, tableData) => {
     API.getStats(idLecture, idCourse, period, week, month, year)
       .then((s) => {
@@ -139,20 +140,23 @@ class HistoricalData extends React.Component {
         console.log(week);
         console.log(idLecture);
         data.labels[i]=0;
-        data.labels[i]= months[month] || week || idLecture;
+        let l = idLecture?idLecture + ' - ' +  this.state.allCourses.find(x => x.courseId === s.courseId).courseName: '';
+        let m = month?months[month]+ ' ' +year:'';
+        
+        data.labels[i]=m || week || l;
         console.log(data.labels[i]);
         data.datasets[0].data[i]=s.bookingsAvg;
         //console.log("stampe")
         //console.log(i);
         //console.log(this.state.detailLevel);
         //console.log(this.state.totalLectures.length);
-        tableData[i] = {labels: months[month] || week || idLecture, data: s.bookingsAvg}
+        tableData[i] = {labels: m || week || l, data: s.bookingsAvg}
         if(this.state.detailLevel==="Week"|| this.state.detailLevel==="Month"){
           n++;
-          console.log("primo")
+          
           if(n>=10){
             n=0;
-            console.log("patasta");
+            
             this.setState({dataState : data, lectures : tableData});
             this.setState({progress : 0});
             
@@ -160,11 +164,10 @@ class HistoricalData extends React.Component {
         }
         if(this.state.detailLevel==="Lecture"){
           n++;
-          console.log("LEZIONI");
-          console.log(n);
+          
           if(n>=this.state.totalLectures.length-10*(this.state.offset-1)){
             n=0;
-            console.log("patasta");
+            
             this.setState({dataState : data, lectures : tableData});
             this.setState({progress : 0});
           }
