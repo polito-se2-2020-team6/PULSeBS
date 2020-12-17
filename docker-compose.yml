@@ -2,11 +2,11 @@ version: "3.0"
 
 services:
     pbs-back:
-        image: "politosftengteam6/pulsebs:backv0.2"
+        image: "politosftengteam6/pulsebs:backv0.3"
         build: "./server"
         network_mode: "bridge"
     pbs-front:
-        image: "politosftengteam6/pulsebs:frontv0.2"
+        image: "politosftengteam6/pulsebs:frontv0.3"
         build: "./client"
         network_mode: "bridge"
         ports:
