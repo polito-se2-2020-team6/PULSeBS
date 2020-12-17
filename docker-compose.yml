@@ -5,6 +5,10 @@ services:
         image: "politosftengteam6/pulsebs:backv0.3"
         build: "./server"
         network_mode: "bridge"
+        links:
+            - "mailserver"
+        depends_on:
+            - "mailserver"
     pbs-front:
         image: "politosftengteam6/pulsebs:frontv0.3"
         build: "./client"
@@ -14,6 +18,18 @@ services:
         expose:
             - "3000"
         links:
-            - pbs-back
+            - "pbs-back"
         depends_on:
             - "pbs-back"
+    mailserver:
+        image: "mailhog/mailhog"
+        network_mode: "bridge"
+        ports:
+            - "8025:8025"
+        expose:
+            - "8025"
+        environment:
+            - MH_AUTH_FILE=/etc/authfile
+            - MH_HOSTNAME=mailserver
+        volumes:
+            - ./server/authfile:/etc/authfile

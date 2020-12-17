@@ -24,13 +24,13 @@ COPY ./configs/msmtprc.tmpl /msmtprc.tmpl
 RUN curl -L https://github.com/hairyhenderson/gomplate/releases/download/v2.3.0/gomplate_linux-amd64-slim > /usr/local/bin/gomplate && \
   chmod u+x /usr/local/bin/gomplate
 RUN echo 'sendmail_path = "/usr/sbin/sendmail -t"' > /usr/local/etc/php/conf.d/mail.ini
-ENV SSMTP_HOST=debugmail.io
-ENV SSMTP_PORT=25
+ENV SSMTP_HOST=mailserver
+ENV SSMTP_PORT=1025
 ENV SSMTP_FROM=noreply@polito.it
-ENV SSMTP_USE_TLS=on
-ENV SSMTP_USE_STARLTLS=on
+ENV SSMTP_USE_TLS=off
+ENV SSMTP_USE_STARLTLS=off
 ENV SSMTP_AUTH_USER=francexi@hotmail.it
-ENV SSMTP_AUTH_PASSWORD=54c3f9b0-2e90-11eb-a9b2-a5a944372c61
+ENV SSMTP_AUTH_PASSWORD=testpass
 
 # Run the command on container startup
 CMD . ./initialize.sh

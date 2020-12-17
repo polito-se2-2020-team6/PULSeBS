@@ -622,7 +622,7 @@ if (!function_exists('cancel_booking')) {
 			if (!empty($next_waiting_student) && !$is_cancelling_user_in_waiting_list) {
 				$student_info = get_user($next_waiting_student[0]);
 				$start_time = new DateTime("@" . $lecture['start_ts']);
-				@mail($student_info['email'], "Moving out of waiting list for " . $lecture['name'], "You have been moved out from waiting list for the lecture of " . $lecture . " scheduled for " . $start_time->format("Y-m-d h:i"));
+				@mail($student_info['email'], "Moving out of waiting list for " . $lecture['name'], "You have been moved out from waiting list for the lecture of " . $lecture['name'] . " scheduled for " . $start_time->format("Y-m-d h:i"));
 			}
 
 			// Success
