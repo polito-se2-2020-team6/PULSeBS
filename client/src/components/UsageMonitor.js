@@ -476,7 +476,7 @@ class UsageMonitor extends React.Component {
               <Row>
                 <Col className="mt-5">
                   {this.state.filter === "all" && (
-                    <TableContainer id="teachersTable" component={Paper}>
+                    <TableContainer id="statisticsTable" component={Paper}>
                       <Table size="small">
                         <TableHead>
                           <TableRow>
