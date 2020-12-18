@@ -22,5 +22,4 @@ RUN mkdir -p /src
 WORKDIR /src
 COPY . /src
 RUN npm install --production
-RUN npm build
 CMD ["npm","start"]
