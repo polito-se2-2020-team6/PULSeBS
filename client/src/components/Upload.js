@@ -94,7 +94,7 @@ class Upload extends Component {
           />
           {this.props.section === "Schedules" ? (
             <>
-              <label for="startDay">
+              <label className="mt-4" for="startDay">
                 Please Select Start Day
                 <input
                   className="ml-1"
