@@ -64,6 +64,10 @@ class Student extends Component {
   };
 
   componentDidMount() {
+    // just to solve the problem of refreshing the page and prevent going to the login Page
+    if (!this.props.isStillLogged) {
+      this.props.isLogged(true);
+    }
     const studentId = window.location.href.split("=")[1];
     API.getLectures(studentId)
       .then((lectures) => {

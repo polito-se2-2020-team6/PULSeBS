@@ -163,7 +163,9 @@ class App extends React.Component {
             />
           </Route>
           <Route path="/student/home">
-            <Student user={this.state.authUser} />
+            <Student user={this.state.authUser} 
+            isLogged={this.isLogged}
+            isStillLogged={this.state.isStillLogged}/>
           </Route>
           <Route path="/support/home">
             <SupportOfficer user={this.state.authUser} />

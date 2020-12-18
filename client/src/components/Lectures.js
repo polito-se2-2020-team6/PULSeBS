@@ -55,9 +55,9 @@ class LectureList extends Component {
           <Col>
          <Button variant="info" className="ml-n5" onClick={()=>this.scroll()}>Booked Lectures</Button></Col>
          </Row>
-          <div className="table-responsive">
+          <div className=" table-responsive">
             <h2 className="mt-5 ml-">Available Lectures</h2>
-            <table className="table table-hover text-center">
+            <table className="font-size: 22px; table table-striped table-hover text-center">
               <thead>
                 <tr className="">
                   <th>Course Name</th>
@@ -71,7 +71,7 @@ class LectureList extends Component {
                   <th>Status</th>
                 </tr>
               </thead>
-              {this.props.filtered == '' ? <tbody>
+              {this.props.filtered == '' ? <tbody className="lectures-table" >
               {this.props.lectures.map(
                 (lecture) =>
                   !lecture.bookedSelf && (
@@ -164,7 +164,7 @@ function LectureRow(props) {
 function LectureData(props) {
   return (
     <>
-      <td>{props.lecture.courseName}</td>
+      <td >{props.lecture.courseName}</td>
       <td>{props.lecture.startTS}</td>
       <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
       <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
