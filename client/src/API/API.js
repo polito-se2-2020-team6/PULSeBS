@@ -424,7 +424,8 @@ async function getAllCourses() {
   }
 }
 
-async function uploadCsv(file, section) {
+async function uploadCsv(file, section,start,end) {
+  
   return new Promise(async function (resolve, reject) {
     //the received file will be formatted
     var data = new FormData();
@@ -436,11 +437,10 @@ async function uploadCsv(file, section) {
         data.append("course_file", file, "course_file.csv");
         break;
         case "Schedules":
-        console.log("schecule")
         url = baseURL + `/schedules/upload`;
         data.append("schedule_file", file, "schedule_file.csv");
-        data.append("startDay","2020-12-21");
-        data.append("endDay","2020-12-26");
+        data.append("startDay",start);
+        data.append("endDay",end);
         break;
       case "Student":
         url = baseURL + `/students/upload`;
