@@ -467,7 +467,7 @@ async function uploadCsv(file, section,start,end) {
     })
     const lectureJson = await res.json();
     if (res.ok) {
-      console.log("ok")
+      
       resolve(lectureJson);
     }
     else{

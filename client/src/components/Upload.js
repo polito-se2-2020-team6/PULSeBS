@@ -25,10 +25,8 @@ class Upload extends Component {
   dateChange = (event) => {
     if (event.target.id === "start") {
       this.setState({ start: event.target.value });
-      console.log(event.target.value);
     } else if (event.target.id === "end") {
       this.setState({ end: event.target.value });
-      console.log(event.target.value);
     }
   };
   fileUploadHandler() {
