@@ -10,35 +10,34 @@ class Student extends Component {
       lectures: [],
       bookingProgres: 0,
       distincted: [],
-      filtered:[]
+      filtered: [],
+      failedBooked: null,
     };
   }
   //let the student to book for a lecture
   bookSeat = (lectureId) => {
     this.setState({ bookingProgres: 1 });
     const studentId = this.props.user.userId;
-    console.log(studentId);
+
     API.bookLecture(lectureId, studentId)
       .then((lectures) => {
+        if (lectures.success === true) {
+          this.setState({ bookingProgres: 0, failedBooked: 0 });
+        } else if (lectures.success === false) {
+          this.setState({ bookingProgres: 0, failedBooked: 1 });
+        }
         this.componentDidMount();
-        this.setState({ bookingProgres: 0 });
-        console.log(lectures);
       })
       .catch((err) => console.log(err));
-    // API.getLectures(studentId)
-    //   .then((lectures) => {
-    //     this.setState({ lectures: lectures });
-    //   })
-    //   .catch((err) => console.log(err));
   };
 
   //filtering lectures
   filterLectures = (courseId) => {
     let lectures = [...this.state.lectures];
     if (courseId === "all") {
-      this.setState({filtered:[]})
-      console.log(this.state.filtered)
-      console.log(this.state.lectures)
+      this.setState({ filtered: [] });
+      console.log(this.state.filtered);
+      console.log(this.state.lectures);
       this.componentDidMount();
     } else {
       let filtered = lectures.filter((cur) => {
@@ -77,7 +76,7 @@ class Student extends Component {
           return lecture.courseName;
         });
         let unique = [...new Set(courseNames)];
-        console.log(unique);
+
         this.setState({ distincted: unique });
       })
       .catch((err) => console.log(err));
@@ -99,6 +98,7 @@ class Student extends Component {
                   cancelBooking={this.cancelBooking}
                   distincted={this.state.distincted}
                   filtered={this.state.filtered}
+                  failedBooked={this.state.failedBooked}
                 />
               </>
             ) : (

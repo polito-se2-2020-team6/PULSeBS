@@ -4,19 +4,24 @@ import Button from "react-bootstrap/Button";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import Badge from "react-bootstrap/Badge";
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Alert from "react-bootstrap/Alert";
 class LectureList extends Component {
-  state = {
-    lectures:[]
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      lectures: [],
+    };
+  }
 
   scroll = () => {
-    setTimeout(() => {
-      document.getElementById("booked").scrollIntoView({
-        behavior: "smooth",
-      });
-    }, 1000);
+      setTimeout(() => {
+        document.getElementById("booked").scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 1000);
+   
   };
 
   render() {
@@ -26,35 +31,42 @@ class LectureList extends Component {
           role="main"
           className="main p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4"
         >
+            
           <Row xs={2} md={4} lg={6}>
             <Col>
-          <DropdownButton
-            className="mb-4"
-            id="dropdown-basic-button"
-            title="Filter Courses"
-          >
-            <Dropdown.Item
-              onClick={() => {
-                this.props.filterLectures("all");
-              }}
-            >
-              All Courses
-            </Dropdown.Item>
-            {this.props.distincted.map((lecture) => (
-              <Dropdown.Item
-                onClick={() => {
-                  this.props.filterLectures(lecture);
-                }}
+              <DropdownButton
+                className="mb-4"
+                id="dropdown-basic-button"
+                title="Filter Courses"
               >
-                {lecture}
-              </Dropdown.Item>
-            ))}
-            
-          </DropdownButton>
-          </Col>
-          <Col>
-         <Button variant="info" className="ml-n5" onClick={()=>this.scroll()}>Booked Lectures</Button></Col>
-         </Row>
+                <Dropdown.Item
+                  onClick={() => {
+                    this.props.filterLectures("all");
+                  }}
+                >
+                  All Courses
+                </Dropdown.Item>
+                {this.props.distincted.map((lecture) => (
+                  <Dropdown.Item
+                    onClick={() => {
+                      this.props.filterLectures(lecture);
+                    }}
+                  >
+                    {lecture}
+                  </Dropdown.Item>
+                ))}
+              </DropdownButton>
+            </Col>
+            <Col>
+              <Button
+                variant="info"
+                className="ml-n5"
+                onClick={() => this.scroll()}
+              >
+                Booked Lectures
+              </Button>
+            </Col>
+          </Row>
           <div className=" table-responsive">
             <h2 className="mt-5 ml-">Available Lectures</h2>
             <table className="font-size: 22px; table table-striped table-hover text-center">
@@ -71,42 +83,43 @@ class LectureList extends Component {
                   <th>Status</th>
                 </tr>
               </thead>
-              {this.props.filtered == '' ? <tbody className="lectures-table" >
-              {this.props.lectures.map(
-                (lecture) =>
-                  !lecture.bookedSelf && (
-                    <LectureRow
-                      key={lecture.lectureId}
-                      lecture={lecture}
-                      bookSeat={this.props.bookSeat}
-                      cancelBooking={this.props.cancelBooking}
-                      //   onClick={this.props.onClick}
-                      scroll={this.scroll}
-                      show="false"
-                      bookingProgres={this.props.bookingProgres}
-                    />
-                  )
+              {this.props.filtered == "" ? (
+                <tbody className="lectures-table">
+                  {this.props.lectures.map(
+                    (lecture) =>
+                      !lecture.bookedSelf && (
+                        <LectureRow
+                          key={lecture.lectureId}
+                          lecture={lecture}
+                          bookSeat={this.props.bookSeat}
+                          cancelBooking={this.props.cancelBooking}
+                          //   onClick={this.props.onClick}
+                          scroll={this.scroll}
+                          show="false"
+                          bookingProgres={this.props.bookingProgres}
+                        />
+                      )
+                  )}
+                </tbody>
+              ) : (
+                <tbody>
+                  {this.props.filtered.map(
+                    (lecture) =>
+                      !lecture.bookedSelf && (
+                        <LectureRow
+                          key={lecture.lectureId}
+                          lecture={lecture}
+                          bookSeat={this.props.bookSeat}
+                          cancelBooking={this.props.cancelBooking}
+                          //   onClick={this.props.onClick}
+                          scroll={this.scroll}
+                          show="false"
+                          bookingProgres={this.props.bookingProgres}
+                        />
+                      )
+                  )}
+                </tbody>
               )}
-            </tbody>
-            :
-              <tbody>
-              {this.props.filtered.map(
-                (lecture) =>
-                  !lecture.bookedSelf && (
-                    <LectureRow
-                      key={lecture.lectureId}
-                      lecture={lecture}
-                      bookSeat={this.props.bookSeat}
-                      cancelBooking={this.props.cancelBooking}
-                      //   onClick={this.props.onClick}
-                      scroll={this.scroll}
-                      show="false"
-                      bookingProgres={this.props.bookingProgres}
-                    />
-                  )
-              )}
-            </tbody>
-              }
             </table>
 
             <h2 className="mt-5 ml-">Booked Lectures</h2>
@@ -141,6 +154,9 @@ class LectureList extends Component {
                 )}
               </tbody>
             </table>
+            <AlertDismissibleExample
+              failedBooked={this.props.failedBooked}
+            />
           </div>
         </main>
       </Fragment>
@@ -161,16 +177,29 @@ function LectureRow(props) {
     </tr>
   );
 }
+
 function LectureData(props) {
   return (
     <>
-      <td >{props.lecture.courseName}</td>
+      <td>{props.lecture.courseName}</td>
       <td>{props.lecture.startTS}</td>
       <td>{props.lecture.endTS === false ? "-" : props.lecture.endTS}</td>
       <td>{props.lecture.online === true ? "Online" : "In Person"}</td>
       <td>{props.lecture.teacherName}</td>
-      {props.lecture.online ?<td><h4><Badge variant="danger">{props.lecture.roomName}</Badge></h4></td>  : <td><h4><Badge variant="success">{props.lecture.roomName}</Badge></h4></td>}
-      
+      {props.lecture.online ? (
+        <td>
+          <h4>
+            <Badge variant="danger">{props.lecture.roomName}</Badge>
+          </h4>
+        </td>
+      ) : (
+        <td>
+          <h4>
+            <Badge variant="success">{props.lecture.roomName}</Badge>
+          </h4>
+        </td>
+      )}
+
       <td>{props.lecture.bookedSeats}</td>
       <td>{props.lecture.totalSeats}</td>
       {props.lecture.online === false ? (
@@ -214,14 +243,33 @@ function LectureData(props) {
       ) : (
         <td>
           {props.lecture.inWaitingList === true ? (
-           <h3> <Badge variant="success">Yes</Badge></h3>
+            <h3>
+              {" "}
+              <Badge variant="success">Yes</Badge>
+            </h3>
           ) : (
-            <h3> <Badge variant="warning">No</Badge></h3>
+            <h3>
+              {" "}
+              <Badge variant="warning">No</Badge>
+            </h3>
           )}
         </td>
       )}
     </>
   );
+}
+
+function AlertDismissibleExample(props) {
+  if(props.failedBooked === 1)
+    {return (
+      <Alert variant="danger">
+        <Alert.Heading>Booking is Failed, Please Try Again!</Alert.Heading>
+      </Alert>
+    );}else if (props.failedBooked ===0){
+      return('')
+    }else{
+      return('')
+    }
 }
 
 export default LectureList;
