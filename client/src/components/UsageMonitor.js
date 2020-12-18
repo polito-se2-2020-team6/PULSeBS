@@ -113,34 +113,35 @@ class UsageMonitor extends React.Component {
       this.setState({
         statistics,
       });
-      const areas = [
-        {
-          slice: "Total Bookings",
-          area: this.state.statistics.totalBookings,
-        },
-        {
-          slice: "Total Attendances",
-          area: this.state.statistics.totalAttendances,
-        },
-        {
-          slice: "Total Cancellations",
-          area: this.state.statistics.totalCancellations,
-        },
-        {
-          slice: "BookingsSD",
-          area: this.state.statistics.bookingsStdDev.toFixed(2),
-        },
-        {
-          slice: "AttendancesSD",
-          area: this.state.statistics.attendancesStdDev.toFixed(2),
-        },
-        {
-          slice: "CancellationsSD",
-          area: this.state.statistics.cancellationsStdDev.toFixed(2),
-        },
-      ];
+
+      // const areas = [
+      //   {
+      //     slice: "Total Bookings",
+      //     area: this.state.statistics.totalBookings,
+      //   },
+      //   {
+      //     slice: "Total Attendances",
+      //     area: this.state.statistics.totalAttendances,
+      //   },
+      //   {
+      //     slice: "Total Cancellations",
+      //     area: this.state.statistics.totalCancellations,
+      //   },
+      //   {
+      //     slice: "BookingsSD",
+      //     area: this.state.statistics.bookingsStdDev.toFixed(2),
+      //   },
+      //   {
+      //     slice: "AttendancesSD",
+      //     area: this.state.statistics.attendancesStdDev.toFixed(2),
+      //   },
+      //   {
+      //     slice: "CancellationsSD",
+      //     area: this.state.statistics.cancellationsStdDev.toFixed(2),
+      //   },
+      // ];
       this.setState({
-        areas: areas,
+        areas: statistics,
       });
     });
   };
@@ -305,6 +306,7 @@ class UsageMonitor extends React.Component {
   };
 
   render() {
+    const { areas } = this.state;
     return (
       <AuthContext.Consumer>
         {(context) => (
@@ -474,22 +476,107 @@ class UsageMonitor extends React.Component {
               <Row>
                 <Col className="mt-5">
                   {this.state.filter === "all" && (
-                    <PieChart
-                      title="Total Statistics"
-                      className="mt-3 "
-                      id="pie"
-                      dataSource={this.state.areas}
-                      palette="Bright"
-                    >
-                      <Series argumentField="slice" valueField="area">
-                        <Label visible={true}>
-                          <Connector visible={true} width={1} />
-                        </Label>
-                      </Series>
+                    <TableContainer id="teachersTable" component={Paper}>
+                      <Table size="small">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell
+                              style={{ fontWeight: "bold" }}
+                              align="center"
+                            >
+                              Total Bookings
+                            </TableCell>
+                            <TableCell
+                              style={{ fontWeight: "bold" }}
+                              align="center"
+                            >
+                              Total Attendances
+                            </TableCell>
+                            <TableCell
+                              style={{ fontWeight: "bold" }}
+                              align="center"
+                            >
+                              Total Cancellations
+                            </TableCell>
+                            <TableCell
+                              style={{ fontWeight: "bold" }}
+                              align="center"
+                            >
+                              BookingsSD
+                            </TableCell>
+                            <TableCell
+                              style={{ fontWeight: "bold" }}
+                              align="center"
+                            >
+                              AttendancesSD
+                            </TableCell>
+                            <TableCell
+                              style={{ fontWeight: "bold" }}
+                              align="center"
+                            >
+                              CancellationsSD
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody stripedRows>
+                          <TableRow
+                            // style={
+                            //   areas.ID % 2
+                            //     ? { background: "#a3b687" }
+                            //     : { background: "white" }
+                            // }
+                            key={areas.ID}
+                          >
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              {areas.totalBookings}
+                            </TableCell>
+                            <TableCell align="center">
+                              {areas.totalAttendances}
+                            </TableCell>
+                            <TableCell align="center">
+                              {areas.totalCancellations}
+                            </TableCell>
 
-                      {/* <Size width={500} />
-                    <Export enabled={true} /> */}
-                    </PieChart>
+                            <TableCell align="center">
+                              {Number(areas.bookingsStdDev).toFixed(2)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {Number(areas.attendancesStdDev).toFixed(2)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {Number(areas.cancellationsStdDev).toFixed(2)}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+
+                    //  <TablePagination
+                    //    rowsPerPageOptions={[10, 25, 100]}
+                    //    component="div"
+                    //    count={this.state.allCourses.length}
+                    //    rowsPerPage={this.state.rowsPerPage}
+                    //    page={this.state.page}
+                    //    onChangePage={this.handleChangePage}
+                    //    onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                    //  />
+                    // <PieChart
+                    //   title="Total Statistics"
+                    //   className="mt-3 "
+                    //   id="pie"
+                    //   dataSource={this.state.areas}
+                    //   palette="Bright"
+                    // >
+                    //   <Series argumentField="slice" valueField="area">
+                    //     <Label visible={true}>
+                    //       <Connector visible={true} width={1} />
+                    //     </Label>
+                    //   </Series>
+                    // </PieChart>
                   )}
                   {this.state.filter === "weekly" && (
                     <Chart
