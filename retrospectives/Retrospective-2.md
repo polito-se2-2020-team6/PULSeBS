@@ -1,8 +1,4 @@
-TEMPLATE FOR RETROSPECTIVE (add your team name)
-=====================================
-
-The retrospective should include _at least_ the following
-sections:
+# Retrospective 2 (Team 6)
 
 - [process measures](#process-measures)
 - [quality measures](#quality-measures)
@@ -22,8 +18,6 @@ sections:
 - Code review completed: 6
 - Code present on VCS: 2.7k LOC
 - End-to-End tests performed: 4
-
-> Please refine your DoD 
 
 ### Detailed statistics
 

@@ -1,8 +1,4 @@
-TEMPLATE FOR RETROSPECTIVE (add your team name)
-=====================================
-
-The retrospective should include _at least_ the following
-sections:
+# Retrospective 1 (Team 6)
 
 - [process measures](#process-measures)
 - [quality measures](#quality-measures)
@@ -16,8 +12,6 @@ sections:
 - Total points committed vs done: 34/24
 - Nr of hours planned vs spent (as a team): 53.5/72.5
 
-**Remember**  a story is done ONLY if it fits the Definition of Done:
- 
 - Unit Tests passing: 9
 - Code review completed: 18
 - Code present on VCS: 
@@ -65,8 +59,6 @@ sections:
     - Reliability: A
     - Security: A
     - Maintainability: A
-  
-
 
 ## ASSESSMENT
 
@@ -81,6 +73,7 @@ sections:
   - We improved the way of communication and collaboration between each other.
   
 - Which ones you were not able to achieve? Why?
+  - /
 
 - Improvement goals for the next sprint and how to achieve them (technical tasks, team coordination, etc.)
   - Improve the testing performed on the application.
