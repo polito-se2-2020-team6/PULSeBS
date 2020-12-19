@@ -56,7 +56,7 @@ if (!function_exists("do_login")) {
 				$_SESSION['nonce'] = $nonce;
 
 				echo json_encode(array("success" => true, "userId" =>
-				$user_data['ID'], 'type' => $user_data['type']));
+				$user_data['ID'], 'type' => intval($user_data['type'])));
 
 				return;
 			}
