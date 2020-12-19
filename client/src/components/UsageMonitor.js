@@ -68,9 +68,9 @@ class UsageMonitor extends React.Component {
 
   componentDidMount = async () => {
     // just to solve the problem of refreshing the page and prevent going to the login Page
-    if (!this.props.isStillLogged) {
-      this.props.isLogged(true);
-    }
+    // if (!this.props.isStillLogged) {
+    //   this.props.isLogged(true);
+    // }
     await API.getAllCourses().then((allCourses) => {
       const filterCourses = allCourses.courses.filter(
         (ele, ind) =>

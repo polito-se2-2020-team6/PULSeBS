@@ -26,6 +26,14 @@ class App extends React.Component {
     //     this.setState({ authErr: err.errorObj });
     //   });
     // this.isLogged();
+    API.isLogged()
+      .then((user) => {
+        this.setState({ authUser: user });
+      })
+      .catch((err) => {
+        this.props.history.push("/login");
+        this.setState({ authErr: err.errorObj });
+      });
   }
 
   constructor(props) {
@@ -36,35 +44,35 @@ class App extends React.Component {
     };
   }
 
-  isLogged = async (logged) => {
-    // this.setState({
-    //   isLogged: logged,
-    // });
-    // API.isLogged()
-    //   .then((user) => {
-    //     this.setState({ authUser: user });
-    //   })
-    //   .catch((err) => {
-    //     this.props.history.push("/login");
-    //     this.setState({ authErr: err.errorObj });
-    //   });
+  // isLogged = async (logged) => {
+  //   // this.setState({
+  //   //   isLogged: logged,
+  //   // });
+  //   // API.isLogged()
+  //   //   .then((user) => {
+  //   //     this.setState({ authUser: user });
+  //   //   })
+  //   //   .catch((err) => {
+  //   //     this.props.history.push("/login");
+  //   //     this.setState({ authErr: err.errorObj });
+  //   //   });
 
-    this.setState({
-      isLogged: logged,
-    });
-    const response = await API.isLogged();
-    try {
-      setTimeout(() => {
-        this.setState({
-          isLogged: false,
-        });
-      }, 200);
-      this.setState({ authUser: response, authErr: null });
-    } catch (errorObj) {
-      this.props.history.push("/login");
-      // this.setState({ authErr: err.errorObj });
-    }
-  };
+  //   this.setState({
+  //     isLogged: logged,
+  //   });
+  //   const response = await API.isLogged();
+  //   try {
+  //     setTimeout(() => {
+  //       this.setState({
+  //         isLogged: false,
+  //       });
+  //     }, 200);
+  //     this.setState({ authUser: response, authErr: null });
+  //   } catch (errorObj) {
+  //     this.props.history.push("/login");
+  //     // this.setState({ authErr: err.errorObj });
+  //   }
+  // };
 
   login = (username, password) => {
     // this.state.users.map((e) => {
@@ -91,11 +99,10 @@ class App extends React.Component {
             // this.props.history.push("/booking-manager/home?userId="+user.userId);
             this.props.history.push("/booking-manager/home");
             break;
-            case ROLES.SUPPORT_OFFICER:
+          case ROLES.SUPPORT_OFFICER:
             this.setState({ authUser: user, authErr: null });
             this.props.history.push("/support/home");
             break;
-            
         }
       })
       .catch((errObj) => {
@@ -137,7 +144,6 @@ class App extends React.Component {
         <Navigation />
 
         <Switch>
-          <Route path="/login" component={LoginPage}></Route>
           <Route path="/teacher/home">
             <Teacher
               studentsList={this.state.studentsList}
@@ -146,6 +152,7 @@ class App extends React.Component {
               getLectures={this.getLectures}
             />
           </Route>
+          <Route path="/login" component={LoginPage}></Route>
           <Route path="/teacher/historicaldata">
             <HistoricalData
               key={123435}
@@ -163,9 +170,11 @@ class App extends React.Component {
             />
           </Route>
           <Route path="/student/home">
-            <Student user={this.state.authUser} 
-            isLogged={this.isLogged}
-            isStillLogged={this.state.isStillLogged}/>
+            <Student
+              user={this.state.authUser}
+              isLogged={this.isLogged}
+              isStillLogged={this.state.isStillLogged}
+            />
           </Route>
           <Route path="/support/home">
             <SupportOfficer user={this.state.authUser} />
