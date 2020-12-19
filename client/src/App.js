@@ -16,16 +16,15 @@ import "react-toastify/dist/ReactToastify.css";
 import SupportOfficer from "./components/SupportOfficer";
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isStillLogged: false,
+      // calendar: [],
+    };
+  }
+
   componentDidMount() {
-    // API.isLogged()
-    //   .then((user) => {
-    //     this.setState({ authUser: user });
-    //   })
-    //   .catch((err) => {
-    //     this.props.history.push("/login");
-    //     this.setState({ authErr: err.errorObj });
-    //   });
-    // this.isLogged();
     API.isLogged()
       .then((user) => {
         this.setState({ authUser: user });
@@ -34,14 +33,6 @@ class App extends React.Component {
         this.props.history.push("/login");
         this.setState({ authErr: err.errorObj });
       });
-  }
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isStillLogged: false,
-      // calendar: [],
-    };
   }
 
   // isLogged = async (logged) => {
@@ -94,10 +85,12 @@ class App extends React.Component {
             this.props.history.push("/student/home?userId=" + user.userId);
             break;
           case ROLES.BOOKING_MANAGER:
-            this.setState({ authUser: user, authErr: null });
+            {
+              this.setState({ authUser: user, authErr: null });
+              this.props.history.push("/booking-manager/home");
+            }
             // this.getCalendar(this.state.authUser.userId);
             // this.props.history.push("/booking-manager/home?userId="+user.userId);
-            this.props.history.push("/booking-manager/home");
             break;
           case ROLES.SUPPORT_OFFICER:
             this.setState({ authUser: user, authErr: null });
@@ -186,6 +179,7 @@ class App extends React.Component {
               // user={this.state.authUser}
             />
           </Route>
+          <Route path="/logout"></Route>
           <Redirect from="/" exact to="login" />
         </Switch>
         <ToastContainer autoClose={3500} />
