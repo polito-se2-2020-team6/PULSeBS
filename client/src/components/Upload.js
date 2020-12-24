@@ -100,7 +100,7 @@ class Upload extends Component {
           ""
         )}
         {this.state.failure ? (
-          <h4 className="my-4 text-danger">
+          <h4 id="uploadFail" className="my-4 text-danger">
             There was a problem {this.state.failureReason}, please try again!
           </h4>
         ) : (
@@ -157,7 +157,7 @@ class Upload extends Component {
                 onClose={() => this.closeAlert("file")}
                 dismissible
               >
-                <h4>Please Select A File!</h4>
+                <h4 id="selectError">Please Select A File!</h4>
               </Alert>
             </Col>
           </Row>
