@@ -1,6 +1,36 @@
 import "cypress-file-upload";
 const baseURL = "http://localhost:3000";
 
+const studentLogin = () => {
+  cy.visit(baseURL);
+  cy.get("#username").type("mostafat");
+  cy.get("#password").type("helloworld");
+  cy.get("#login").click();
+  cy.url().should("include", "/student/home");
+};
+
+const professorLogin = () => {
+  cy.visit(baseURL);
+  cy.get("#username").type("antoniov");
+  cy.get("#password").type("987654321");
+  cy.get("#login").click();
+  cy.url().should("include", "/teacher/home");
+};
+
+const isLogged = () => {
+  console.log("df");
+  it("returns JSON", () => {
+    cy.request("GET", "http://localhost:8080/API/REST.php/api/login").then(
+      (response) => {
+        expect(response.status).equal(200);
+        expect(response.body.data[0].first_name).equal("Michael");
+        expect(response.body).to.not.be.null;
+        expect(response.body.data).to.have.length(6);
+      }
+    );
+  });
+};
+
 context("loginAPITest", () => {
   it("returns User", () => {
     cy.request({
@@ -23,6 +53,20 @@ context("loginAPITest", () => {
   });
 });
 
+context("loginAPITest", () => {
+  it("returns User", () => {
+    cy.request({
+      failOnStatusCode: false,
+      url: `http://localhost:8080/API/REST.php/api/user/me`,
+    }).then((response) => {
+      const status = JSON.parse(JSON.stringify(response.body));
+      expect(status).to.have.property("reason", "Authentication required");
+      expect(status).to.have.property("success", false);
+      console.log(response.status === 403);
+    });
+  });
+});
+
 context("Home Page", () => {
   it("Login Page Test", () => {
     cy.visit(baseURL);
@@ -39,20 +83,24 @@ context("Home Page", () => {
 
 context("Student Page", () => {
   it("Login Test for Student Component", () => {
-    cy.visit(baseURL);
-    cy.get("#username").type("mostafat");
-    cy.get("#password").type("helloworld");
-    cy.get("#login").click();
-    cy.url().should("include", "/student/home");
+    studentLogin();
     cy.get("h1").should("have.text", "Book Your Next Lectures");
     cy.get("#dropdown-filter").click();
     cy.get("#filter-items").first().should("have.text", "All Courses").click();
+    cy.get("tbody>tr")
+      .eq(10)
+      .find("button") // finds the delete button
+      .click();
+
     cy.get("#booked-lecture").should("have.text", "Booked Lectures").click();
     cy.get("#avail-lecture").should("be.visible");
     cy.get("#book-a-seat").should("be.visible");
     cy.wait(500);
-    cy.get("#booked").should("be.visible");
-    cy.get("#calendar").click();
+    cy.get("#booked>tbody>tr")
+      .eq(0)
+      .find("button") // finds the delete button
+      .click();
+    cy.get("#calendar").contains("Calendar").click();
     cy.url().should("include", "/student/calendar?userid=5");
     cy.get("#logout").click();
   });
@@ -60,11 +108,8 @@ context("Student Page", () => {
 
 context("Teacher Page", () => {
   it("Login Test for Teacher Component", () => {
-    cy.visit(baseURL);
-    cy.get("#username").type("antoniov");
-    cy.get("#password").type("987654321");
-    cy.get("#login").click();
-    cy.url().should("include", "/teacher/home");
+    const response = professorLogin();
+    isLogged();
     cy.get("#welcome")
       .should("be.visible")
       .should("have.text", "Welcome back Antonio Vetrò");
@@ -91,7 +136,6 @@ context("Teacher Page", () => {
     cy.get("#dropdown-basic1")
       .should("be.visible")
       .should("have.text", "Information Systems Security");
-
     cy.get("#logout").click();
   });
 });
@@ -109,7 +153,7 @@ context("Support Officer Page", () => {
 
     const fileName = "Students.csv";
     cy.readFile(
-      "C:\\Users\\ASUS\\Desktop\\NewNewSE2\\PULSeBS\\client\\src\\data\\csv-files\\Students.csv"
+      "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Students.csv"
     ).then(function (fileContent) {
       cy.get('input[type="file"]').attachFile({
         fileContent,
@@ -121,6 +165,23 @@ context("Support Officer Page", () => {
       cy.get("#uploadBTN").click();
       cy.get("#uploadFail").should("be.visible");
     });
+
+    // cy.get("#uncontrolled-tab-example-tab-teachers", { force: true }).click();
+    // cy.get("#uploadBTN").should("have.text", "Upload").click({ force: true });
+
+    // cy.readFile(
+    //   "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Professors.csv"
+    // ).then(function (fileContent) {
+    //   cy.get('input[type="file"]').attachFile({
+    //     fileContent,
+    //     fileName,
+    //     mimeType: "application/csv",
+    //   });
+    //   cy.get("#uploadBTN").click();
+    //   cy.get("#uploadSucc").should("be.visible");
+    //   cy.get("#uploadBTN").click();
+    //   cy.get("#uploadFail").should("be.visible");
+    // });
   });
 });
 
