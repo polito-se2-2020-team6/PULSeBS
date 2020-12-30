@@ -251,7 +251,7 @@ Require login as support officer
     - success: bool
 
 # Upload schedule csv
-Requiire login as support officer
+Require login as support officer
 
 - **POST** /api/schedules/upload
   - *request params*
@@ -260,6 +260,16 @@ Requiire login as support officer
     - endDay: string YYYY-mm-dd
   - *response body*
     - success: bool
+
+# Generate a contact tracing report
+Requires login as booking manager
+
+- **GET** /api/users/{studentId}/CTReport/{format}
+  - *params details*
+    - studentId: int (ID of the student)
+    - format: string (pdf|csv)
+  - *response body*
+    - None. The client will start the download
 
 # Error
 
