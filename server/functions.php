@@ -274,3 +274,71 @@ if (!function_exists("get_user")) {
 		}
 	}
 }
+
+if (!function_exists('getContactInformation')) {
+	function getContactInformation($id, $timestamp) {
+
+		$contactQuery = <<<'EOC'
+SELECT
+	U.ID as userId,
+	U.firstname as firstName,
+	U.lastname as lastName,
+	U.city as city,
+	U.birthday as birthday,
+	U.SSN as SSN,
+	U.email as email,
+	MAX(L.end_ts) as lastContact
+FROM
+	bookings B,
+	users U,
+	lectures L
+WHERE B.user_id = U.ID
+	AND B.lecture_id = L.ID
+	AND lecture_id IN (
+		SELECT lecture_id
+		FROM bookings
+		WHERE user_id = :userId
+			AND attended = 1
+			AND cancellation_ts IS NULL
+	)
+	AND user_id <> :userId
+	AND start_ts < :ts
+GROUP BY U.ID, U.firstname, U.lastname, U.city, U.birthday, U.SSN, U.email
+ORDER BY lastContact DESC;
+EOC;
+
+		try {
+			$pdo = new PDO("sqlite:../db.sqlite");
+
+			$stmt = $pdo->prepare($contactQuery);
+			$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
+			$stmt->bindValue(":ts", $timestamp, PDO::PARAM_INT);
+
+
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+
+			$contact_info = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$mapContactInfo = function ($r) {
+
+				$dt = new DateTime();
+				$dt->setTimestamp(intval($r['lastContact']));
+				return [
+					'ID' => intval($r['userId']),
+					'First name' => $r['firstName'],
+					'Last name' => $r['lastName'],
+					'City' => $r['city'],
+					'Birthday' => $r['birthday'],
+					'SSN' => $r['SSN'],
+					'Email' => $r['email'],
+					'Last contact' => $dt->format('Y-m-d h:i eO')
+				];
+			};
+
+			return array_map($mapContactInfo, $contact_info);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
