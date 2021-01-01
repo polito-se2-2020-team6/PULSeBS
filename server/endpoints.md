@@ -78,25 +78,6 @@ Requires login
       - teacherEmail: string
         }
 
-# All courses
-
-- **GET** /api/courses
-  - _request params_
-    - _optional_ ofLogged: no value
-  - _response body_
-    - success: bool
-    - courses: [object]{
-      - ID: int
-      - code: string
-      - name: string
-      - year: int _(is the academical year: for example 1 for the first year)_
-      - semester: int
-      - teacherId: int
-      - teacherFirstName: string
-      - teacherLastName: string
-      - teacherEmail: string
-        }
-
 # All lectures of a user
 
 Requires login as student or teacher
@@ -260,6 +241,25 @@ Require login as support officer
     - endDay: string YYYY-mm-dd
   - *response body*
     - success: bool
+
+# Get student info
+Requires login as booking manager
+
+- **GET** /api/students/{code}/{field}
+  - *params details*
+    - code: int|string (ID or SSN of student)
+    - field: string (id|ssn)
+  - *response body*
+      - success: bool
+      - userId: int
+      - type: int
+      - username: string
+      - email: string
+      - firstname: string
+      - lastname: string
+      - city: string
+      - birthday: ISO-8601 string "-" separated
+      - SSN: string
 
 # Generate a contact tracing report
 Requires login as booking manager
