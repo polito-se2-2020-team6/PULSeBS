@@ -8,6 +8,7 @@ require_once "upload_functions/UploadEnrollements.php";
 require_once "upload_functions/UploadStudents.php";
 require_once "upload_functions/UploadTeachers.php";
 require_once "upload_functions/UploadSchedule.php";
+require_once "./GetStudentInfo.php";
 require_once "./GetContactTracingReport.php";
 
 header("Access-Control-Allow-Origin: *");
@@ -785,6 +786,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/teachers/upload', ['upload_teachers', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/schedules/upload', ['upload_schedules', NEED_AUTH]);
 
+	$r->addRoute('GET', API_PATH . '/students/{code:.+}/{field:id|ssn}', ['get_student_info', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/CTReport/{format:...}', ['get_contact_report', NEED_AUTH]);
 });
 
