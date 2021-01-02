@@ -278,39 +278,6 @@ async function isLogged() {
     throw err; // An object with the error coming from the server
   }
 }
-async function turnLecture2(lectureId, online) {
-  return new Promise((resolve, reject) => {
-    fetch(baseURL + `/lectures/${lectureId}/online`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(true),
-    })
-      .then((response) => {
-        if (response.ok) {
-          resolve(null);
-        } else {
-          // analyze the cause of error
-          response
-            .json()
-            .then((obj) => {
-              reject(obj);
-            }) // error msg in the response body
-            .catch((err) => {
-              reject({
-                errors: [
-                  { param: "Application", msg: "Cannot parse server response" },
-                ],
-              });
-            }); // something else
-        }
-      })
-      .catch((err) => {
-        reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
-      }); // connection errors
-  });
-}
 // let url = baseURL + `/lectures/${lectureId}/online`;
 async function turnLecture(lectureId, online) {
   
@@ -511,7 +478,6 @@ const API = {
   bookLecture,
   cancelBooking,
   turnLecture,
-  turnLecture2,
   getLecturesStartDate,
   getStats,
   getAllLectures,
