@@ -182,7 +182,7 @@ class App extends React.Component {
           <Route path="/logout"></Route>
           <Redirect from="/" exact to="login" />
         </Switch>
-        <ToastContainer autoClose={3500} />
+        <ToastContainer id="ToastContainer" autoClose={3500} />
       </AuthContext.Provider>
     );
   }
