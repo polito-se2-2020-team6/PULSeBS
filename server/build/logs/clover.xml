@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1609854149">
-  <project timestamp="1609854149">
+<coverage generated="1609858867">
+  <project timestamp="1609858867">
     <file name="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\API\GetContactTracingReport.php">
       <line num="5" type="stmt" count="0"/>
       <line num="8" type="stmt" count="0"/>
