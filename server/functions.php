@@ -212,107 +212,95 @@ if (!function_exists("get_myself")) {
 			return false;
 		}
 
-		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO("sqlite:../db.sqlite");
 
-			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
+		$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
+		$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
 
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$user_data = $stmt->fetch();
-
-			return array(
-				'success' => true,
-				'userId' => intval($user_data['ID']),
-				'type' => intval($user_data['type']),
-				'username' => $user_data['username'],
-				'email' => $user_data['email'],
-				'firstname' => $user_data['firstname'],
-				'lastname' => $user_data['lastname'],
-				'city' => $user_data['city'],
-				'birthday' => $user_data['birthday'],
-				'SSN' => $user_data['SSN'],
-			);
-		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
 		}
+
+		$user_data = $stmt->fetch();
+
+		return array(
+			'success' => true,
+			'userId' => intval($user_data['ID']),
+			'type' => intval($user_data['type']),
+			'username' => $user_data['username'],
+			'email' => $user_data['email'],
+			'firstname' => $user_data['firstname'],
+			'lastname' => $user_data['lastname'],
+			'city' => $user_data['city'],
+			'birthday' => $user_data['birthday'],
+			'SSN' => $user_data['SSN'],
+		);
 	}
 }
 
 if (!function_exists("get_user")) {
 	function get_user($id) {
-		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO("sqlite:../db.sqlite");
 
-			$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE ID = :userId");
-			$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
+		$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE ID = :userId");
+		$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
 
 
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$user_data = $stmt->fetch();
-
-			if (!$user_data) {
-				throw new ErrorException("User not found.");
-			}
-
-			return array(
-				'success' => true,
-				'userId' => intval($user_data['ID']),
-				'type' => intval($user_data['type']),
-				'username' => $user_data['username'],
-				'email' => $user_data['email'],
-				'firstname' => $user_data['firstname'],
-				'lastname' => $user_data['lastname'],
-				'city' => $user_data['city'],
-				'birthday' => $user_data['birthday'],
-				'SSN' => $user_data['SSN'],
-			);
-		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
 		}
+
+		$user_data = $stmt->fetch();
+
+		if (!$user_data) {
+			throw new ErrorException("User not found.");
+		}
+
+		return array(
+			'success' => true,
+			'userId' => intval($user_data['ID']),
+			'type' => intval($user_data['type']),
+			'username' => $user_data['username'],
+			'email' => $user_data['email'],
+			'firstname' => $user_data['firstname'],
+			'lastname' => $user_data['lastname'],
+			'city' => $user_data['city'],
+			'birthday' => $user_data['birthday'],
+			'SSN' => $user_data['SSN'],
+		);
 	}
 }
 
 if (!function_exists("get_user_by_ssn")) {
 	function get_user_by_ssn($ssn) {
-		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO("sqlite:../db.sqlite");
 
-			$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE SSN = :SSN");
-			$stmt->bindValue(":SSN", $ssn, PDO::PARAM_STR);
+		$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE SSN = :SSN");
+		$stmt->bindValue(":SSN", $ssn, PDO::PARAM_STR);
 
 
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$user_data = $stmt->fetch();
-
-			if (!$user_data) {
-				throw new ErrorException("User not found.");
-			}
-
-			return array(
-				'success' => true,
-				'userId' => intval($user_data['ID']),
-				'type' => intval($user_data['type']),
-				'username' => $user_data['username'],
-				'email' => $user_data['email'],
-				'firstname' => $user_data['firstname'],
-				'lastname' => $user_data['lastname'],
-				'city' => $user_data['city'],
-				'birthday' => $user_data['birthday'],
-				'SSN' => $user_data['SSN'],
-			);
-		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
 		}
+
+		$user_data = $stmt->fetch();
+
+		if (!$user_data) {
+			throw new ErrorException("User not found.");
+		}
+
+		return array(
+			'success' => true,
+			'userId' => intval($user_data['ID']),
+			'type' => intval($user_data['type']),
+			'username' => $user_data['username'],
+			'email' => $user_data['email'],
+			'firstname' => $user_data['firstname'],
+			'lastname' => $user_data['lastname'],
+			'city' => $user_data['city'],
+			'birthday' => $user_data['birthday'],
+			'SSN' => $user_data['SSN'],
+		);
 	}
 }
 
@@ -348,38 +336,34 @@ GROUP BY U.ID, U.firstname, U.lastname, U.city, U.birthday, U.SSN, U.email
 ORDER BY lastContact DESC;
 EOC;
 
-		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO("sqlite:../db.sqlite");
 
-			$stmt = $pdo->prepare($contactQuery);
-			$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
-			$stmt->bindValue(":ts", $timestamp, PDO::PARAM_INT);
+		$stmt = $pdo->prepare($contactQuery);
+		$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
+		$stmt->bindValue(":ts", $timestamp, PDO::PARAM_INT);
 
 
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-
-			$contact_info = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			$mapContactInfo = function ($r) {
-
-				$dt = new DateTime();
-				$dt->setTimestamp(intval($r['lastContact']));
-				return [
-					'ID' => intval($r['userId']),
-					'First name' => $r['firstName'],
-					'Last name' => $r['lastName'],
-					'City' => $r['city'],
-					'Birthday' => $r['birthday'],
-					'SSN' => $r['SSN'],
-					'Email' => $r['email'],
-					'Last contact' => $dt->format('Y-m-d h:i eO')
-				];
-			};
-
-			return array_map($mapContactInfo, $contact_info);
-		} catch (Exception $e) {
-			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
 		}
+
+		$contact_info = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$mapContactInfo = function ($r) {
+
+			$dt = new DateTime();
+			$dt->setTimestamp(intval($r['lastContact']));
+			return [
+				'ID' => intval($r['userId']),
+				'First name' => $r['firstName'],
+				'Last name' => $r['lastName'],
+				'City' => $r['city'],
+				'Birthday' => $r['birthday'],
+				'SSN' => $r['SSN'],
+				'Email' => $r['email'],
+				'Last contact' => $dt->format('Y-m-d h:i eO')
+			];
+		};
+
+		return array_map($mapContactInfo, $contact_info);
 	}
 }
