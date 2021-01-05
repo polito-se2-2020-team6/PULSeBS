@@ -1,145 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests" tests="60" assertions="458" errors="0" warnings="0" failures="10" skipped="0" time="25.382152">
-    <testsuite name="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" tests="9" assertions="36" errors="0" warnings="0" failures="2" skipped="0" time="14.766199">
-      <testcase name="test_book_1" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="26" assertions="4" time="4.754334">
+  <testsuite name="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests" tests="73" assertions="516" errors="0" warnings="0" failures="10" skipped="0" time="26.164805">
+    <testsuite name="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" tests="9" assertions="36" errors="0" warnings="0" failures="2" skipped="0" time="12.795912">
+      <testcase name="test_book_1" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="26" assertions="4" time="2.915123">
         <failure type="PHPUnit\Framework\ExpectationFailedException">BookLectureTest::test_book_1
 Failed asserting that false is true.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php:42
 </failure>
       </testcase>
-      <testcase name="test_book_2" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="46" assertions="4" time="2.348557">
+      <testcase name="test_book_2" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="46" assertions="4" time="2.303582">
         <failure type="PHPUnit\Framework\ExpectationFailedException">BookLectureTest::test_book_2
 Failed asserting that false is true.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php:62
 </failure>
       </testcase>
-      <testcase name="test_book_3" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="73" assertions="4" time="2.412089"/>
-      <testcase name="test_book_4" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="93" assertions="4" time="0.169123"/>
-      <testcase name="test_book_5" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="113" assertions="4" time="0.187508"/>
-      <testcase name="test_book_6" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="133" assertions="4" time="0.164714"/>
-      <testcase name="test_book_7" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="153" assertions="4" time="2.368839"/>
-      <testcase name="test_book_8" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="173" assertions="4" time="2.329040"/>
-      <testcase name="test_book_9" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="193" assertions="4" time="0.031994"/>
+      <testcase name="test_book_3" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="73" assertions="4" time="2.357317"/>
+      <testcase name="test_book_4" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="93" assertions="4" time="0.160742"/>
+      <testcase name="test_book_5" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="113" assertions="4" time="0.157311"/>
+      <testcase name="test_book_6" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="133" assertions="4" time="0.148761"/>
+      <testcase name="test_book_7" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="153" assertions="4" time="2.335595"/>
+      <testcase name="test_book_8" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="173" assertions="4" time="2.352217"/>
+      <testcase name="test_book_9" class="BookLectureTest" classname="BookLectureTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookLectureTest.php" line="193" assertions="4" time="0.065265"/>
     </testsuite>
-    <testsuite name="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" tests="5" assertions="20" errors="0" warnings="0" failures="2" skipped="0" time="1.458120">
-      <testcase name="test_cancel_1" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="26" assertions="4" time="0.454960"/>
-      <testcase name="test_cancel_2" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="46" assertions="4" time="0.147972"/>
-      <testcase name="test_cancel_3" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="66" assertions="4" time="0.413269">
+    <testsuite name="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" tests="5" assertions="20" errors="0" warnings="0" failures="2" skipped="0" time="1.254646">
+      <testcase name="test_cancel_1" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="26" assertions="4" time="0.461684"/>
+      <testcase name="test_cancel_2" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="46" assertions="4" time="0.147233"/>
+      <testcase name="test_cancel_3" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="66" assertions="4" time="0.296998">
         <failure type="PHPUnit\Framework\ExpectationFailedException">BookingCancelTest::test_cancel_3
 Failed asserting that true is false.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php:82
 </failure>
       </testcase>
-      <testcase name="test_cancel_4" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="86" assertions="4" time="0.394808">
+      <testcase name="test_cancel_4" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="86" assertions="4" time="0.300193">
         <failure type="PHPUnit\Framework\ExpectationFailedException">BookingCancelTest::test_cancel_4
 Failed asserting that true is false.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php:102
 </failure>
       </testcase>
-      <testcase name="test_cancel_5" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="106" assertions="4" time="0.047112"/>
+      <testcase name="test_cancel_5" class="BookingCancelTest" classname="BookingCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\BookingCancelTest.php" line="106" assertions="4" time="0.048538"/>
     </testsuite>
-    <testsuite name="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" tests="6" assertions="24" errors="0" warnings="0" failures="1" skipped="0" time="2.937622">
-      <testcase name="test_lecture_cancel_1" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="26" assertions="4" time="2.304128">
+    <testsuite name="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" tests="13" assertions="58" errors="0" warnings="0" failures="0" skipped="0" time="1.865228">
+      <testcase name="testGetStudentInfo_1" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="26" assertions="8" time="0.145892"/>
+      <testcase name="testGetStudentInfo_2" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="53" assertions="8" time="0.145215"/>
+      <testcase name="testGetStudentInfo_3" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="80" assertions="4" time="0.150521"/>
+      <testcase name="testGetStudentInfo_4" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="103" assertions="4" time="0.158996"/>
+      <testcase name="testGetStudentInfo_5" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="126" assertions="4" time="0.142625">
+        <system-out>array(3) {
+  ["success"]=&gt;
+  bool(false)
+  ["reason"]=&gt;
+  string(15) "User not found."
+  ["line"]=&gt;
+  int(256)
+}
+</system-out>
+      </testcase>
+      <testcase name="testGetStudentInfo_6" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="151" assertions="4" time="0.181910"/>
+      <testcase name="testGetStudentInfo_7" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="174" assertions="4" time="0.146401"/>
+      <testcase name="testGetStudentInfo_8" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="197" assertions="4" time="0.149926"/>
+      <testcase name="testGetStudentInfo_9" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="220" assertions="2" time="0.155754"/>
+      <testcase name="testGetStudentInfo_10" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="238" assertions="4" time="0.147875"/>
+      <testcase name="testGetStudentInfo_11" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="261" assertions="4" time="0.148730"/>
+      <testcase name="testGetStudentInfo_12" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="284" assertions="4" time="0.145237"/>
+      <testcase name="testGetStudentInfo_13" class="GetStudentInfoTest" classname="GetStudentInfoTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\GetStudentInfoTest.php" line="307" assertions="4" time="0.046146"/>
+    </testsuite>
+    <testsuite name="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" tests="6" assertions="24" errors="0" warnings="0" failures="1" skipped="0" time="3.093456">
+      <testcase name="test_lecture_cancel_1" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="26" assertions="4" time="2.390290">
         <failure type="PHPUnit\Framework\ExpectationFailedException">LectureCancelTest::test_lecture_cancel_1
 Failed asserting that false is true.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php:42
 </failure>
       </testcase>
-      <testcase name="test_lecture_cancel_2" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="46" assertions="4" time="0.153536"/>
-      <testcase name="test_lecture_cancel_3" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="66" assertions="4" time="0.145960"/>
-      <testcase name="test_lecture_cancel_4" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="86" assertions="4" time="0.148560"/>
-      <testcase name="test_lecture_cancel_5" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="106" assertions="4" time="0.144110"/>
-      <testcase name="test_lecture_cancel_6" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="126" assertions="4" time="0.041328"/>
+      <testcase name="test_lecture_cancel_2" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="46" assertions="4" time="0.131375"/>
+      <testcase name="test_lecture_cancel_3" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="66" assertions="4" time="0.160324"/>
+      <testcase name="test_lecture_cancel_4" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="86" assertions="4" time="0.198696"/>
+      <testcase name="test_lecture_cancel_5" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="106" assertions="4" time="0.145282"/>
+      <testcase name="test_lecture_cancel_6" class="LectureCancelTest" classname="LectureCancelTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LectureCancelTest.php" line="126" assertions="4" time="0.067489"/>
     </testsuite>
-    <testsuite name="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" tests="7" assertions="32" errors="0" warnings="0" failures="3" skipped="0" time="0.956900">
-      <testcase name="test_list_1" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="26" assertions="6" time="0.149259"/>
-      <testcase name="test_list_2" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="49" assertions="6" time="0.164679"/>
-      <testcase name="test_list_3" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="72" assertions="4" time="0.149950">
+    <testsuite name="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" tests="7" assertions="32" errors="0" warnings="0" failures="3" skipped="0" time="1.145062">
+      <testcase name="test_list_1" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="26" assertions="6" time="0.148379"/>
+      <testcase name="test_list_2" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="49" assertions="6" time="0.288258"/>
+      <testcase name="test_list_3" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="72" assertions="4" time="0.152756">
         <failure type="PHPUnit\Framework\ExpectationFailedException">ListBookedStudentsTest::test_list_3
 Failed asserting that true is false.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php:88
 </failure>
       </testcase>
-      <testcase name="test_list_4" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="92" assertions="4" time="0.161989">
+      <testcase name="test_list_4" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="92" assertions="4" time="0.159120">
         <failure type="PHPUnit\Framework\ExpectationFailedException">ListBookedStudentsTest::test_list_4
 Failed asserting that true is false.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php:108
 </failure>
       </testcase>
-      <testcase name="test_list_5" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="112" assertions="4" time="0.138305">
+      <testcase name="test_list_5" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="112" assertions="4" time="0.150289">
         <failure type="PHPUnit\Framework\ExpectationFailedException">ListBookedStudentsTest::test_list_5
 Failed asserting that true is false.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php:128
 </failure>
       </testcase>
-      <testcase name="test_list_6" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="132" assertions="4" time="0.140336"/>
-      <testcase name="test_list_7" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="152" assertions="4" time="0.052383"/>
+      <testcase name="test_list_6" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="132" assertions="4" time="0.200433"/>
+      <testcase name="test_list_7" class="ListBookedStudentsTest" classname="ListBookedStudentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListBookedStudentsTest.php" line="152" assertions="4" time="0.045826"/>
     </testsuite>
-    <testsuite name="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" tests="3" assertions="13" errors="0" warnings="0" failures="2" skipped="0" time="0.414305">
-      <testcase name="test_list_1" class="ListLecturesTest" classname="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" line="29" assertions="6" time="0.199760">
+    <testsuite name="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" tests="3" assertions="13" errors="0" warnings="0" failures="2" skipped="0" time="0.561566">
+      <testcase name="test_list_1" class="ListLecturesTest" classname="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" line="29" assertions="6" time="0.263594">
         <failure type="PHPUnit\Framework\ExpectationFailedException">ListLecturesTest::test_list_1
 Failed asserting that 4 matches expected 5.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php:48
 </failure>
       </testcase>
-      <testcase name="test_list_2" class="ListLecturesTest" classname="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" line="52" assertions="6" time="0.155403">
+      <testcase name="test_list_2" class="ListLecturesTest" classname="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" line="52" assertions="6" time="0.250251">
         <failure type="PHPUnit\Framework\ExpectationFailedException">ListLecturesTest::test_list_2
 Failed asserting that 5 matches expected 6.
 
 D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php:71
 </failure>
       </testcase>
-      <testcase name="test_list_3" class="ListLecturesTest" classname="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" line="75" assertions="1" time="0.059143"/>
+      <testcase name="test_list_3" class="ListLecturesTest" classname="ListLecturesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\ListLecturesTest.php" line="75" assertions="1" time="0.047721"/>
     </testsuite>
-    <testsuite name="LoginTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LoginTest.php" tests="1" assertions="7" errors="0" warnings="0" failures="0" skipped="0" time="0.123095">
-      <testcase name="testLogin" class="LoginTest" classname="LoginTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LoginTest.php" line="25" assertions="7" time="0.123095"/>
+    <testsuite name="LoginTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LoginTest.php" tests="1" assertions="7" errors="0" warnings="0" failures="0" skipped="0" time="0.117763">
+      <testcase name="testLogin" class="LoginTest" classname="LoginTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\LoginTest.php" line="25" assertions="7" time="0.117763"/>
     </testsuite>
-    <testsuite name="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" tests="13" assertions="260" errors="0" warnings="0" failures="0" skipped="0" time="1.898920">
-      <testcase name="test_stats_1" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="26" assertions="20" time="0.246517"/>
-      <testcase name="test_stats_2" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="66" assertions="20" time="0.163089"/>
-      <testcase name="test_stats_3" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="105" assertions="20" time="0.138115"/>
-      <testcase name="test_stats_4" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="144" assertions="20" time="0.138943"/>
-      <testcase name="test_stats_5" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="183" assertions="20" time="0.158673"/>
-      <testcase name="test_stats_6" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="222" assertions="20" time="0.134574"/>
-      <testcase name="test_stats_7" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="261" assertions="6" time="0.144293"/>
-      <testcase name="test_stats_8" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="284" assertions="4" time="0.038315"/>
-      <testcase name="test_stats_9" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="299" assertions="26" time="0.160432"/>
-      <testcase name="test_stats_10" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="343" assertions="26" time="0.143944"/>
-      <testcase name="test_stats_11" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="387" assertions="26" time="0.145486"/>
-      <testcase name="test_stats_12" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="431" assertions="26" time="0.149943"/>
-      <testcase name="test_stats_13" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="475" assertions="26" time="0.136597"/>
+    <testsuite name="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" tests="13" assertions="260" errors="0" warnings="0" failures="0" skipped="0" time="2.416677">
+      <testcase name="test_stats_1" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="26" assertions="20" time="0.216573"/>
+      <testcase name="test_stats_2" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="66" assertions="20" time="0.214984"/>
+      <testcase name="test_stats_3" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="105" assertions="20" time="0.191884"/>
+      <testcase name="test_stats_4" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="144" assertions="20" time="0.222096"/>
+      <testcase name="test_stats_5" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="183" assertions="20" time="0.148110"/>
+      <testcase name="test_stats_6" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="222" assertions="20" time="0.174884"/>
+      <testcase name="test_stats_7" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="261" assertions="6" time="0.162640"/>
+      <testcase name="test_stats_8" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="284" assertions="4" time="0.135999"/>
+      <testcase name="test_stats_9" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="299" assertions="26" time="0.163123"/>
+      <testcase name="test_stats_10" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="343" assertions="26" time="0.248669"/>
+      <testcase name="test_stats_11" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="387" assertions="26" time="0.218471"/>
+      <testcase name="test_stats_12" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="431" assertions="26" time="0.150066"/>
+      <testcase name="test_stats_13" class="StatsBookingsTest" classname="StatsBookingsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\StatsBookingsTest.php" line="475" assertions="26" time="0.169178"/>
     </testsuite>
-    <testsuite name="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" tests="5" assertions="20" errors="0" warnings="0" failures="0" skipped="0" time="0.994948">
-      <testcase name="test_upload_courses_1" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="26" assertions="4" time="0.426323"/>
-      <testcase name="test_upload_courses_2" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="59" assertions="4" time="0.151968"/>
-      <testcase name="test_upload_courses_3" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="92" assertions="4" time="0.228031"/>
-      <testcase name="test_upload_courses_4" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="125" assertions="4" time="0.043594"/>
-      <testcase name="test_upload_courses_5" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="153" assertions="4" time="0.145032"/>
+    <testsuite name="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" tests="5" assertions="20" errors="0" warnings="0" failures="0" skipped="0" time="0.923031">
+      <testcase name="test_upload_courses_1" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="26" assertions="4" time="0.361094"/>
+      <testcase name="test_upload_courses_2" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="59" assertions="4" time="0.197561"/>
+      <testcase name="test_upload_courses_3" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="92" assertions="4" time="0.151513"/>
+      <testcase name="test_upload_courses_4" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="125" assertions="4" time="0.062555"/>
+      <testcase name="test_upload_courses_5" class="UploadCoursesTest" classname="UploadCoursesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadCoursesTest.php" line="153" assertions="4" time="0.150309"/>
     </testsuite>
-    <testsuite name="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" tests="7" assertions="28" errors="0" warnings="0" failures="0" skipped="0" time="1.152944">
-      <testcase name="test_upload_enrollments_1" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="26" assertions="4" time="0.356493"/>
-      <testcase name="test_upload_enrollments_2" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="59" assertions="4" time="0.138011"/>
-      <testcase name="test_upload_enrollments_3" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="92" assertions="4" time="0.164285"/>
-      <testcase name="test_upload_enrollments_4" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="125" assertions="4" time="0.161759"/>
-      <testcase name="test_upload_enrollments_5" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="158" assertions="4" time="0.150375"/>
-      <testcase name="test_upload_enrollments_6" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="191" assertions="4" time="0.138378"/>
-      <testcase name="test_upload_enrollments_7" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="217" assertions="4" time="0.043643"/>
+    <testsuite name="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" tests="7" assertions="28" errors="0" warnings="0" failures="0" skipped="0" time="1.280195">
+      <testcase name="test_upload_enrollments_1" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="26" assertions="4" time="0.351254"/>
+      <testcase name="test_upload_enrollments_2" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="59" assertions="4" time="0.170662"/>
+      <testcase name="test_upload_enrollments_3" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="92" assertions="4" time="0.156848"/>
+      <testcase name="test_upload_enrollments_4" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="125" assertions="4" time="0.150842"/>
+      <testcase name="test_upload_enrollments_5" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="158" assertions="4" time="0.245902"/>
+      <testcase name="test_upload_enrollments_6" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="191" assertions="4" time="0.155138"/>
+      <testcase name="test_upload_enrollments_7" class="UploadEnrollmentsTest" classname="UploadEnrollmentsTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadEnrollmentsTest.php" line="217" assertions="4" time="0.049549"/>
     </testsuite>
-    <testsuite name="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" tests="4" assertions="18" errors="0" warnings="0" failures="0" skipped="0" time="0.679099">
-      <testcase name="test_upload_schedules_1" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="26" assertions="4" time="0.348253"/>
-      <testcase name="test_upload_schedules_2" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="67" assertions="5" time="0.140577"/>
-      <testcase name="test_upload_schedules_3" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="102" assertions="5" time="0.150737"/>
-      <testcase name="test_upload_schedules_4" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="140" assertions="4" time="0.039531"/>
+    <testsuite name="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" tests="4" assertions="18" errors="0" warnings="0" failures="0" skipped="0" time="0.711269">
+      <testcase name="test_upload_schedules_1" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="26" assertions="4" time="0.293030"/>
+      <testcase name="test_upload_schedules_2" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="67" assertions="5" time="0.156991"/>
+      <testcase name="test_upload_schedules_3" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="102" assertions="5" time="0.180985"/>
+      <testcase name="test_upload_schedules_4" class="UploadSchedulesTest" classname="UploadSchedulesTest" file="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\tests\UploadSchedulesTest.php" line="140" assertions="4" time="0.080263"/>
     </testsuite>
   </testsuite>
 </testsuites>
