@@ -332,6 +332,7 @@ WHERE B.user_id = U.ID
 	)
 	AND user_id <> :userId
 	AND start_ts < :ts
+	AND start_ts >= :twoweeksago
 GROUP BY U.ID, U.firstname, U.lastname, U.city, U.birthday, U.SSN, U.email
 ORDER BY lastContact DESC;
 EOC;
@@ -341,6 +342,9 @@ EOC;
 		$stmt = $pdo->prepare($contactQuery);
 		$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
 		$stmt->bindValue(":ts", $timestamp, PDO::PARAM_INT);
+		// Limit to midnight of 14 days before
+		$twoweeksago = ($timestamp - (2 * 7 * 24 * 60 * 60)) - ($timestamp % (24 * 60 * 60));
+		$stmt->bindValue(':twoweeksago', $twoweeksago, PDO::PARAM_INT);
 
 
 		if (!$stmt->execute()) {
