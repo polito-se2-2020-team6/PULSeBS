@@ -1,4 +1,7 @@
 <?php
+
+use PHPUnit\Framework\Constraint\IsFalse;
+
 session_start();
 $server_default_timezone = date_default_timezone_get();  //needed to know which timezone the server uses
 date_default_timezone_set("UTC");
@@ -271,6 +274,139 @@ if (!function_exists("get_user")) {
 			);
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
+
+if (!function_exists('get_lecture')) {
+	function get_lecture($lectureId) {
+		$query = <<<'EOC'
+SELECT
+	ID as lectureId,
+	course_id as courseId,
+	room_id as roomId,
+	start_ts as startTs,
+	end_ts as endTs,
+	settings as settings
+FROM
+	lectures
+WHERE
+	ID = :lectureId
+EOC;
+
+		$pdo = new PDO('sqlite:../db.sqlite');
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':lectureId', intval($lectureId), PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$lectureData = $stmt->fetch();
+
+		return array(
+			'success' => true,
+			'lectureId' => intval($lectureData['lectureId']),
+			'courseId' => intval($lectureData['courseId']),
+			'roomId' => intval($lectureData['roomId']),
+			'startTs' => intval($lectureData['startTs']),
+			'endTs' => intval($lectureData['endTs']),
+			'settings' => intval($lectureData['settings']),
+		);
+	}
+}
+
+if (!function_exists('get_course_from_lecture')) {
+	function get_course_from_lecture($lectureId) {
+		$query = <<<'EOC'
+SELECT
+	C.ID as courseId,
+	C.code as code,
+	C.name as name,
+	C.teacher_id as teacherId,
+	C.year as year,
+	C.semester as semester
+FROM
+	lectures L, courses C
+WHERE
+	L.course_id = C.ID AND
+	L.ID = :lectureId
+EOC;
+
+		$pdo = new PDO('sqlite:../db.sqlite');
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':lectureId', intval($lectureId), PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$courseData = $stmt->fetch();
+
+		return array(
+			'success' => true,
+			'courseId' => intval($courseData['courseId']),
+			'code' => $courseData['code'],
+			'name' => $courseData['name'],
+			'teacherId' => intval($courseData['teacherId']),
+			'year' => intval($courseData['year']),
+			'semester' => intval($courseData['semester']),
+		);
+	}
+}
+
+if (!function_exists('is_student_booked')) {
+	function is_student_booked_no_waitlist($studentId, $lectureId) {
+		$query = <<<'EOC'
+SELECT 
+	COUNT(*) as isBooked
+FROM
+	users U, bookings B
+WHERE
+	U.ID = B.user_id AND
+	lecture_id = :lectureId AND
+	type = :student AND
+	B.user_id = :studentId AND
+	booking_ts IS NOT NULL AND
+	cancellation_ts IS NULL
+EOC;
+
+		$pdo = new PDO('sqlite:../db.sqlite');
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':lectureId', intval($lectureId), PDO::PARAM_INT);
+		$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
+		$stmt->bindValue(':studentId', intval($studentId), PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$bookedData = $stmt->fetch();
+
+		return boolval($bookedData['isBooked'] === 1) && !check_user_in_waiting_list($lectureId, $studentId);
+	}
+}
+
+if (!function_exists('update_attendance')) {
+	function update_attendance($studentId, $lectureId, $attended) {
+		$query = <<<'EOC'
+UPDATE
+	bookings 
+SET
+	attended = :attended 
+WHERE
+	user_id = :studentId AND
+	lecture_id = :lectureId
+EOC;
+
+		$pdo = new PDO('sqlite:../db.sqlite');
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':attended', intval($attended), PDO::PARAM_INT);
+		$stmt->bindValue(':studentId', intval($studentId), PDO::PARAM_INT);
+		$stmt->bindValue(':lectureId', intval($lectureId), PDO::PARAM_INT);
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
 		}
 	}
 }
