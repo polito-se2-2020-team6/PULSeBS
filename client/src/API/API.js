@@ -1,6 +1,24 @@
 import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
+// Return the detail info of positive studen
+async function getPositiveStudentDetail(stID, SSN, idField, ssnField) {
+  let url = "";
+  if (stID !== null && idField !== null) {
+    url = `/students/${stID}/${idField}`;
+  } else if (SSN !== null && ssnField !== null) {
+    url = `/students/${SSN}/${idField}`;
+  }
+  const response = await fetch(baseURL + url);
+  const positiveSTD = await response.json();
+  if (response.ok) {
+    return positiveSTD;
+  } else {
+    let err = { status: response.status, errObj: positiveSTD };
+    throw err;
+  }
+}
+
 async function getAllLectures(userId) {
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
   let url = `/users/${userId}/lectures`;
@@ -72,7 +90,7 @@ async function getLecturesStartDate(userId) {
   let url = `/users/${userId}/lectures?startDate=${data.getUTCFullYear()}-${
     data.getMonth() + 1
   }-${data.getDate()}`;
-  
+
   const response = await fetch(baseURL + url);
   const lectureJson = await response.json();
   if (response.ok) {
@@ -109,7 +127,6 @@ async function getStats(idLecture, idCourse, period, week, month, year) {
 
   let url = "/stats?" + l + c + `period=${period}&` + w + m + `year=${year}`;
 
-  
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -185,7 +202,7 @@ async function getStudentsBooked(lectureId) {
     const queryParams = lectureId + "/students";
     url += queryParams;
   }
-  
+
   const response = await fetch(baseURL + url);
 
   const studentsList = await response.json();
@@ -210,20 +227,16 @@ async function deleteLecture(lectureId) {
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-      
       if (req.status === 200) {
-        
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
       } else {
-        
         reject(Error(req.statusText));
       }
     };
     // handle network errors
     req.onerror = function () {
-    
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
@@ -241,17 +254,15 @@ async function userLogin(username, password) {
     req.open("post", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-   
+
     req.onload = function () {
-      
       const status = JSON.parse(req.response);
-    
+
       if (status.success === true) {
         const response = req.response;
         let user = JSON.parse(response);
         resolve(user);
       } else {
-        
         reject(status.success);
       }
     };
@@ -269,9 +280,8 @@ async function userLogin(username, password) {
 async function isLogged() {
   const response = await fetch(`${baseURL}/user/me`);
   const userJson = await response.json();
-  
+
   if (response.ok) {
-    
     return userJson;
   } else {
     let err = { status: response.status, errObj: userJson };
@@ -313,31 +323,26 @@ async function turnLecture2(lectureId, online) {
 }
 // let url = baseURL + `/lectures/${lectureId}/online`;
 async function turnLecture(lectureId, online) {
-  
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}/online`;
     let data = `value=${!online}`;
-    
+
     req.open("PATCH", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-     
       if (req.status === 200) {
-      
         const response = req.response;
         let obj = JSON.parse(response);
         resolve(obj);
       } else {
-        
         reject(Error(req.statusText));
       }
     };
     // handle network errors
     req.onerror = function () {
-      
       reject(Error("Network Error"));
     }; // make the request
     req.send(data);
@@ -373,7 +378,7 @@ async function userLogout() {
 
 async function getStatesBookManager(idCourse) {
   let url = `/stats?course=${idCourse}`;
-  
+
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -387,7 +392,7 @@ async function getStatesBookManager(idCourse) {
 async function getStatesWeekly(idCourse, WeekNo) {
   const year = new Date().getFullYear();
   let url = `/stats?course=${idCourse}&period=week&week=${WeekNo}&year=${year}`;
- 
+
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -399,9 +404,8 @@ async function getStatesWeekly(idCourse, WeekNo) {
 }
 
 async function getStatesMonthly(idCourse, MonthNo, year) {
-  
   let url = `/stats?course=${idCourse}&period=month&month=${MonthNo}&year=${year}`;
-  
+
   const response = await fetch(baseURL + url);
   const stats = await response.json();
   if (response.ok) {
@@ -424,8 +428,7 @@ async function getAllCourses() {
   }
 }
 
-async function uploadCsv(file, section,start,end) {
-  
+async function uploadCsv(file, section, start, end) {
   return new Promise(async function (resolve, reject) {
     //the received file will be formatted
     var data = new FormData();
@@ -436,11 +439,11 @@ async function uploadCsv(file, section,start,end) {
         url = baseURL + `/courses/upload`;
         data.append("course_file", file, "course_file.csv");
         break;
-        case "Schedules":
+      case "Schedules":
         url = baseURL + `/schedules/upload`;
         data.append("schedule_file", file, "schedule_file.csv");
-        data.append("startDay",start);
-        data.append("endDay",end);
+        data.append("startDay", start);
+        data.append("endDay", end);
         break;
       case "Student":
         url = baseURL + `/students/upload`;
@@ -461,16 +464,14 @@ async function uploadCsv(file, section,start,end) {
       default:
         break;
     }
-    const res= await fetch(url, {
-      method: 'POST',
-      body: data
-    })
+    const res = await fetch(url, {
+      method: "POST",
+      body: data,
+    });
     const lectureJson = await res.json();
     if (res.ok) {
-      
       resolve(lectureJson);
-    }
-    else{
+    } else {
       reject(Error("Network Error upload"));
     }
 
@@ -498,10 +499,10 @@ async function uploadCsv(file, section,start,end) {
     req.send(data);
     */
   });
-  
 }
 
 const API = {
+  getPositiveStudentDetail,
   getLectures,
   userLogin,
   userLogout,
