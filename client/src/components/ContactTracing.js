@@ -1,6 +1,6 @@
 import React from "react";
 import { Container, Jumbotron } from "react-bootstrap";
-// import Paper from "@material-ui/core/Paper";
+import PositiveStudentModal from "../components/PositiveStudentModal";
 import { withStyles } from "@material-ui/core/styles";
 import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -29,21 +29,10 @@ class ContactTracing extends React.Component {
       value: options[0],
       number: "",
       positiveSTD: "", // should set to "" for working conditional rendering
-      // inputValue: options[0].value,
+      isModalOpen: false,
     };
   }
 
-  // onInputChangeHandler = async (e, newInputvalue) => {
-  //   if (newInputvalue === "") {
-  //     await this.setState({
-  //       inputValue: "",
-  //     });
-  //   }
-  //   console.log(newInputvalue);
-  //   await this.setState({
-  //     inputValue: newInputvalue,
-  //   });
-  // };
   changeHandler = async (e, newValue) => {
     if (newValue !== null) {
       console.log(newValue.value);
@@ -80,9 +69,17 @@ class ContactTracing extends React.Component {
           positiveSTD: response,
         });
       });
+      this.toggleModal();
       console.log(this.state.positiveSTD.firstname);
     }
   };
+
+  toggleModal = () => {
+    this.setState({
+      isModalOpen: !this.state.isModalOpen,
+    });
+  };
+
   render() {
     const actionClasses = this.props.classes;
     return (
@@ -140,12 +137,6 @@ class ContactTracing extends React.Component {
           <Grid item xs={4}></Grid>
           <Grid item xs={4}></Grid>
           <Grid item xs={4} style={{ marginTop: "15px" }}>
-            {/* <form
-              className={actionClasses.root}
-              autoComplete="off"
-              // variant="filled"
-              fullWidth
-            > */}
             <TextField
               onChange={this.handleInputChange}
               id="number"
@@ -160,13 +151,6 @@ class ContactTracing extends React.Component {
                   : "Please Select SSN or SN"
               }
             />
-            {/* <TextField id="filled-basic" label="Filled" variant="filled" /> */}
-            {/* <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-              /> */}
-            {/* </form> */}
           </Grid>
           <Grid item xs={4}></Grid>
           <Grid item xs={4} style={{ marginTop: "50px" }}>
@@ -181,7 +165,15 @@ class ContactTracing extends React.Component {
             </Button>
           </Grid>
         </Grid>
-        {this.state.positiveSTD ? <p>salam</p> : <></>}
+        {this.state.positiveSTD && this.state.isModalOpen && (
+          <>
+            <PositiveStudentModal
+              isModalOpen={this.state.isModalOpen}
+              toggleModal={this.toggleModal}
+              positiveSTD={this.state.positiveSTD}
+            />
+          </>
+        )}
       </>
     );
   }
