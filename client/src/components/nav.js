@@ -68,6 +68,21 @@ class Navigation extends Component {
                           </NavLink>
                         </NavItem>
                       )}
+                      {context.authUser.type === ROLES.SUPPORT_OFFICER && (
+                        <NavItem>
+                          <NavLink className="nav-link" id="supporthome" to="/support/home">
+                            Upload CSV
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      {context.authUser.type === ROLES.SUPPORT_OFFICER && (
+                        <NavItem>
+                          <NavLink className="nav-link" id="supportupdate" to="/support/update">
+                            Update List
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      
 
                       <NavItem className="ml-auto">
                         <NavLink
