@@ -5,6 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { Grid, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import Button from "@material-ui/core/Button";
+import { Alert, AlertTitle } from "@material-ui/lab";
 import API from "../API/API";
 
 const styles = {
@@ -69,13 +70,15 @@ class ContactTracing extends React.Component {
           positiveSTD: response,
         });
       });
-      this.toggleModal();
-      console.log(this.state.positiveSTD.firstname);
+      if (this.state.positiveSTD.success) {
+        this.toggleModal();
+      }
+      console.log(this.state.positiveSTD);
     }
   };
 
-  toggleModal = () => {
-    this.setState({
+  toggleModal = async () => {
+    await this.setState({
       isModalOpen: !this.state.isModalOpen,
     });
   };
@@ -93,6 +96,7 @@ class ContactTracing extends React.Component {
             </p>
           </Container>
         </Jumbotron>
+
         <Grid
           className={actionClasses.root}
           container
@@ -174,6 +178,19 @@ class ContactTracing extends React.Component {
             />
           </>
         )}
+        <Grid style={{ marginTop: "30px" }} container>
+          <Grid item xs={4}></Grid>
+          <Grid item xs={4}>
+            {this.state.positiveSTD.success === false && (
+              <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {this.state.positiveSTD.reason} {"\u00A0"}
+                <strong>Check the SSN or SN</strong>
+              </Alert>
+            )}
+          </Grid>
+          <Grid item xs={4}></Grid>
+        </Grid>
       </>
     );
   }
