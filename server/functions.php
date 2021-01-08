@@ -383,7 +383,7 @@ EOC;
 
 		$bookedData = $stmt->fetch();
 
-		return boolval($bookedData['isBooked'] === 1) && !check_user_in_waiting_list($lectureId, $studentId);
+		return boolval(intval($bookedData['isBooked']) === 1) && !check_user_in_waiting_list($lectureId, $studentId);
 	}
 }
 
