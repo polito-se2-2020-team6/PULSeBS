@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1609858867">
-  <project timestamp="1609858867">
+<coverage generated="1610129454">
+  <project timestamp="1610129454">
     <file name="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\API\GetContactTracingReport.php">
       <line num="5" type="stmt" count="0"/>
       <line num="8" type="stmt" count="0"/>
@@ -106,17 +106,15 @@
       <line num="26" type="stmt" count="0"/>
       <line num="27" type="stmt" count="0"/>
       <line num="28" type="stmt" count="0"/>
+      <line num="29" type="stmt" count="0"/>
       <line num="30" type="stmt" count="0"/>
       <line num="31" type="stmt" count="0"/>
-      <line num="32" type="stmt" count="0"/>
-      <line num="33" type="stmt" count="0"/>
       <line num="34" type="stmt" count="0"/>
-      <line num="37" type="stmt" count="0"/>
+      <line num="35" type="stmt" count="0"/>
       <line num="38" type="stmt" count="0"/>
-      <line num="41" type="stmt" count="0"/>
-      <line num="42" type="stmt" count="0"/>
-      <line num="43" type="stmt" count="0"/>
-      <metrics loc="50" ncloc="50" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="28" coveredstatements="0" elements="28" coveredelements="0"/>
+      <line num="39" type="stmt" count="0"/>
+      <line num="40" type="stmt" count="0"/>
+      <metrics loc="47" ncloc="47" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="26" coveredstatements="0" elements="26" coveredelements="0"/>
     </file>
     <file name="D:\PoliTo\Magistrale\II Anno\Software Engineering II\PULSeBS\server\API\ListLectures.php">
       <line num="3" type="stmt" count="0"/>
@@ -1048,6 +1046,6 @@
       <line num="86" type="stmt" count="0"/>
       <metrics loc="93" ncloc="89" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="48" coveredstatements="0" elements="48" coveredelements="0"/>
     </file>
-    <metrics files="10" loc="2128" ncloc="2024" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1017" coveredstatements="0" elements="1017" coveredelements="0"/>
+    <metrics files="10" loc="2125" ncloc="2021" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1015" coveredstatements="0" elements="1015" coveredelements="0"/>
   </project>
 </coverage>
