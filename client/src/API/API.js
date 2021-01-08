@@ -3,11 +3,12 @@ const baseURL = "/API/REST.php/api";
 
 // Return the detail info of positive studen
 async function getPositiveStudentDetail(stID, SSN, idField, ssnField) {
+  // console.log("dadsfadf", /^\d+$/.test(SSN));
   let url = "";
   if (stID !== null && idField !== null) {
     url = `/students/${stID}/${idField}`;
   } else if (SSN !== null && ssnField !== null) {
-    url = `/students/${SSN}/${idField}`;
+    url = `/students/${SSN}/${ssnField}`;
   }
   const response = await fetch(baseURL + url);
   const positiveSTD = await response.json();
