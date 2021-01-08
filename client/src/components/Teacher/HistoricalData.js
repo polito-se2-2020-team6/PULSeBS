@@ -152,11 +152,10 @@ class HistoricalData extends React.Component {
           week || week === 0
             ? moment(this.getDateOfWeek(week, year)).format("DD/MM/YYYY")
             : "";
+        let l1=l? l+"  -  "+this.state.totalLectures.find((x) => x.lectureId === idLecture).startTS:"";
         data.labels[i] = m || w || l;
-        console.log("dettaflio")
-        console.log(this.state.BookedAttendance)
-        data.datasets[0].data[i] = this.state.BookedAttendance==="Bookings"? s.bookingsAvg : console.log("scemop");
-        tableData[i] = { labels: m || w || l, data: this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendanceAvg };
+        data.datasets[0].data[i] = this.state.BookedAttendance==="Bookings"? s.bookingsAvg : console.log("scemotto");
+        tableData[i] = { labels: m || w || l1, data: this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendanceAvg };
 
         if (
           this.state.detailLevel === "Week" ||
