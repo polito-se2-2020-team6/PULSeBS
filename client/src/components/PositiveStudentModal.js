@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Button,
-  FormGroup,
-  Grid,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Button, Grid, TextField, Typography } from "@material-ui/core";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -14,6 +8,9 @@ import API from "../API/API";
 const theme = createMuiTheme({
   typography: {
     fontSize: 13,
+    allVariants: {
+      color: "#5f374f",
+    },
   },
 });
 
@@ -58,7 +55,7 @@ class PositiveStudentModal extends React.Component {
       <div>
         <Modal toggle={this.props.toggleModal} isOpen={this.props.isModalOpen}>
           <ModalHeader toggle={this.props.toggleModal}>
-            <Typography variant="h4">
+            <Typography style={{ color: "#15007e" }} variant="h4">
               Detail of Positive Student to Report
             </Typography>
           </ModalHeader>
@@ -68,7 +65,7 @@ class PositiveStudentModal extends React.Component {
                 <Grid container xs={12}>
                   <Grid item xs={2}></Grid>
                   <Grid item xs={2}>
-                    <Typography htmlFor="date">Student ID: </Typography>
+                    <Typography>Student ID: </Typography>
                   </Grid>
                   <Grid item xs={2}>
                     <Typography id="date">{student.userId}</Typography>
@@ -78,7 +75,7 @@ class PositiveStudentModal extends React.Component {
                 <Grid container xs={12}>
                   <Grid item xs={2}></Grid>
                   <Grid item xs={2}>
-                    <Typography htmlFor="date">Firstname: </Typography>
+                    <Typography>Firstname: </Typography>
                   </Grid>
                   <Grid item xs={2}>
                     <Typography id="date">{student.firstname}</Typography>
@@ -88,7 +85,7 @@ class PositiveStudentModal extends React.Component {
                 <Grid container xs={12}>
                   <Grid item xs={2}></Grid>
                   <Grid item xs={2}>
-                    <Typography htmlFor="date">Lastname: </Typography>
+                    <Typography>Lastname: </Typography>
                   </Grid>
                   <Grid item xs={2}>
                     <Typography id="date">{student.lastname}</Typography>
@@ -100,7 +97,7 @@ class PositiveStudentModal extends React.Component {
                 <Grid container xs={12}>
                   <Grid item xs={2}></Grid>
                   <Grid item xs={2}>
-                    <Typography htmlFor="date">Birthday: </Typography>
+                    <Typography>Birthday: </Typography>
                   </Grid>
                   <Grid item xs={2}>
                     <Typography id="date">{student.birthday}</Typography>
@@ -115,7 +112,7 @@ class PositiveStudentModal extends React.Component {
                 <Grid container xs={12}>
                   <Grid item xs={2}></Grid>
                   <Grid item xs={2}>
-                    <Typography htmlFor="date">SSN:</Typography>
+                    <Typography>SSN:</Typography>
                   </Grid>
                   <Grid item xs={2}>
                     <Typography id="date">{student.SSN}</Typography>
@@ -128,7 +125,7 @@ class PositiveStudentModal extends React.Component {
               <Grid container xs={12}>
                 <Grid item xs={2}></Grid>
                 <Grid item xs={2}>
-                  <Typography htmlFor="date">Email: </Typography>
+                  <Typography>Email: </Typography>
                 </Grid>
                 <Grid item xs={2}>
                   <Typography id="date">{student.email}</Typography>

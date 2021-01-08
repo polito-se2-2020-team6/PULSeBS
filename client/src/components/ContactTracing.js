@@ -194,9 +194,9 @@ class ContactTracing extends React.Component {
               }
             />
           </Grid>
+          {/* <Grid item xs={4}></Grid> */}
           <Grid item xs={4}></Grid>
-
-          <Grid item xs={4} style={{ marginTop: "80px" }}>
+          <Grid item xs={2} style={{ marginTop: "80px" }}>
             <Button
               disabled={!this.state.value} // disable when there is no value
               fullWidth
@@ -206,6 +206,7 @@ class ContactTracing extends React.Component {
             >
               Send
             </Button>
+            <Grid item xs={4}></Grid>
           </Grid>
         </Grid>
         {this.state.positiveSTD &&
@@ -219,8 +220,8 @@ class ContactTracing extends React.Component {
             </>
           )}
         <Grid style={{ marginTop: "30px" }} container>
-          <Grid item xs={2}></Grid>
-          <Grid item xs={8}>
+          <Grid item xs={4}></Grid>
+          <Grid item xs={4}>
             {this.state.positiveSTD.success === false && ( // if the API returns no value, user does not enter correct SSN|SID this error appears
               <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
@@ -230,7 +231,7 @@ class ContactTracing extends React.Component {
               </Alert>
             )}
           </Grid>
-          <Grid item xs={2}></Grid>
+          <Grid item xs={4}></Grid>
         </Grid>
       </>
     );
