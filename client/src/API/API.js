@@ -1,7 +1,7 @@
 import Lecture from "./Lecture";
 const baseURL = "/API/REST.php/api";
 
-// Return the detail info of positive studen
+// ---------------------- Return the detail info of positive studen
 async function getPositiveStudentDetail(stID, SSN, idField, ssnField) {
   // console.log("dadsfadf", /^\d+$/.test(SSN));
   let url = "";
@@ -20,6 +20,19 @@ async function getPositiveStudentDetail(stID, SSN, idField, ssnField) {
   }
 }
 
+async function getCTReport(STID, format) {
+  let url = `/users/${STID}/CTReport/${format}`;
+  const response = await fetch(baseURL + url);
+  const CTReportJSON = await response.json();
+  console.log(CTReportJSON);
+  if (response.ok) {
+    return CTReportJSON;
+  } else {
+    let err = { status: response.status, errObj: CTReportJSON };
+    throw err;
+  }
+}
+// --------------------------------------------------------------------
 async function getAllLectures(userId) {
   /////// xxxxxxxxxxxxxx   YYYY-dd-mm to modify ( also startST is wrong)
   let url = `/users/${userId}/lectures`;
@@ -503,6 +516,7 @@ async function uploadCsv(file, section, start, end) {
 }
 
 const API = {
+  getCTReport,
   getPositiveStudentDetail,
   getLectures,
   userLogin,

@@ -9,6 +9,7 @@ import {
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import API from "../API/API";
 
 const theme = createMuiTheme({
   typography: {
@@ -45,6 +46,10 @@ class PositiveStudentModal extends React.Component {
         value: "",
       });
     }
+  };
+
+  generateReport = () => {
+    API.getCTReport(this.props.positiveSTD.userId, this.state.value.value);
   };
 
   render() {
@@ -161,7 +166,7 @@ class PositiveStudentModal extends React.Component {
                 disabled={!this.state.value}
                 variant="contained"
                 color="secondary"
-                onClick={this.props.toggleModal}
+                onClick={this.generateReport}
               >
                 Generate
               </Button>

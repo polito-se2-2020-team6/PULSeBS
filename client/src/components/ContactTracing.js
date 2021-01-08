@@ -67,6 +67,9 @@ class ContactTracing extends React.Component {
 
   sendHandle = async () => {
     // console.log(this.state.value.value);
+    if (this.state.number === "") {
+      this.setState({ err: true });
+    }
     console.log(this.state.number);
     if (this.state.value.value === "id") {
       await API.getPositiveStudentDetail(
@@ -86,22 +89,22 @@ class ContactTracing extends React.Component {
       }
       console.log(this.state.positiveSTD);
     } else if (this.state.value.value === "ssn") {
-      if (/^\d+$/.test(this.state.number)) {
-        this.setState({ err: true });
-      } else {
-        await API.getPositiveStudentDetail(
-          null,
-          this.state.number.toString(),
-          null,
-          "ssn"
-        ).then((response) => {
-          // console.log(response);
-          this.setState({
-            positiveSTD: response,
-            err: false,
-          });
+      // if (/^\d+$/.test(this.state.number)) {
+      //   this.setState({ err: true });
+      // } else {
+      await API.getPositiveStudentDetail(
+        null,
+        this.state.number.toString(),
+        null,
+        "ssn"
+      ).then((response) => {
+        // console.log(response);
+        this.setState({
+          positiveSTD: response,
+          err: false,
         });
-      }
+      });
+      // }
       if (this.state.positiveSTD.success) {
         this.toggleModal();
       }
@@ -175,6 +178,7 @@ class ContactTracing extends React.Component {
           <Grid item xs={4}></Grid>
           <Grid item xs={4} style={{ marginTop: "15px" }}>
             <TextField
+              required
               error={this.state.err} // a filed to red the border once there is error
               onChange={this.handleInputChange}
               id="number"
@@ -220,7 +224,8 @@ class ContactTracing extends React.Component {
             {this.state.positiveSTD.success === false && ( // if the API returns no value, user does not enter correct SSN|SID this error appears
               <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
-                {this.state.positiveSTD.reason} {"\u00A0"}
+                {/* {this.state.positiveSTD.reason} {"\u00A0"} */}
+                No User Found! {"\u00A0"}
                 <strong>Check the SSN or SN</strong>
               </Alert>
             )}
