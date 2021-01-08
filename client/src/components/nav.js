@@ -19,8 +19,12 @@ class Navigation extends Component {
                     <Nav className="container-fluid">
                       {context.authUser.type === ROLES.STUDENT && (
                         <NavItem>
-                          <NavLink className="nav-link" to={"/student/home?userid=" +
-                              context.authUser.userId}> 
+                          <NavLink
+                            className="nav-link"
+                            to={
+                              "/student/home?userid=" + context.authUser.userId
+                            }
+                          >
                             Student
                           </NavLink>
                         </NavItem>
@@ -65,6 +69,16 @@ class Navigation extends Component {
                             to="/booking-manager/home"
                           >
                             Booking Manager
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      {context.authUser.type === ROLES.BOOKING_MANAGER && (
+                        <NavItem>
+                          <NavLink
+                            className="nav-link"
+                            to="/booking-manager/contact-tracing"
+                          >
+                            Contact Tracing
                           </NavLink>
                         </NavItem>
                       )}

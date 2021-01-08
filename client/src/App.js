@@ -8,6 +8,7 @@ import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
 import UsageMonitor from "./components/UsageMonitor";
+import ContactTracing from "./components/ContactTracing";
 import { AuthContext } from "./auth/AuthContext";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { ROLES } from "./data/consts";
@@ -178,6 +179,9 @@ class App extends React.Component {
               isStillLogged={this.state.isStillLogged}
               // user={this.state.authUser}
             />
+          </Route>
+          <Route path="/booking-manager/contact-tracing">
+            <ContactTracing />
           </Route>
           <Route path="/logout"></Route>
           <Redirect from="/" exact to="login" />
