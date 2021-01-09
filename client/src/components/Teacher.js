@@ -125,7 +125,7 @@ class Teacher extends React.Component {
             <>
               <Container fluid className="mt-5 ">
                 <Row className="justify-content-md-center">
-                  <h1>
+                  <h1 id="welcome">
                     Welcome back{" "}
                     {this.state.user.firstname + " " + this.state.user.lastname}
                   </h1>

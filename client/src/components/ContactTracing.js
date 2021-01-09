@@ -69,9 +69,7 @@ class ContactTracing extends React.Component {
     // console.log(this.state.value.value);
     if (this.state.number === "") {
       this.setState({ err: true });
-    }
-    console.log(this.state.number);
-    if (this.state.value.value === "id") {
+    } else if (this.state.value.value === "id") {
       await API.getPositiveStudentDetail(
         this.state.number,
         null,
