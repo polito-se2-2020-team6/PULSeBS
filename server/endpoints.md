@@ -177,6 +177,21 @@ Requires login as teacher
   - _response body_
     - success: bool
 
+# Edit a block of lecture online status
+
+Requires login as support officer
+
+- **PATCH** /api/lectures/online
+  - _request params_
+    - value: bool (true -> turn all to online, false -> turn all to presence)
+    - year: array(int) _(optional, default: all the years)_
+    - semester: array(int) _(optional, default: all the semesters)_
+    - start_date: ISO-8601 date _(optional, default: current date and time)_
+    - end_date: ISO-8601 date _(optional, default: last day of 35 ABY (if you don't know what is it, search star wars))_
+  - _response body_
+    - success: bool
+    - affectedRecords: int
+
 # Booking statistics
 
 Requires login as teacher or booking manager
