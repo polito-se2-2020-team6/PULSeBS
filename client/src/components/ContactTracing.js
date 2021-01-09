@@ -68,7 +68,7 @@ class ContactTracing extends React.Component {
   sendHandle = async () => {
     // console.log(this.state.value.value);
     if (this.state.number === "") {
-      this.setState({ err: true });
+      this.setState({ err: true, positiveSTD: "" });
     } else if (this.state.value.value === "id") {
       await API.getPositiveStudentDetail(
         this.state.number,
@@ -188,7 +188,7 @@ class ContactTracing extends React.Component {
               label={
                 this.state.value.title
                   ? `Enter ${this.state.value.title}`
-                  : "Please Select SSN or SN"
+                  : "Please Select SN|SSN Option"
               }
             />
           </Grid>

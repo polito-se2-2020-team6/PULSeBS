@@ -23,12 +23,12 @@ async function getPositiveStudentDetail(stID, SSN, idField, ssnField) {
 async function getCTReport(STID, format) {
   let url = `/users/${STID}/CTReport/${format}`;
   const response = await fetch(baseURL + url);
-  const CTReportJSON = await response.json();
-  console.log(CTReportJSON);
+  // const CTReportJSON = await response.json();
+  // console.log(CTReportJSON);
   if (response.ok) {
-    return CTReportJSON;
+    return response;
   } else {
-    let err = { status: response.status, errObj: CTReportJSON };
+    let err = { status: response.status, errObj: response };
     throw err;
   }
 }
