@@ -697,7 +697,7 @@ if (!function_exists('set_mass_lecture_online_status')) {
 			}
 
 			if(null !== $end_time){
-				$sql .= " AND end_ts <= ".$end_time->getTimestamp();
+				$sql .= " AND start_ts <= ".$end_time->getTimestamp();
 			}
 			$stmt = $pdo->prepare($sql);
 			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
