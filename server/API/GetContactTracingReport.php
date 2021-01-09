@@ -91,33 +91,36 @@ if (!function_exists('formatInPdf')) {
 		$pdf->SetLineWidth(.3);
 		$pdf->SetFont('Arial', 'B', 12);
 
-		if (empty($table)) {
+		if (count($table) <= 1) {
 			$pdf->Cell(40, 0, "No contact with other students.");
 		} else {
-			// Header
-			$pdf->SetTextColor(255);
-			$w = array(15, 30, 30, 25, 25, 35, 60, 60);
-			for ($i = 0; $i < count(array_keys($table[0])); $i++) {
-				$pdf->Cell($w[$i], 7, array_keys($table[0])[$i], 1, 0, 'C', true);
-			}
-			$pdf->Ln();
-			// Color and font restoration
-			$pdf->SetFillColor(224, 235, 255);
-			$pdf->SetTextColor(0);
-			$pdf->SetFont('Arial', '', 10);
-			// Data
 			$fill = false;
-			foreach ($table as $row) {
-				$pdf->Cell($w[0], 6, $row['ID'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[1], 6, $row['First name'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[2], 6, $row['Last name'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[3], 6, $row['City'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[4], 6, $row['Birthday'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[5], 6, $row['SSN'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[6], 6, $row['Email'], 'LR', 0, 'L', $fill);
-				$pdf->Cell($w[7], 6, $row['Last contact'], 'LR', 0, 'L', $fill);
-				$pdf->Ln();
-				$fill = !$fill;
+			foreach ($table as $k => $row) {
+				if ($k === 0) {
+					// Header
+					$pdf->SetTextColor(255);
+					$w = array(15, 30, 30, 25, 25, 35, 60, 60);
+					for ($i = 0; $i < count($row); $i++) {
+						$pdf->Cell($w[$i], 7, $row[$i], 1, 0, 'C', true);
+					}
+					$pdf->Ln();
+					// Color and font restoration
+					$pdf->SetFillColor(224, 235, 255);
+					$pdf->SetTextColor(0);
+					$pdf->SetFont('Arial', '', 10);
+				} else {
+					// Data
+					$pdf->Cell($w[0], 6, $row['ID'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[1], 6, $row['First name'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[2], 6, $row['Last name'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[3], 6, $row['City'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[4], 6, $row['Birthday'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[5], 6, $row['SSN'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[6], 6, $row['Email'], 'LR', 0, 'L', $fill);
+					$pdf->Cell($w[7], 6, $row['Last contact'], 'LR', 0, 'L', $fill);
+					$pdf->Ln();
+					$fill = !$fill;
+				}
 			}
 			// Closing line
 			$pdf->Cell(array_sum($w), 0, '', 'T');
@@ -131,10 +134,10 @@ if (!function_exists('formatInCsv')) {
 	function formatInCsv($table) {
 
 		if (empty($table)) {
-			return "";
+			throw new ErrorException("No data found.");
 		}
 
-		$out = implode(",", array_keys($table[0])) . PHP_EOL;
+		$out = "";
 		foreach ($table as $r) {
 			$out .= implode(",", $r) . PHP_EOL;
 		}

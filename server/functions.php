@@ -309,14 +309,14 @@ if (!function_exists('getContactInformation')) {
 
 		$contactQuery = <<<'EOC'
 SELECT
-	U.ID as userId,
-	U.firstname as firstName,
-	U.lastname as lastName,
-	U.city as city,
-	U.birthday as birthday,
-	U.SSN as SSN,
-	U.email as email,
-	MAX(L.end_ts) as lastContact
+	U.ID as `ID`,
+	U.firstname as `First Name`,
+	U.lastname as `Last Name`,
+	U.city as `City`,
+	U.birthday as `Birthday`,
+	U.SSN as `SSN`,
+	U.email as `Email`,
+	MAX(L.end_ts) as `Last Contact`
 FROM
 	bookings B,
 	users U,
@@ -333,8 +333,10 @@ WHERE B.user_id = U.ID
 	AND user_id <> :userId
 	AND start_ts < :ts
 	AND start_ts >= :twoweeksago
+	AND B.cancellation_ts IS NULL
+	AND B.attended = 1
 GROUP BY U.ID, U.firstname, U.lastname, U.city, U.birthday, U.SSN, U.email
-ORDER BY lastContact DESC;
+ORDER BY `Last Contact` DESC;
 EOC;
 
 		$pdo = new PDO("sqlite:../db.sqlite");
@@ -355,19 +357,27 @@ EOC;
 		$mapContactInfo = function ($r) {
 
 			$dt = new DateTime();
-			$dt->setTimestamp(intval($r['lastContact']));
+			$dt->setTimestamp(intval($r['Last Contact']));
 			return [
-				'ID' => intval($r['userId']),
-				'First name' => $r['firstName'],
-				'Last name' => $r['lastName'],
-				'City' => $r['city'],
-				'Birthday' => $r['birthday'],
+				'ID' => intval($r['ID']),
+				'First name' => $r['First Name'],
+				'Last name' => $r['Last Name'],
+				'City' => $r['City'],
+				'Birthday' => $r['Birthday'],
 				'SSN' => $r['SSN'],
-				'Email' => $r['email'],
-				'Last contact' => $dt->format('Y-m-d h:i eO')
+				'Email' => $r['Email'],
+				'Last contact' => $dt->format('Y-m-d H:i eO')
 			];
 		};
 
-		return array_map($mapContactInfo, $contact_info);
+		$columnNames = [];
+		$i = 0;
+		while ($i < $stmt->columnCount()) {
+			$meta = $stmt->getColumnMeta($i);
+			array_push($columnNames, $meta['name']);
+			$i++;
+		}
+
+		return array_merge([$columnNames], array_map($mapContactInfo, $contact_info));
 	}
 }
