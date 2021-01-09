@@ -190,6 +190,7 @@ Requires login as support officer
     - end_date: ISO-8601 date _(optional, default: last day of 35 ABY (if you don't know what is it, search star wars))_
   - _response body_
     - success: bool
+    - affectedRecords: int
 
 # Booking statistics
 
