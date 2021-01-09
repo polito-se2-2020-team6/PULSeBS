@@ -24,9 +24,6 @@ if (!function_exists('get_student_info')) {
 					$user = get_user($code);
 					break;
 				case 'ssn':
-					if (is_numeric($code)) {
-						throw new ErrorException('Code expected to be string.');
-					}
 					$user = get_user_by_ssn($code);
 					break;
 				default:
