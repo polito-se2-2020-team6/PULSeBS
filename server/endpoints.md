@@ -183,7 +183,7 @@ Requires login as support officer
 
 - **PATCH** /api/lectures/online
   - _request params_
-    - value: bool
+    - value: bool (true -> turn all to online, false -> turn all to presence)
     - year: array(int) _(optional, default: all the years)_
     - semester: array(int) _(optional, default: all the semesters)_
     - start_date: ISO-8601 date _(optional, default: current date and time)_
