@@ -1,0 +1,117 @@
+import React from "react";
+import API from "../../API/API";
+import { Redirect } from "react-router-dom";
+import {
+    Col,
+    Container,
+    Row,
+    Table,
+    Dropdown,
+    Pagination,
+    Accordion,
+    Card,
+    Button
+  } from "react-bootstrap";
+  import { AuthContext } from "../../auth/AuthContext";
+
+  class RecordPresence extends React.Component {
+    constructor(props) {
+      super(props);
+  
+      this.state = {
+        authUser: {},
+        students: [],
+        lectures: []
+      };
+      this.wrapper = React.createRef();
+    } 
+    
+    async componentDidMount() {
+        await this.isLogged();
+        this.getLectures(this.state.authUser.userId);
+      }
+
+      isLogged = async () => {
+        const response = await API.isLogged();
+        try {
+          this.setState({ authUser: response, authErr: null });
+        } catch (errorObj) {
+          this.props.history.push("/login");
+        }
+      };
+
+      getLectures = (userId) => {
+        API.getLecturesStartDate(userId) //qua devi prendere solo  le lezioni di oggi
+          .then((lectures) => {
+            this.setState({
+              lectures: lectures.filter((l) => new Date(l.startTS) < new Date()) || [] 
+            });
+            this.getStudentsBooked(this.state.lectures[0].lectureId)
+            
+          })
+          .catch((errorObj) => {
+            console.log(errorObj);
+          });
+          
+      };
+
+      getStudentsBooked(lectureId) {
+        API.getStudentsBooked(lectureId)
+          .then((students) => {
+            this.setState({
+              students: students.students || [],
+            });
+            console.log(students.students)
+          })
+          .catch((errorObj) => {
+            console.log(errorObj);
+          });
+      }
+
+      setAttendance(lectureId, studentId, attended) {
+        API.setAttendance(lectureId, studentId, attended)
+          .then((response) => {
+            //bo guarda se è true
+          })
+          .catch((errorObj) => {
+            console.log(errorObj);
+          });
+      }
+
+      render() {
+        return (
+          <AuthContext.Consumer>
+            {(context) => (
+              <>
+                {context.authUser === null && <Redirect to="/login"></Redirect>}
+                <Container className = "mt-3">
+                <Row className="justify-content-md-center mb-3"><h5>Click on the lectures to record the presence</h5></Row>
+                <Accordion defaultActiveKey="0">
+                
+                {this.state.lectures?.map((l) => (
+                    <Card >      
+                        <Accordion.Toggle as={Card.Header} eventKey={l.lectureId} onClick={() => this.getStudentsBooked(l.lectureId)}> {//qua fai onclick getstudentsbooked e li rappresenti
+                    }
+                    {l.startTS + " - " + l.courseName} 
+                    </Accordion.Toggle>
+                    <Accordion.Collapse eventKey={l.lectureId}>
+                    <Card.Body>
+                        {this.state.students?.map((s) =>(
+                        <Row className="mt-1"><Col>{s.studentName}  <Button variant="success" className="ml-2" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, false)}>Present</Button></Col></Row>
+                        ) )}
+                    </Card.Body>
+                    </Accordion.Collapse>
+                </Card>          
+                                  ))}
+                </Accordion>
+                </Container>
+              </>
+            )}
+          </AuthContext.Consumer>
+        );
+      }
+    }
+    
+    RecordPresence.contextType = AuthContext;
+    export default RecordPresence;
+    

@@ -4,6 +4,7 @@ import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
 import HistoricalData from "./components/Teacher/HistoricalData";
+import RecordPresence from "./components/Teacher/RecordPresence";
 import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
@@ -139,7 +140,7 @@ class App extends React.Component {
         <Switch>
           <Route path="/teacher/home">
             <Teacher
-              studentsList={this.state.studentsList}
+              studentsList={this.state.studentsList} //all this stuff need to be deleted
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
               getLectures={this.getLectures}
@@ -149,10 +150,14 @@ class App extends React.Component {
           <Route path="/teacher/historicaldata">
             <HistoricalData
               key={123435}
-              studentsList={this.state.studentsList}
+              studentsList={this.state.studentsList} //all this stuff need to be deleted
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
               getLectures={this.getLectures}
+            />
+          </Route>
+          <Route path="/teacher/recordPresence">
+            <RecordPresence
             />
           </Route>
           <Route path="/student/calendar/">

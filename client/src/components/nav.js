@@ -41,13 +41,13 @@ class Navigation extends Component {
                         </NavItem>
                       )}
                       {context.authUser.type === ROLES.TEACHER && (
+                        <>
                         <NavItem>
                           <NavLink className="nav-link" to="/teacher/home">
                             Courses
                           </NavLink>
                         </NavItem>
-                      )}
-                      {context.authUser.type === ROLES.TEACHER && (
+                      
                         <NavItem>
                           <NavLink
                             id="historicaldata"
@@ -57,6 +57,17 @@ class Navigation extends Component {
                             Historical Data
                           </NavLink>
                         </NavItem>
+
+                        <NavItem>
+                          <NavLink
+                            id="recordPresence"
+                            className="nav-link"
+                            to="/teacher/recordPresence"
+                          >
+                            Record Presence
+                          </NavLink>
+                        </NavItem>
+                        </>
                       )}
                       {context.authUser.type === ROLES.BOOKING_MANAGER && (
                         <NavItem>

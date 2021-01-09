@@ -424,6 +424,39 @@ async function getAllCourses() {
   }
 }
 
+//setAttendance
+async function setAttendance(lectureId, studentId, attended) {
+  
+  return new Promise(function (resolve, reject) {
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    let url = baseURL + `/lectures/${lectureId}/students/${studentId}`;
+    let data = `value=${!attended}`;
+    
+    req.open("PATCH", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.onload = function () {
+     
+      if (req.status === 200) {
+      
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
+      } else {
+        
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
+  });
+}
+
 async function uploadCsv(file, section,start,end) {
   
   return new Promise(async function (resolve, reject) {
@@ -520,5 +553,6 @@ const API = {
   getStatesMonthly,
   uploadCsv,
   getAllCourses,
+  setAttendance
 };
 export default API;
