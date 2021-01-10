@@ -145,7 +145,25 @@ Requires login as teacher
       - studentId: int
       - studentName: string
       - email: string
-      - inWaitingList : bool
+      - inWaitingList: bool
+      - attended: bools
+
+# Set attendance
+
+Requires login as teacher
+
+- **PATCH** /api/lectures/{lectureId}/students/{studentId}
+  - *params detail*
+    - lectureId: int
+    - studentId: int
+  - *request params*
+    - attended: bool
+  - *response body*
+    - success: bool
+
+The endpoint will fail if trying to modify attendances of a lecture that took place on a previous day.
+*Example:*
+The execution of `/api/lectures/3/students/1` called on 2021-01-06 15:30:00 will be allowed only if lecture 3 has a start time between 2021-01-06 00:00:00 and 2021-01-06 15:30:00 inclusive.
 
 # Set attendance
 

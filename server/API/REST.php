@@ -413,7 +413,7 @@ if (!function_exists('booked_students')) {
 
 
 			// Get students
-			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
+			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname, attended
 								   FROM users U, bookings B
 								   WHERE U.ID = B.user_id 
 								   		AND lecture_id = :lectureId
@@ -435,7 +435,8 @@ if (!function_exists('booked_students')) {
 					'studentId' => $studentId,
 					'email' => $s['email'],
 					'studentName' => $s['lastname'] . ' ' . $s['firstname'],
-					'inWaitingList' => in_array($studentId, $waiting_list)
+					'inWaitingList' => in_array($studentId, $waiting_list),
+					'attended' => boolval($s['attended'])
 				);
 
 				array_push($students, $student);
