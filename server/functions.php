@@ -1,7 +1,4 @@
 <?php
-
-use PHPUnit\Framework\Constraint\IsFalse;
-
 session_start();
 $server_default_timezone = date_default_timezone_get();  //needed to know which timezone the server uses
 date_default_timezone_set("UTC");
