@@ -1,6 +1,46 @@
 import "cypress-file-upload";
 const baseURL = "http://localhost:3000";
 
+const studentLogin = () => {
+  cy.visit(baseURL);
+  cy.get("#username").type("mostafat");
+  cy.get("#password").type("helloworld");
+  cy.get("#login").click();
+  cy.url().should("include", "/student/home");
+};
+
+const studentNotLogin = () => {
+  cy.visit(baseURL);
+  cy.get("#username").type("mostafa");
+  cy.get("#password").type("helloworld");
+  cy.get("#login").click();
+  // cy.url().should("include", "/student/home");
+  cy.get(".Toastify__toast-body")
+    .should("be.visible")
+    .should("have.text", "Sorry, the username or password was incorrect.");
+};
+
+const professorLogin = () => {
+  cy.visit(baseURL);
+  cy.get("#username").type("antoniov");
+  cy.get("#password").type("987654321");
+  cy.get("#login").click();
+  cy.url().should("include", "/teacher/home");
+};
+
+const isLogged = () => {
+  // console.log("df");
+  it("returns JSON", () => {
+    cy.request("GET", "http://localhost:8080/API/REST.php/api/user/me").then(
+      (response) => {
+        const status = JSON.parse(JSON.stringify(response.body));
+        console.log(status);
+        expect(status).to.have.property("success", false);
+      }
+    );
+  });
+};
+
 context("loginAPITest", () => {
   it("returns User", () => {
     cy.request({
@@ -23,6 +63,20 @@ context("loginAPITest", () => {
   });
 });
 
+context("loginAPITest", () => {
+  it("returns User", () => {
+    cy.request({
+      failOnStatusCode: false,
+      url: `http://localhost:8080/API/REST.php/api/user/me`,
+    }).then((response) => {
+      const status = JSON.parse(JSON.stringify(response.body));
+      expect(status).to.have.property("reason", "Authentication required");
+      expect(status).to.have.property("success", false);
+      console.log(response.status === 403);
+    });
+  });
+});
+
 context("Home Page", () => {
   it("Login Page Test", () => {
     cy.visit(baseURL);
@@ -39,20 +93,19 @@ context("Home Page", () => {
 
 context("Student Page", () => {
   it("Login Test for Student Component", () => {
-    cy.visit(baseURL);
-    cy.get("#username").type("mostafat");
-    cy.get("#password").type("helloworld");
-    cy.get("#login").click();
-    cy.url().should("include", "/student/home");
+    studentNotLogin();
+    studentLogin();
     cy.get("h1").should("have.text", "Book Your Next Lectures");
     cy.get("#dropdown-filter").click();
     cy.get("#filter-items").first().should("have.text", "All Courses").click();
+    cy.get("tbody>tr").eq(10).find("button").click();
+
     cy.get("#booked-lecture").should("have.text", "Booked Lectures").click();
     cy.get("#avail-lecture").should("be.visible");
     cy.get("#book-a-seat").should("be.visible");
-    cy.wait(500);
-    cy.get("#booked").should("be.visible");
-    cy.get("#calendar").click();
+    cy.wait(16000);
+    cy.get("#booked>tbody>tr").eq(0).find("button").click();
+    cy.get("#calendar").contains("Calendar").click();
     cy.url().should("include", "/student/calendar?userid=5");
     cy.get("#logout").click();
   });
@@ -60,21 +113,38 @@ context("Student Page", () => {
 
 context("Teacher Page", () => {
   it("Login Test for Teacher Component", () => {
-    cy.visit(baseURL);
-    cy.get("#username").type("antoniov");
-    cy.get("#password").type("987654321");
-    cy.get("#login").click();
-    cy.url().should("include", "/teacher/home");
+    professorLogin();
+    const response = isLogged();
+    // console.log(response);
     cy.get("#welcome")
       .should("be.visible")
       .should("have.text", "Welcome back Antonio Vetrò");
     cy.get("#lgId2").should("be.visible");
+    cy.get("#pagNextId").click();
+    cy.get("#pagPrevId").click();
+    // test Trun To Online BTN in Teacher Page - "No" BTN in POPUP
     cy.get("#but4").should("have.text", "Turn to online").click();
     cy.get("#modId1").should("be.visible");
-    cy.get("#but5").should("be.visible").click();
+    cy.get("#but5").should("have.text", "No").should("be.visible").click();
+    // test Trun To Online BTN in Teacher Page - "Yes,I am BTN" BTN in POPUP
+    cy.get("#but4").should("have.text", "Turn to online").click();
+    cy.get("#modId1").should("be.visible");
+    cy.get("#but6")
+      .should("have.text", "Yes, I am")
+      .should("be.visible")
+      .click();
+    // test Delete BTN in Teacher Page - "No" BTN in POPUP
     cy.get("#but1").should("have.text", "Delete").click();
     cy.get("#modId").should("be.visible");
-    cy.get("#but2").should("be.visible").click();
+    cy.get("#but2").should("have.text", "No").should("be.visible").click();
+    // test Delete BTN in Teacher Page - "Yes,I am BTN" in POPUP
+    cy.get("#but1").should("have.text", "Delete").click();
+    cy.get("#modId").should("be.visible");
+    cy.get("#but3")
+      .should("have.text", "Yes, I am")
+      .should("be.visible")
+      .click();
+
     cy.get(".tab-content").should("be.visible");
     cy.get("#historicaldata").click();
     cy.url().should("include", "/teacher/historicaldata");
@@ -91,7 +161,6 @@ context("Teacher Page", () => {
     cy.get("#dropdown-basic1")
       .should("be.visible")
       .should("have.text", "Information Systems Security");
-
     cy.get("#logout").click();
   });
 });
@@ -121,6 +190,23 @@ context("Support Officer Page", () => {
       cy.get("#uploadBTN").click();
       cy.get("#uploadFail").should("be.visible");
     });
+
+    cy.get("#uncontrolled-tab-example-tab-teachers", { force: true }).click();
+    cy.get("#uploadBTN").should("have.text", "Upload").click({ force: true });
+
+    // cy.readFile(
+    //   "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Professors.csv"
+    // ).then(function (fileContent) {
+    //   cy.get('input[type="file"]').attachFile({
+    //     fileContent,
+    //     fileName,
+    //     mimeType: "application/csv",
+    //   });
+    //   cy.get("#uploadBTN").click();
+    //   cy.get("#uploadSucc").should("be.visible");
+    //   cy.get("#uploadBTN").click();
+    //   cy.get("#uploadFail").should("be.visible");
+    // });
   });
 });
 
@@ -134,7 +220,13 @@ context("Booking Manager Page", () => {
     cy.get("#welcomeText")
       .should("be.visible")
       .should("have.text", "Welcome Mr.");
-    // cy.get("#course").select("ALL Courses").should("have.value", "0");
+    // .select("ALL Courses").should("have.value", "0");
+    // cy.get("#course").click();
+    // cy.get("li")
+    //   .first()
+    //   .should("have.value", 0)
+    //   .should("have.text", "ALL Courses")
+    //   .click();
     cy.get("#teachersTable").should("be.visible");
     cy.get("#course").click();
     cy.get("li")
@@ -165,5 +257,49 @@ context("Booking Manager Page", () => {
     cy.get(".react-datepicker").should("be.visible");
     cy.get(".react-datepicker__month-11").click();
     cy.get("#monthlyChart").should("be.visible");
+    cy.get("#CT").click();
+    cy.url().should("include", "/booking-manager/contact-tracing");
+    cy.get("#JT")
+      .should("be.visible")
+      .should(
+        "have.text",
+        "Contact Tracing ReportA page for reporting the positive students to comply with safety regulations."
+      );
+    cy.get('[title="Clear"]').click({ force: true });
+    cy.get("#btnSEND").should("have.value", "").should("be.disabled");
+    cy.get("#number").should("have.value", "").should("be.disabled");
+    cy.get("#search-by").should("be.visible").click({ force: true });
+    cy.get("li")
+      .first()
+      .should("have.value", 0)
+      .should("have.text", "Student Number - (SN)")
+      .click();
+    cy.get("#number").type(5);
+    cy.get("#btnSEND").click();
+    cy.get("#modalPOS").should("be.visible");
+    cy.get("#typeCombo").should("be.visible").click();
+    cy.get("li")
+      .first()
+      .should("have.value", 0)
+      .should("have.text", "PDF")
+      .click();
+    cy.get("#generate").click();
+    cy.get("#typeCombo").click();
+    cy.get("li")
+      .eq(1)
+      .should("have.value", 0)
+      .should("have.text", "CSV")
+      .click();
+    cy.get("#generate").click();
+    cy.get("#cancel").click();
+    cy.get("#search-by").click();
+    cy.get("li")
+      .eq(1)
+      .should("have.value", 0)
+      .should("have.text", "Servizio Sanitario Nazionale - (SSN)")
+      .click();
+    cy.get("#btnSEND").click();
+    cy.get("#number").clear();
+    cy.get("#btnSEND").click();
   });
 });

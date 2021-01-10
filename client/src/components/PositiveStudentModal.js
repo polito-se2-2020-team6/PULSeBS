@@ -26,23 +26,24 @@ class PositiveStudentModal extends React.Component {
       modal: false,
       value: "",
     };
-    this.toggle = this.toggle.bind(this);
+    // this.toggle = this.toggle.bind(this);
   }
 
-  toggle() {
-    this.setState({ modal: !this.state.modal });
-  }
+  // toggle() {
+  //   this.setState({ modal: !this.state.modal });
+  // }
   changeHandler = async (e, newValue) => {
     if (newValue !== null) {
       console.log(newValue.value);
       await this.setState({
         value: newValue,
       });
-    } else {
-      await this.setState({
-        value: "",
-      });
     }
+    // else {
+    //   await this.setState({
+    //     value: "",
+    //   });
+    // }
   };
 
   generateReport = () => {
@@ -53,7 +54,11 @@ class PositiveStudentModal extends React.Component {
     const student = this.props.positiveSTD;
     return (
       <div>
-        <Modal toggle={this.props.toggleModal} isOpen={this.props.isModalOpen}>
+        <Modal
+          id="modalPOS"
+          toggle={this.props.toggleModal}
+          isOpen={this.props.isModalOpen}
+        >
           <ModalHeader toggle={this.props.toggleModal}>
             <Typography style={{ color: "#15007e" }} variant="h4">
               Detail of Positive Student to Report
@@ -146,7 +151,7 @@ class PositiveStudentModal extends React.Component {
                   <Autocomplete
                     value={this.state.value}
                     onChange={(e, newValue) => this.changeHandler(e, newValue)}
-                    id="combo-box-demo"
+                    id="typeCombo"
                     options={options}
                     getOptionLabel={(option) => (option ? option.title : "")}
                     renderInput={(params) => (
@@ -164,11 +169,13 @@ class PositiveStudentModal extends React.Component {
                 variant="contained"
                 color="secondary"
                 onClick={this.generateReport}
+                id="generate"
               >
                 Generate
               </Button>
               <Grid item xs={2}></Grid>
               <Button
+                id="cancel"
                 variant="outlined"
                 color="secondary"
                 onClick={this.props.toggleModal}

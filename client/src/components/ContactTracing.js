@@ -121,7 +121,7 @@ class ContactTracing extends React.Component {
     const actionClasses = this.props.classes;
     return (
       <>
-        <Jumbotron fluid>
+        <Jumbotron id="JT" fluid>
           <Container>
             <h1>Contact Tracing Report</h1>
             <p>
@@ -163,7 +163,7 @@ class ContactTracing extends React.Component {
             <Autocomplete
               value={this.state.value}
               onChange={(e, newValue) => this.changeHandler(e, newValue)}
-              id="combo-box-demo"
+              id="search-by"
               options={options}
               getOptionLabel={(option) => (option ? option.title : "")}
               // style={{ width: 300 }}
@@ -184,7 +184,6 @@ class ContactTracing extends React.Component {
               disabled={!this.state.value} // disable when there is no value
               value={this.state.number}
               fullWidth
-              id="standard-basic"
               label={
                 this.state.value.title
                   ? `Enter ${this.state.value.title}`
@@ -196,6 +195,7 @@ class ContactTracing extends React.Component {
           <Grid item xs={4}></Grid>
           <Grid item xs={2} style={{ marginTop: "80px" }}>
             <Button
+              id="btnSEND"
               disabled={!this.state.value} // disable when there is no value
               fullWidth
               variant="contained"

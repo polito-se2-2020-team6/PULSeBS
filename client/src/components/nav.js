@@ -75,6 +75,7 @@ class Navigation extends Component {
                       {context.authUser.type === ROLES.BOOKING_MANAGER && (
                         <NavItem>
                           <NavLink
+                            id="CT"
                             className="nav-link"
                             to="/booking-manager/contact-tracing"
                           >

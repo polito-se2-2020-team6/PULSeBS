@@ -266,15 +266,16 @@ class UsageMonitor extends React.Component {
         },
         {
           mStat: "Bookings Average",
-          mValue: this.state.monthlyStats.bookingsAvg.toFixed(2),
+          mValue: this.state.monthlyStats.bookingsAvg,
         },
         {
           mStat: "Cancellations Average",
-          mValue: this.state.monthlyStats.cancellationsAvg.toFixed(2),
+          mValue: this.state.monthlyStats.cancellationsAvg,
         },
         {
           mStat: "Attendances Average",
-          mValue: this.state.monthlyStats.attendancesAvg.toFixed(2),
+          mValue: this.state.monthlyStats.attendancesAvg,
+          // mValue: this.state.monthlyStats.attendancesAvg.toFixed(2),
         },
         {
           mStat: "Number of Lectures",
@@ -416,12 +417,10 @@ class UsageMonitor extends React.Component {
                 <Col className="center center mt-5" md={{ span: 4, offset: 4 }}>
                   <FormGroup>
                     <FormControl>
-                      <InputLabel id="course mb-5">
-                        Choose the Course
-                      </InputLabel>
+                      <InputLabel id=" mb-5">Choose the Course</InputLabel>
                       <Select
                         ref={this.wrapper}
-                        labelId="course"
+                        // labelId="course"
                         id="course"
                         value={this.state.course}
                         onChange={this.handleChange}
