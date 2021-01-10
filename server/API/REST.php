@@ -707,7 +707,7 @@ if (!function_exists('print_courses')) {
 			$pdo = new PDO('sqlite:../db.sqlite');
 
 			if (isset($_GET["ofLogged"])) {
-				$logged_user = get_myself();
+				$logged_user = :2get_myself();
 				switch ($logged_user["type"]) {
 					case USER_TYPE_TEACHER:
 						$stmt = $pdo->prepare("SELECT courses.*, users.firstname AS teacherFirstName, users.lastname AS teacherLastName, users.email AS teacherEmail, users.ID AS teacherId FROM courses, users WHERE courses.teacher_id = users.ID AND courses.teacher_id = :teacherID");
