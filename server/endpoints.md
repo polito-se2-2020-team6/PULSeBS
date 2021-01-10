@@ -145,7 +145,8 @@ Requires login as teacher
       - studentId: int
       - studentName: string
       - email: string
-      - inWaitingList : bool
+      - inWaitingList: bool
+      - attended: bools
 
 # Set attendance
 
