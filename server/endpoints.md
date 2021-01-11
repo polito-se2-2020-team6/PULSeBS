@@ -107,7 +107,7 @@ Requires login as student or teacher
   - _response body_
     - success: bool
     - lectures: [object]
-      - lectureId: int
+      - lectureId: in21MA0031119578t
       - courseId: int
       - courseName: string
       - startTS: int _(GMT timezone)_
@@ -260,6 +260,26 @@ Requiire login as support officer
     - endDay: string YYYY-mm-dd
   - *response body*
     - success: bool
+
+
+# Edit a course schedule
+Require login as support officer
+
+- **PATCH** /api/courses/{courseId}/schedule
+  - *request params*
+    - originalWeekday: int *(0 to 6, where 0 is Monday, 6 is Sunday)*
+    - newWeekday: int *(0 to 6, where 0 is Monday, 6 is Sunday)*
+    - newTime: string *(optional: default is to not change the time. Time should be formatted like this hh:mm)*
+    - startDateTime: ISO-8601 date and time *(optional: default is the current date and time)*
+    - endDateTime: ISO-8601 date and time *(optional: default is to the infinite and beyond)*
+  - *response body*
+    - success: bool
+    - affectedRow: int
+
+The endpoint will change all the lectures of the `courseId` course that are held in `originalWeekday` during the specified period of time
+(using `startDateTime` and `endDateTime`) to `newWeekday` and `newTime`. For example, if originalWeekday is 0 and newWeekday is 4, all the
+lectures of course `courseId` that are held on Monday, will be moved to Friday. Notice that `startDateTime` cannot be for any reason in the
+past, since only not already held lectures can be affected.
 
 # Error
 
