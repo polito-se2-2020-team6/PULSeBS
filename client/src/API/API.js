@@ -426,18 +426,18 @@ async function getAllCourses() {
 
 //setAttendance
 async function setAttendance(lectureId, studentId, attended) {
-  
+  console.log(attended)
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();
     let url = baseURL + `/lectures/${lectureId}/students/${studentId}`;
-    let data = `value=${!attended}`;
+    let data = `attended=${attended}`;
     
     req.open("PATCH", url);
     //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
     req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     req.onload = function () {
-     
+    
       if (req.status === 200) {
       
         const response = req.response;

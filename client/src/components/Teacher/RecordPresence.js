@@ -5,9 +5,6 @@ import {
     Col,
     Container,
     Row,
-    Table,
-    Dropdown,
-    Pagination,
     Accordion,
     Card,
     Button
@@ -46,7 +43,10 @@ import {
             this.setState({
               lectures: lectures.filter((l) => new Date(l.startTS) < new Date()) || [] 
             });
-            this.getStudentsBooked(this.state.lectures[0].lectureId)
+            
+            if (this.state.lectures.lenght){
+                this.getStudentsBooked(this.state.lectures[0].lectureId)
+            }
             
           })
           .catch((errorObj) => {
@@ -72,6 +72,7 @@ import {
         API.setAttendance(lectureId, studentId, attended)
           .then((response) => {
             //bo guarda se è true
+            console.log(response)
           })
           .catch((errorObj) => {
             console.log(errorObj);
@@ -85,19 +86,24 @@ import {
               <>
                 {context.authUser === null && <Redirect to="/login"></Redirect>}
                 <Container className = "mt-3">
-                <Row className="justify-content-md-center mb-3"><h5>Click on the lectures to record the presence</h5></Row>
-                <Accordion defaultActiveKey="0">
+                <Row className="justify-content-md-center mb-3"><h5>Click on the lectures to record the presences</h5></Row>
+                <Accordion defaultActiveKey="0" id="acc">
                 
                 {this.state.lectures?.map((l) => (
-                    <Card >      
-                        <Accordion.Toggle as={Card.Header} eventKey={l.lectureId} onClick={() => this.getStudentsBooked(l.lectureId)}> {//qua fai onclick getstudentsbooked e li rappresenti
+                    <Card id="ca" key={l.lectureId}>      
+                        <Accordion.Toggle as={Card.Header} id="acc1" eventKey={l.lectureId} onClick={() => this.getStudentsBooked(l.lectureId)}> {//qua fai onclick getstudentsbooked e li rappresenti
                     }
                     {l.startTS + " - " + l.courseName} 
                     </Accordion.Toggle>
-                    <Accordion.Collapse eventKey={l.lectureId}>
-                    <Card.Body>
+                    <Accordion.Collapse eventKey={l.lectureId} id="acc2">
+                    <Card.Body id="cab">
                         {this.state.students?.map((s) =>(
-                        <Row className="mt-1"><Col>{s.studentName}  <Button variant="success" className="ml-2" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, false)}>Present</Button></Col></Row>
+                            //qua in realta devi fare vedere il bottone presente solo se non lhai gia segnato presente
+                        <Row className="mt-1" key={s.studentId}>
+                        <Col>{s.studentName}  
+                        {!s.attended?<Button variant="success" className="ml-2" id="but" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, 1)}>Present</Button>
+                        :<Button variant="danger" className="ml-2" id="but" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, 0)}>Not Present</Button>}
+                        </Col></Row>
                         ) )}
                     </Card.Body>
                     </Accordion.Collapse>
