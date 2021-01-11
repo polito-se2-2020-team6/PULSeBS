@@ -1,12 +1,9 @@
 import React from "react";
-import PieChart, {
+import {
   Series,
   Label,
-  Connector,
-  LoadingIndicator,
-} from "devextreme-react/pie-chart";
-import {
   Chart,
+  LoadingIndicator,
   CommonSeriesSettings,
   Legend,
   ArgumentAxis,
@@ -81,7 +78,7 @@ class UsageMonitor extends React.Component {
         allCourses: filterCourses,
       });
     });
-    console.log(this.state.allCourses);
+    // console.log(this.state.allCourses);
   };
 
   //   async handleChange(e) {
@@ -289,7 +286,7 @@ class UsageMonitor extends React.Component {
   }
 
   handleChangePage = (event, newPage) => {
-    console.log(newPage);
+    // console.log(newPage);
     // setPage(newPage);
     this.setState({
       page: newPage,

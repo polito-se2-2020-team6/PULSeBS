@@ -9,7 +9,7 @@ const theme = createMuiTheme({
   typography: {
     fontSize: 13,
     allVariants: {
-      color: "#5f374f",
+      color: "#1e4f80",
     },
   },
 });
@@ -29,9 +29,6 @@ class PositiveStudentModal extends React.Component {
     // this.toggle = this.toggle.bind(this);
   }
 
-  // toggle() {
-  //   this.setState({ modal: !this.state.modal });
-  // }
   changeHandler = async (e, newValue) => {
     if (newValue !== null) {
       console.log(newValue.value);
@@ -73,7 +70,7 @@ class PositiveStudentModal extends React.Component {
                     <Typography>Student ID: </Typography>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography id="date">{student.userId}</Typography>
+                    <Typography>{student.userId}</Typography>
                   </Grid>
                   <Grid item xs={6}></Grid>
                 </Grid>
@@ -83,7 +80,7 @@ class PositiveStudentModal extends React.Component {
                     <Typography>Firstname: </Typography>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography id="date">{student.firstname}</Typography>
+                    <Typography>{student.firstname}</Typography>
                   </Grid>
                   <Grid item xs={6}></Grid>
                 </Grid>
@@ -93,7 +90,7 @@ class PositiveStudentModal extends React.Component {
                     <Typography>Lastname: </Typography>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography id="date">{student.lastname}</Typography>
+                    <Typography>{student.lastname}</Typography>
                   </Grid>
                   <Grid item xs={6}></Grid>
                 </Grid>
@@ -105,14 +102,13 @@ class PositiveStudentModal extends React.Component {
                     <Typography>Birthday: </Typography>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography id="date">{student.birthday}</Typography>
+                    <Typography>{student.birthday}</Typography>
                   </Grid>
                   <Grid item xs={6}></Grid>
                 </Grid>
               ) : (
                 <></>
               )}
-
               {student.SSN ? (
                 <Grid container xs={12}>
                   <Grid item xs={2}></Grid>
@@ -120,7 +116,21 @@ class PositiveStudentModal extends React.Component {
                     <Typography>SSN:</Typography>
                   </Grid>
                   <Grid item xs={2}>
-                    <Typography id="date">{student.SSN}</Typography>
+                    <Typography>{student.SSN}</Typography>
+                  </Grid>
+                  <Grid item xs={6}></Grid>
+                </Grid>
+              ) : (
+                <></>
+              )}
+              {student.city ? (
+                <Grid container xs={12}>
+                  <Grid item xs={2}></Grid>
+                  <Grid item xs={2}>
+                    <Typography>City:</Typography>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Typography>{student.city}</Typography>
                   </Grid>
                   <Grid item xs={6}></Grid>
                 </Grid>
@@ -133,14 +143,14 @@ class PositiveStudentModal extends React.Component {
                   <Typography>Email: </Typography>
                 </Grid>
                 <Grid item xs={2}>
-                  <Typography id="date">{student.email}</Typography>
+                  <Typography>{student.email}</Typography>
                 </Grid>
                 <Grid item xs={6}></Grid>
               </Grid>
               <Grid style={{ marginTop: "30px" }} container xs={12}>
                 <Grid item xs={2}></Grid>
                 <Grid xs={10} item>
-                  <Typography id="date">
+                  <Typography>
                     Select the filte types to generate the report
                   </Typography>
                 </Grid>
@@ -189,5 +199,4 @@ class PositiveStudentModal extends React.Component {
     );
   }
 }
-
 export default PositiveStudentModal;

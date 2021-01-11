@@ -137,61 +137,6 @@ class LoginPage extends React.Component {
                       </Button>
                     </FormGroup>
                   </Form>
-
-                  {/* <Form
-                  method="POST"
-                  onSubmit={(event) =>
-                    this.handleSubmit(event, context.loginUser)
-                  }
-                >
-                  <FormGroup>
-                    <select
-                      className="form-control"
-                      role={this.state.role}
-                      onChange={this.handleInputChange}
-                      name="role"
-                    >
-                      <option value="teacher">Teacher</option>
-                      <option value="student">Student</option>
-                      <option value="teacher">Booking Manager</option>
-                      <option value="student">Support Officer</option>
-                    </select>
-                  </FormGroup>
-                  <FormGroup>
-                    <FormControl
-                      type="text"
-                      id="username"
-                      name="username"
-                      placeholder="Username"
-                      value={this.state.username}
-                      onChange={this.handleInputChange}
-                      required
-                      autoFocus
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <FormControl
-                      type="password"
-                      id="password"
-                      name="password"
-                      placeholder="Password"
-                      value={this.state.password}
-                      onChange={this.handleInputChange}
-                      required
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Button
-                      block
-                      variant="primary"
-                      type="submit"
-                      color="primary"
-                      size="sm"
-                    >
-                      Login
-                    </Button>
-                  </FormGroup>
-                </Form> */}
                 </Col>
               </Row>
             </Container>

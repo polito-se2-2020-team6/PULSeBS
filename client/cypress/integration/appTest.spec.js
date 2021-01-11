@@ -257,6 +257,7 @@ context("Booking Manager Page", () => {
     cy.get(".react-datepicker").should("be.visible");
     cy.get(".react-datepicker__month-11").click();
     cy.get("#monthlyChart").should("be.visible");
+    // ************************************ Test Contact Tracing and Positive Student Modal Components **********************************
     cy.get("#CT").click();
     cy.url().should("include", "/booking-manager/contact-tracing");
     cy.get("#JT")
@@ -296,9 +297,13 @@ context("Booking Manager Page", () => {
     cy.get("li")
       .eq(1)
       .should("have.value", 0)
-      .should("have.text", "Servizio Sanitario Nazionale - (SSN)")
+      .should("have.text", "Social Security Number - (SSN)")
       .click();
+    cy.get("#number").clear();
+    cy.get("#number").type("AB123456789");
     cy.get("#btnSEND").click();
+    cy.get("#modalPOS").should("be.visible");
+    cy.get("#cancel").click();
     cy.get("#number").clear();
     cy.get("#btnSEND").click();
   });

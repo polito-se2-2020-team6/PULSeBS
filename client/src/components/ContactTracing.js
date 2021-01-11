@@ -20,7 +20,7 @@ const styles = {
 
 const options = [
   { title: "Student Number - (SN)", value: "id" },
-  { title: "Servizio Sanitario Nazionale - (SSN)", value: "ssn" },
+  { title: "Social Security Number - (SSN)", value: "ssn" },
 ];
 
 class ContactTracing extends React.Component {
@@ -56,7 +56,6 @@ class ContactTracing extends React.Component {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-
     this.setState({
       [name]: value,
     });
@@ -86,7 +85,8 @@ class ContactTracing extends React.Component {
         this.toggleModal();
       }
       console.log(this.state.positiveSTD);
-    } else if (this.state.value.value === "ssn") {
+    }
+    if (this.state.value.value === "ssn") {
       // if (/^\d+$/.test(this.state.number)) {
       //   this.setState({ err: true });
       // } else {
@@ -106,7 +106,7 @@ class ContactTracing extends React.Component {
       if (this.state.positiveSTD.success) {
         this.toggleModal();
       }
-      console.log(this.state.positiveSTD);
+      // console.log(this.state.positiveSTD);
     }
   };
 
@@ -130,7 +130,6 @@ class ContactTracing extends React.Component {
             </p>
           </Container>
         </Jumbotron>
-
         <Grid
           className={actionClasses.root}
           container
@@ -182,12 +181,14 @@ class ContactTracing extends React.Component {
               id="number"
               name="number"
               disabled={!this.state.value} // disable when there is no value
-              value={this.state.number}
+              value={this.state.number || ""}
               fullWidth
               label={
-                this.state.value.title
-                  ? `Enter ${this.state.value.title}`
-                  : "Please Select SN|SSN Option"
+                this.state.value.title ? (
+                  `Enter ${this.state.value.title}`
+                ) : (
+                  <>Please Select SN|SSN Option</>
+                )
               }
             />
           </Grid>

@@ -86,10 +86,9 @@ class App extends React.Component {
             this.props.history.push("/student/home?userId=" + user.userId);
             break;
           case ROLES.BOOKING_MANAGER:
-            {
-              this.setState({ authUser: user, authErr: null });
-              this.props.history.push("/booking-manager/home");
-            }
+            this.setState({ authUser: user, authErr: null });
+            this.props.history.push("/booking-manager/home");
+
             // this.getCalendar(this.state.authUser.userId);
             // this.props.history.push("/booking-manager/home?userId="+user.userId);
             break;
@@ -157,11 +156,7 @@ class App extends React.Component {
             />
           </Route>
           <Route path="/student/calendar/">
-            <Calendar
-              getCalendar={this.getCalendar}
-              // calendar={this.state.calendar}
-              // user={this.state.authUser}
-            />
+            <Calendar getCalendar={this.getCalendar} />
           </Route>
           <Route path="/student/home">
             <Student
@@ -177,7 +172,6 @@ class App extends React.Component {
             <UsageMonitor
               isLogged={this.isLogged}
               isStillLogged={this.state.isStillLogged}
-              // user={this.state.authUser}
             />
           </Route>
           <Route path="/booking-manager/contact-tracing">
