@@ -38,8 +38,6 @@ class StatsBookingsTest extends TestCase {
 		$this->assertEquals(200, $response->getStatusCode());
 		$data = json_decode($response->getBody(true), true);
 
-		var_dump($data);
-
 		$this->assertArrayHasKey('success', $data);
 		$this->assertTrue($data['success']);
 
