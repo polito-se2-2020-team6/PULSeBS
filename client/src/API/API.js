@@ -344,6 +344,46 @@ async function turnLecture(lectureId, online) {
   });
 }
 
+async function UpdateLectureList(year, semester, start, end, online) {
+  let years=[]
+  /*years[0]=2021;
+  years[1]=2022;
+  */
+  years[0]=year
+  let semesters=[]
+  semesters[0]=semester
+  let y = year ? `&year[]=${years}` : "";
+  let s = semester ? `&semester[]=${semesters}` : "";
+  let st = start ? `&start_date=${start}` : "";
+  let en = end ? `&end_date=${end}` : "";
+
+  years[0]=year;
+  console.log("anno")
+  console.log(years);
+  console.log("semestre")
+  console.log(semesters);
+  return new Promise(async function  (resolve, reject) {
+    // do the usual XHR stuff
+    
+    let url = baseURL + `/lectures/online`;
+    let data = `value=${online}`+y+s+st+en;
+    console.log(data);
+    const res= await fetch(url, {
+      method: 'PATCH',
+      body: data
+    })
+    const lectureJson = await res.json();
+    if (res.ok) {
+      
+      resolve(lectureJson);
+    }
+    else{
+      reject(Error("Network Error upload"));
+    }
+    
+  });
+}
+
 //Logout **POST** /api/logout
 async function userLogout() {
   return new Promise((resolve, reject) => {
@@ -520,5 +560,6 @@ const API = {
   getStatesMonthly,
   uploadCsv,
   getAllCourses,
+  UpdateLectureList,
 };
 export default API;
