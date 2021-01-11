@@ -79,6 +79,9 @@ if (!function_exists('stats_bookings')) {
 				'bookingsAvg' => floatval($stats['bookingsAvg']),
 				'bookingsStdDev' => sqrt(floatval($stats['bookingsVar'])),
 				'totalBookings' => intval($stats['totalBookings']),
+				'attendancesAvg' => floatval($stats['attendancesAvg']),
+				'attendancesStdDev' => sqrt(floatval($stats['attendancesVar'])),
+				'totalAttendances' => intval($stats['totalAttendances']),
 				'nLectures' => intval($stats['nLectures']),
 			];
 
@@ -86,9 +89,6 @@ if (!function_exists('stats_bookings')) {
 				$data['cancellationsAvg'] = floatval($stats['cancellationsAvg']);
 				$data['cancellationsStdDev'] = sqrt(floatval($stats['cancellationsVar']));
 				$data['totalCancellations'] = intval($stats['totalCancellations']);
-				$data['attendancesAvg'] = floatval($stats['attendancesAvg']);
-				$data['attendancesStdDev'] = sqrt(floatval($stats['attendancesVar']));
-				$data['totalAttendances'] = intval($stats['totalAttendances']);
 			}
 
 			echo json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE);
@@ -105,9 +105,13 @@ if (!function_exists('construct_query_teacher')) {
 		$queryTop = '
 		SELECT
 			courseId as courseId,
-			AVG(totalBookings) as bookingsAvg,
+			SUM(totalBookings)/SUM(nLectures) as bookingsAvg,
 			SUM((totalBookings - bookingsAvg) * (totalBookings - bookingsAvg)) / (COUNT(totalBookings) - 1) as bookingsVar,
 			SUM(totalBookings) as totalBookings,
+				
+			SUM(totalAttendances)/SUM(nLectures) as attendancesAvg,
+			SUM((totalAttendances - attendancesAvg) * (totalAttendances - attendancesAvg)) / (totalAttendances - 1) as attendancesVar,
+			SUM(totalAttendances) as totalAttendances,
 			
 			SUM(nLectures) AS nLectures
 		FROM (
@@ -116,12 +120,16 @@ if (!function_exists('construct_query_teacher')) {
 				SUM(totalBookings) as totalBookings, 
 				AVG(totalBookings) as bookingsAvg, 
 		
+				SUM(totalAttendances) as totalAttendances, 
+				AVG(totalAttendances) as attendancesAvg,
+		
 				COUNT(*) as nLectures
 			FROM (
 				SELECT 
 					lecture_id as lectureId,
 					L.course_id as courseId,
-					COUNT(IFNULL(cancellation_ts, 0)) as totalBookings
+					COUNT(IFNULL(cancellation_ts, 0)) as totalBookings,
+					SUM(attended) as totalAttendances
 				FROM bookings B, lectures L, courses C
 				WHERE B.lecture_id = L.ID
 					AND L.course_id = C.ID
