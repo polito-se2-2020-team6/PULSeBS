@@ -270,7 +270,7 @@ if (!function_exists('list_lectures_by_course')) {
 		try{
 			$startDate = isset($_GET['startDate']) ? (new DateTime($_GET['startDate']))->getTimestamp() : null;
 			$endDate = isset($_GET['endDate']) ? (new DateTime($_GET['endDate']))->getTimestamp() : null;
-			json_encode(array('success' => true) + get_lectures_by_course($courseId, $startDate, $endDate), JSON_INVALID_UTF8_SUBSTITUTE);
+			echo json_encode(array('success' => true) + get_lectures_by_course($courseId, $startDate, $endDate), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
