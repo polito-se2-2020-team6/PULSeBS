@@ -512,5 +512,57 @@ EOC;
 		if (!$stmt->execute()) {
 			throw new PDOException($stmt->errorInfo()[2]);
 		}
+
+		$user_data = $stmt->fetch();
+
+		if (!$user_data) {
+			throw new ErrorException("User not found.");
+		}
+
+		return array(
+			'success' => true,
+			'userId' => intval($user_data['ID']),
+			'type' => intval($user_data['type']),
+			'username' => $user_data['username'],
+			'email' => $user_data['email'],
+			'firstname' => $user_data['firstname'],
+			'lastname' => $user_data['lastname'],
+			'city' => $user_data['city'],
+			'birthday' => $user_data['birthday'],
+			'SSN' => $user_data['SSN'],
+		);
+	}
+}
+
+if (!function_exists("get_user_by_ssn")) {
+	function get_user_by_ssn($ssn) {
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE SSN = :SSN");
+		$stmt->bindValue(":SSN", $ssn, PDO::PARAM_STR);
+
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$user_data = $stmt->fetch();
+
+		if (!$user_data) {
+			throw new ErrorException("User not found.");
+		}
+
+		return array(
+			'success' => true,
+			'userId' => intval($user_data['ID']),
+			'type' => intval($user_data['type']),
+			'username' => $user_data['username'],
+			'email' => $user_data['email'],
+			'firstname' => $user_data['firstname'],
+			'lastname' => $user_data['lastname'],
+			'city' => $user_data['city'],
+			'birthday' => $user_data['birthday'],
+			'SSN' => $user_data['SSN'],
+		);
 	}
 }

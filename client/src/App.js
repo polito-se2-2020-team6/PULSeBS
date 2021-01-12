@@ -5,6 +5,7 @@ import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
 import HistoricalData from "./components/Teacher/HistoricalData";
 import RecordPresence from "./components/Teacher/RecordPresence";
+import UpdateList from "./components/UpdateList";
 import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
@@ -172,6 +173,9 @@ class App extends React.Component {
           </Route>
           <Route path="/support/home">
             <SupportOfficer user={this.state.authUser} />
+          </Route>
+          <Route path="/support/update">
+            <UpdateList user={this.state.authUser} />
           </Route>
           <Route path="/booking-manager/home">
             <UsageMonitor
