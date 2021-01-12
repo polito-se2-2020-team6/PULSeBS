@@ -144,7 +144,7 @@ context("Teacher Page", () => {
       .should("have.text", "Yes, I am")
       .should("be.visible")
       .click();
-
+    // ************* test historical component
     cy.get(".tab-content").should("be.visible");
     cy.get("#historicaldata").click();
     cy.url().should("include", "/teacher/historicaldata");
