@@ -98,11 +98,11 @@ class UpdateList extends Component {
                     <Row id="row1">
                           <Col md={1}></Col>
                           <Col md={1}>
-                            <Button size="sm" variant="outline-dark">Status</Button>
+                            <Button size="sm" variant="outline-dark" id="ButU1">Status</Button>
                             {this.state.online?
-                            <Button variant="outline-success" onClick={() => this.changeOnlineStatus(false)}>Online</Button>
+                            <Button variant="outline-success" id="ButU2" onClick={() => this.changeOnlineStatus(false)}>Online</Button>
                             :
-                            <Button variant="outline-danger" onClick={() => this.changeOnlineStatus(true)}>Presence</Button>
+                            <Button variant="outline-danger" id="ButU3" onClick={() => this.changeOnlineStatus(true)}>Presence</Button>
                             }
                           </Col>
                           <Col md={1}>
@@ -116,7 +116,7 @@ class UpdateList extends Component {
                               </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" className="cell">A.Year</Button>
+                            <Button size="sm" variant="outline-dark" className="cell" id="ButU4">A.Year</Button>
                           </OverlayTrigger>
                       <DropdownButton
                         key="secondary"
@@ -144,7 +144,7 @@ class UpdateList extends Component {
                                 if you select semester you will update all the lectures of the specific semester, "None" means "all the semesters"                              </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" >Semester</Button>
+                            <Button size="sm" variant="outline-dark" id="ButU5">Semester</Button>
                           </OverlayTrigger>
                         <DropdownButton
                         key="secondary"
@@ -176,7 +176,7 @@ class UpdateList extends Component {
                                 </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" >Start date</Button>
+                            <Button size="sm" variant="outline-dark" id="ButU6" >Start date</Button>
                           </OverlayTrigger>
                         </Row>
                         <Row>
@@ -198,7 +198,7 @@ class UpdateList extends Component {
                                 </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" >End date</Button>
+                            <Button size="sm" variant="outline-dark" id="ButU7">End date</Button>
                           </OverlayTrigger>
                         </Row>
                         <Row>
@@ -208,11 +208,11 @@ class UpdateList extends Component {
                         />
                         </Row>
                       </Col>
-                      <Button  onClick={(e) =>  this.changeInsertDate(false)} >Remove date</Button>
+                      <Button  id="ButU8" onClick={(e) =>  this.changeInsertDate(false)} >Remove date</Button>
                       </>
                       :
                       <>
-                      <Button  onClick={(e) =>  this.changeInsertDate(true)} >Insert date</Button>
+                      <Button  id="ButU9" onClick={(e) =>  this.changeInsertDate(true)} >Insert date</Button>
                       </>
                       }
                     </Row>
