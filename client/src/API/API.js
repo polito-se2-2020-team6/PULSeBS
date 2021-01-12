@@ -603,29 +603,6 @@ async function uploadCsv(file, section,start,end) {
       reject(Error("Network Error upload"));
     }
 
-    // do the usual XHR stuff
-    /*
-    var req = new XMLHttpRequest();
-
-    req.open("post", url);
-    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
-    req.onload = function () {
-      if (req.status === 200) {
-        console.log("buono")
-        const response = req.response;
-        let obj = JSON.parse(response);
-        resolve(obj);
-      } else {
-        reject(Error(req.statusText));
-      }
-    };
-    // handle network errors
-    req.onerror = function () {
-      console.log("male")
-      reject(Error("Network Error"));
-    }; // make the request
-    req.send(data);
-    */
   });
   
 }
