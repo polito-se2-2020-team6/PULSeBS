@@ -358,16 +358,10 @@ async function UpdateLectureList(year, semester, start, end, online) {
   let en = end ? `&end_date=${end}` : "";
 
   years[0]=year;
-  console.log("anno")
-  console.log(years);
-  console.log("semestre")
-  console.log(semesters);
   return new Promise(async function  (resolve, reject) {
     // do the usual XHR stuff
-    
     let url = baseURL + `/lectures/online`;
     let data = `value=${online}`+y+s+st+en;
-    console.log(data);
     const res= await fetch(url, {
       method: 'PATCH',
       body: data
@@ -491,10 +485,6 @@ async function uploadCsv(file, section,start,end) {
         data.append("teacher_file", file, "teacher_file.csv");
         break;
       case "Enrollments":
-        url = baseURL + `/enrollments/upload`;
-        data.append("enrollment_file", file, "enrollment_file.csv");
-        break;
-      case "Classes":
         url = baseURL + `/enrollments/upload`;
         data.append("enrollment_file", file, "enrollment_file.csv");
         break;
