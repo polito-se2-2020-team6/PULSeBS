@@ -1,4 +1,6 @@
 import Lecture from "./Lecture";
+import Course from './Course';
+import LectureSO from './LectureSO'
 const baseURL = "/API/REST.php/api";
 
 async function getAllLectures(userId) {
@@ -344,6 +346,46 @@ async function turnLecture(lectureId, online) {
   });
 }
 
+async function UpdateLectureList(year, semester, start, end, online) {
+  let years=[]
+  /*years[0]=2021;
+  years[1]=2022;
+  */
+  years[0]=year
+  let semesters=[]
+  semesters[0]=semester
+  let y = year ? `&year[]=${years}` : "";
+  let s = semester ? `&semester[]=${semesters}` : "";
+  let st = start ? `&start_date=${start}` : "";
+  let en = end ? `&end_date=${end}` : "";
+
+  years[0]=year;
+  console.log("anno")
+  console.log(years);
+  console.log("semestre")
+  console.log(semesters);
+  return new Promise(async function  (resolve, reject) {
+    // do the usual XHR stuff
+    
+    let url = baseURL + `/lectures/online`;
+    let data = `value=${online}`+y+s+st+en;
+    console.log(data);
+    const res= await fetch(url, {
+      method: 'PATCH',
+      body: data
+    })
+    const lectureJson = await res.json();
+    if (res.ok) {
+      
+      resolve(lectureJson);
+    }
+    else{
+      reject(Error("Network Error upload"));
+    }
+    
+  });
+}
+
 //Logout **POST** /api/logout
 async function userLogout() {
   return new Promise((resolve, reject) => {
@@ -424,6 +466,93 @@ async function getAllCourses() {
   }
 }
 
+//get all courses for support officer
+async function getAllCoursesSO() {
+  const url = "/courses";
+  const response = await fetch(baseURL + url);
+  const courses = await response.json();
+  const final = courses.courses.map(
+    (c) =>
+      new Course(
+        c.ID,
+        c.code,
+        c.name,
+        c.teaceher_id,
+        c.year,
+        c.semester,
+        c.teacherFirstName,
+        c.teacherLastName,
+        c.teacherEmail,
+        c.teacherId
+      )
+  );
+  if (response.ok) {
+    return final;
+  } else {
+    let err = { status: response.status, errObj: courses };
+    throw err; //An object with error coming from the server
+  }
+}
+
+//Edit a course Schedule
+async function editSchedule(courseId, data) {
+  // // return a new promise.
+  // return new Promise(function (resolve, reject) {
+  //   // do the usual XHR stuff
+  //   var req = new XMLHttpRequest();
+  //   let url = baseURL + `courses/${courseId}/schedule`;
+  //   let data = `lectureId=${lectureId}`;
+  //   req.open("post", url);
+  //   //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+  //   req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  //   req.onload = function () {
+  //     if (req.status === 200) {
+  //       const response = req.response;
+  //       let obj = JSON.parse(response);
+  //       resolve(obj);
+  //     } else {
+  //       reject(Error(req.statusText));
+  //     }
+  //   };
+  //   // handle network errors
+  //   req.onerror = function () {
+  //     reject(Error("Network Error"));
+  //   }; // make the request
+  //   req.send(data);
+  // });
+}
+
+
+//get all lectures of a specific course for support officer
+async function getAllLecturesSO(courseId) {
+  const url = `/courses/${courseId}/lectures`;
+  const response = await fetch(baseURL + url);
+  const lectures = await response.json();
+ 
+  const final = lectures.lectures.map(
+    (l) =>
+      new LectureSO(
+          l.lectureId,
+          lectures.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          200,
+          100,
+          lectures.courseName,
+          0,
+          'unknown'
+      )
+  );
+  if (response.ok) {
+    return final;
+  } else {
+    let err = { status: response.status, errObj: lectures };
+    throw err; //An object with error coming from the server
+  }
+}
+
 async function uploadCsv(file, section,start,end) {
   
   return new Promise(async function (resolve, reject) {
@@ -474,29 +603,6 @@ async function uploadCsv(file, section,start,end) {
       reject(Error("Network Error upload"));
     }
 
-    // do the usual XHR stuff
-    /*
-    var req = new XMLHttpRequest();
-
-    req.open("post", url);
-    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
-    req.onload = function () {
-      if (req.status === 200) {
-        console.log("buono")
-        const response = req.response;
-        let obj = JSON.parse(response);
-        resolve(obj);
-      } else {
-        reject(Error(req.statusText));
-      }
-    };
-    // handle network errors
-    req.onerror = function () {
-      console.log("male")
-      reject(Error("Network Error"));
-    }; // make the request
-    req.send(data);
-    */
   });
   
 }
@@ -520,5 +626,9 @@ const API = {
   getStatesMonthly,
   uploadCsv,
   getAllCourses,
+  UpdateLectureList,
+  getAllCoursesSO,
+  getAllLecturesSO,
+  editSchedule
 };
 export default API;

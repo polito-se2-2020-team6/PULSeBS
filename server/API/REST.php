@@ -755,6 +755,85 @@ if (!function_exists('cancel_booking')) {
 	}
 }
 
+if (!function_exists('set_mass_lecture_online_status')) {
+	function set_mass_lecture_online_status($vars) {
+		global $_PATCH, $server_default_timezone;
+		$status = $_PATCH['value'] == 'true' ? LECTURE_REMOTE : ~LECTURE_REMOTE;
+		$years = isset($_PATCH["year"]) ? $_PATCH["year"] : array();
+		$semesters = isset($_PATCH["semester"]) ? $_PATCH["semester"] : array();
+		$start_time = isset($_PATCH["start_date"]) ? new DateTime($_PATCH["start_date"], new DateTimeZone($server_default_timezone)) : new DateTime();
+		$end_time = isset($_PATCH["end_date"]) ? new DateTime($_PATCH["end_date"], new DateTimeZone($server_default_timezone)) : null;
+		try {
+			if (!isset($_SESSION['user_id'])) {
+				throw new ErrorException('Auth Needed');
+			}
+
+			$pdo = new PDO('sqlite:../db.sqlite');
+
+			// Check user exists and is teacher
+			$user = get_myself();
+			if($user["type"] != USER_TYPE_SPRT_OFCR){
+				throw new ErrorException('Wrong logged user type');
+			}
+
+			//Prepare the query
+			$sql = "UPDATE lectures ";
+
+			// Set lecture status
+			if ($status == LECTURE_REMOTE) {
+				$sql .= "SET settings = settings | :online ";
+			} else {
+				$sql .= "SET settings = settings & :online ";
+			}
+
+			$sql .= " WHERE start_ts >= :startTime";
+
+			if(!empty($years) || !(empty($semesters))){
+				$sql .= " AND course_id IN (SELECT ID FROM courses WHERE ";
+				//parse because i cannot bind value before prepare
+				//years
+				$conditions = array_map(function($el){
+					if(!is_numeric($el)) return false;
+					return "year = ".intval($el);
+				}, $years);
+				//remove some falses;
+				$conditions = array_filter($conditions);
+				$year_subsql = implode(" OR ", $conditions);
+				//semesters
+				$conditions2 = array_map(function($el){
+					if(!is_numeric($el)) return false;
+					return "semester = ".intval($el);
+				}, $semesters);
+				$conditions2 = array_filter($conditions2);
+				$semester_subsql = implode(" OR ", $conditions2);
+
+				if($semester_subsql != "" && $year_subsql != ""){
+					$sql .= "(".$year_subsql.") AND (".$semester_subsql.")";
+				}
+				else{
+					$sql .= $year_subsql.$semester_subsql;
+				}
+
+				$sql .= ")";
+			}
+
+			if(null !== $end_time){
+				$sql .= " AND start_ts <= ".$end_time->getTimestamp();
+			}
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
+			$stmt->bindValue(':startTime', $start_time->getTimestamp(), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			// Success
+			echo json_encode(array('success' => true, "affectedRecords" => $stmt->rowCount()), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
+
 if (!function_exists('set_lecture_online_status')) {
 	function set_lecture_online_status($vars) {
 		global $_PATCH;
@@ -898,6 +977,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
 	$r->addRoute('PATCH', API_PATH . '/lectures/{lectureId:\d+}/online', ['set_lecture_online_status', NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . '/lectures/online', ['set_mass_lecture_online_status', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 

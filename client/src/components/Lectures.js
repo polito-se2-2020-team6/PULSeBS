@@ -71,7 +71,7 @@ class LectureList extends Component {
             <h2 className="mt-5 ml-">Available Lectures</h2>
             <table
               id="avail-lecture"
-              className="font-size: 22px; table table-striped table-hover text-center"
+              className=" table table-striped table-hover text-center"
             >
               <thead>
                 <tr className="">
@@ -126,7 +126,7 @@ class LectureList extends Component {
             </table>
 
             <h2 className="mt-5 ml-">Booked Lectures</h2>
-            <table id="booked" className="table table-hover text-center">
+            <table id="booked"  className="table table-hover text-center ">
               <thead>
                 <tr className="">
                   <th>Course Name</th>

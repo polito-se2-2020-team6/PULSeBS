@@ -4,6 +4,7 @@ import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
 import HistoricalData from "./components/Teacher/HistoricalData";
+import UpdateList from "./components/UpdateList";
 import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
@@ -14,6 +15,7 @@ import { ROLES } from "./data/consts";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SupportOfficer from "./components/SupportOfficer";
+import ScheduleEdit from './components/ScheduleEdit'
 
 class App extends React.Component {
   constructor(props) {
@@ -171,6 +173,12 @@ class App extends React.Component {
           </Route>
           <Route path="/support/home">
             <SupportOfficer user={this.state.authUser} />
+          </Route>
+          <Route path="/support/update">
+            <UpdateList user={this.state.authUser} />
+          </Route>
+          <Route path="/support/schedule">
+            <ScheduleEdit user={this.state.authUser} />
           </Route>
           <Route path="/booking-manager/home">
             <UsageMonitor
