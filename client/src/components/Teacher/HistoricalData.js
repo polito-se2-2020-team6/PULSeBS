@@ -154,8 +154,8 @@ class HistoricalData extends React.Component {
             : "";
         let l1=l? l+"  -  "+ moment(this.state.totalLectures.find((x) => x.lectureId === idLecture).startTS).format("DD/MM/YYYY HH:mm"):"";
         data.labels[i] = m || w || l;
-        data.datasets[0].data[i] = this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendanceAvg;
-        tableData[i] = { labels: m || w || l1, data: this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendanceAvg };
+        data.datasets[0].data[i] = this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendancesAvg;
+        tableData[i] = { labels: m || w || l1, data: this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendancesAvg };
 
         if (
           this.state.detailLevel === "Week" ||
