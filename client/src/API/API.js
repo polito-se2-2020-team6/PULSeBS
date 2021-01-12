@@ -1,4 +1,6 @@
 import Lecture from "./Lecture";
+import Course from './Course';
+import LectureSO from './LectureSO'
 const baseURL = "/API/REST.php/api";
 
 async function getAllLectures(userId) {
@@ -464,6 +466,65 @@ async function getAllCourses() {
   }
 }
 
+//get all courses for support officer
+async function getAllCoursesSO() {
+  const url = "/courses";
+  const response = await fetch(baseURL + url);
+  const courses = await response.json();
+  const final = courses.courses.map(
+    (c) =>
+      new Course(
+        c.ID,
+        c.code,
+        c.name,
+        c.teaceher_id,
+        c.year,
+        c.semester,
+        c.teacherFirstName,
+        c.teacherLastName,
+        c.teacherEmail,
+        c.teacherId
+      )
+  );
+  if (response.ok) {
+    return final;
+  } else {
+    let err = { status: response.status, errObj: courses };
+    throw err; //An object with error coming from the server
+  }
+}
+
+
+//get all lectures of a specific course for support officer
+async function getAllLecturesSO(courseId) {
+  const url = `/courses/${courseId}/lectures`;
+  const response = await fetch(baseURL + url);
+  const lectures = await response.json();
+ 
+  const final = lectures.lectures.map(
+    (l) =>
+      new LectureSO(
+          l.lectureId,
+          lectures.courseId,
+          l.startTS,
+          l.endTS,
+          l.online,
+          l.roomName,
+          200,
+          100,
+          lectures.courseName,
+          0,
+          'unknown'
+      )
+  );
+  if (response.ok) {
+    return final;
+  } else {
+    let err = { status: response.status, errObj: lectures };
+    throw err; //An object with error coming from the server
+  }
+}
+
 async function uploadCsv(file, section,start,end) {
   
   return new Promise(async function (resolve, reject) {
@@ -561,5 +622,7 @@ const API = {
   uploadCsv,
   getAllCourses,
   UpdateLectureList,
+  getAllCoursesSO,
+  getAllLecturesSO
 };
 export default API;

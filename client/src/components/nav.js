@@ -74,6 +74,7 @@ class Navigation extends Component {
                             Upload CSV
                           </NavLink>
                         </NavItem>
+                        
                       )}
                       {context.authUser.type === ROLES.SUPPORT_OFFICER && (
                         <NavItem>
@@ -82,7 +83,13 @@ class Navigation extends Component {
                           </NavLink>
                         </NavItem>
                       )}
-                      
+                       {context.authUser.type === ROLES.SUPPORT_OFFICER && (
+                        <NavItem>
+                          <NavLink className="nav-link" id="supportschedule" to="/support/schedule">
+                            Edit Schedule
+                          </NavLink>
+                        </NavItem>
+                      )}
 
                       <NavItem className="ml-auto">
                         <NavLink
