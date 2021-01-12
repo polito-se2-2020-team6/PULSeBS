@@ -10,6 +10,7 @@ require_once "upload_functions/UploadTeachers.php";
 require_once "upload_functions/UploadSchedule.php";
 require_once "./GetStudentInfo.php";
 require_once "./GetContactTracingReport.php";
+require_once "./RecordAttendace.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -414,7 +415,7 @@ if (!function_exists('booked_students')) {
 
 
 			// Get students
-			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
+			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname, attended
 								   FROM users U, bookings B
 								   WHERE U.ID = B.user_id 
 								   		AND lecture_id = :lectureId
@@ -436,7 +437,8 @@ if (!function_exists('booked_students')) {
 					'studentId' => $studentId,
 					'email' => $s['email'],
 					'studentName' => $s['lastname'] . ' ' . $s['firstname'],
-					'inWaitingList' => in_array($studentId, $waiting_list)
+					'inWaitingList' => in_array($studentId, $waiting_list),
+					'attended' => boolval($s['attended'])
 				);
 
 				array_push($students, $student);
@@ -788,6 +790,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	$r->addRoute('GET', API_PATH . '/students/{code:.+}/{field:id|ssn}', ['get_student_info', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/CTReport/{format:...}', ['get_contact_report', NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . '/lectures/{lectureId:\d+}/students/{studentId:\d+}', ['record_attendance', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere
