@@ -106,7 +106,7 @@ class UpdateList extends Component {
                       <Row>-if you select semester you will update all the lectures of the specific semester, if "None" is selected means "all the semesters"</Row>
                       <Row>-if start date is selected you will update all the lectures after the specific date, if there is not a start date it automatically select the current date</Row>
                       <Row>-if end date is selected you will update all the lectures before the specific date</Row>
-                      <Row>-you can combine the four parameters in orther to obtain what ever you want</Row>
+                      <Row>-you can combine the four parameters in order to obtain what ever you want</Row>
                       
                       
                       
