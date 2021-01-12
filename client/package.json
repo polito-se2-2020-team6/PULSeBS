@@ -25,7 +25,7 @@
     "react_datepicker": "^1.0.0",
     "web-vitals": "^0.2.4"
   },
-  "proxy": "http://localhost:80/sfteng/PULSeBS/server/",
+  "proxy": "http://pbs-back:80",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
