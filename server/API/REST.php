@@ -266,89 +266,122 @@ if (!function_exists('list_lectures')) {
 if (!function_exists('list_lectures_by_course')) {
 
 	function list_lectures_by_course($vars) {
-
 		$courseId = intval($vars['courseId']);
-		$pdo = new PDO("sqlite:../db.sqlite");
-
-		// Get type of user
-		$userData = get_myself();
-
-		if (!$userData) {
-			// User doesn't exist, but is logged in ❓❓❓
-			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
-			return;
+		try{
+			$startDate = isset($_GET['startDate']) ? (new DateTime($_GET['startDate']))->getTimestamp() : null;
+			$endDate = isset($_GET['endDate']) ? (new DateTime($_GET['endDate']))->getTimestamp() : null;
+			json_encode(array('success' => true) + get_lectures_by_course($courseId, $startDate, $endDate), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
+	}
+}
 
-		$userType = intval($userData['type']);
+if (!function_exists("update_lectures_schedule_by_course")){
+	function update_lectures_schedule_by_course($vars){
+		global $_PATCH;
+		$courseId = intval($vars['courseId']);
+		try{
+			$pdo = new PDO("sqlite:../db.sqlite");
 
-		if($userType != USER_TYPE_SPRT_OFCR){
-			throw new ErrorException("Wrong permissions");
+			// Get type of user
+			$userData = get_myself();
+
+			if (!$userData) {
+				// User doesn't exist, but is logged in ❓❓❓
+				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
+				return;
+			}
+
+			$userType = intval($userData['type']);
+
+			if($userType != USER_TYPE_SPRT_OFCR){
+				throw new ErrorException("Wrong permissions");
+			}
+			//retrieve the weekdays, formatting as sqlite strftime expects it (0 = sunday, 6 = saturday)
+			$original_weekday = (intval($_PATCH["originalWeekday"]) + 1) % 7;
+			$new_weekday = (intval($_PATCH["newWeekday"]) + 1) % 7;
+			$difference = $new_weekday - $original_weekday;
+			$sign = $difference >= 0 ? "+" : "";
+
+			$range_conditions = "";
+			// Add optional ranges to query
+			if (isset($_PATCH['startDateTime'])) {
+				$startDateTime = new DateTime($_PATCH["startDateTime"]);
+				if($startDateTime < new DateTime()){
+					throw new ErrorException("startDateTime cannot be in the past");
+				}
+			}
+			else{
+				$startDateTime = new DateTime();
+			}
+			$range_conditions .= ' AND start_ts >= '.$startDateTime->getTimestamp();
+			if (isset($_PATCH['endDateTime'])) {
+				$endDateTime = new DateTime($_PATCH["endDateTime"]);
+				$range_conditions .= ' AND start_ts <= '.$endDateTime->getTimestamp();
+				if($startDateTime >= $endDateTime){
+					throw new ErrorException("endDateTime cannot be before startDateTime");
+				}
+			}
+			else{
+				$endDateTime = null;
+			}
+
+			if(!isset($_PATCH["newTime"])){
+				$sql = "UPDATE lectures SET start_ts = strftime('%s', start_ts, 'unixepoch', '".$sign.$difference." days'),end_ts = strftime('%s', end_ts, 'unixepoch', '".$sign.$difference." days') WHERE strftime('%w', start_ts, 'unixepoch') = :originalWeekday AND course_id=:courseId ".$range_conditions;
+
+				$stmt = $pdo->prepare($sql);
+				$stmt->bindValue(":courseId", $courseId, PDO::PARAM_INT);
+				$stmt->bindValue(":originalWeekday", $original_weekday, PDO::PARAM_STR);
+
+				if (!$stmt->execute()) {
+					throw new PDOException($stmt->errorInfo()[2]);
+				}
+
+				$affectedRows = $stmt->rowCount();
+			}
+			else{
+				$startDateString = $startDateTime->format("Y-m-d H:i");
+				$endDateString = $endDateTime == null ? null : $endDateTime->format("Y-m-d H:i");
+				$lectures = get_lectures_by_course($courseId, $startDateString, $endDateString);
+				$timeDatas = explode(":", $_PATCH["newTime"]);
+				if(count($timeDatas) != 2 || !is_numeric($timeDatas[0]) || !is_numeric($timeDatas[1])){
+					throw new ErrorException("Wrong time format, should be hh:mm");
+				}
+				$hh = intval($timeDatas[0]);
+				$mm = intval($timeDatas[1]);
+
+				$pdo->beginTransaction();
+
+				$affectedRows = 0;
+				foreach($lectures["lectures"] as $lecture){
+					$cur_start_time = new DateTime('@'.$lecture["startTS"]);
+					if(intval($cur_start_time->format("w")) != $original_weekday) continue;
+					$cur_end_time = new DateTime('@'.$lecture["endTS"]);
+					$lecture_duration = $cur_end_time->getTimestamp() - $cur_start_time->getTimestamp();
+
+					$cur_start_time->modify($sign.$difference." days");
+					$cur_start_time->setTime($hh, $mm);
+					$cur_end_time->modify($sign.$difference." days");
+					$cur_end_time->setTime($hh, $mm);
+					$cur_end_time->modify("+".$lecture_duration." seconds");
+
+					$stmt = $pdo->prepare("UPDATE lectures SET start_ts = ".$cur_start_time->getTimestamp().", end_ts = ".$cur_end_time->getTimestamp()." WHERE ID = ".$lecture["lectureId"].$range_conditions);
+
+					if(!$stmt->execute()){
+						$pdo->rollback();
+						throw new PDOException($pdo->errorInfo()[2]);
+					}
+					$affectedRows += $stmt->rowCount();
+				}
+
+				$pdo->commit();
+			}
+
+			echo json_encode(array('success' => true, 'affectedRow' => $affectedRows), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()), JSON_INVALID_UTF8_SUBSTITUTE);
 		}
-
-		$query = 'SELECT L.*, C.name AS courseName, C.code AS courseCode, R.name AS roomName FROM lectures AS L, rooms AS R, (SELECT name,code FROM courses WHERE ID = :courseId) AS C WHERE L.room_id = R.ID AND L.course_id = :courseId';
-
-		// Filter out cancelled lectures
-		$query .= ' AND settings & :cancelled = 0';
-
-		// Add optional ranges to query
-		if (isset($_GET['startDate'])) {
-			$query .= ' AND start_ts >= :startDate';
-		}
-		if (isset($_GET['endDate'])) {
-			$query .= ' AND start_ts <= :endDate';
-		}
-
-		// Get list of lectures, ordered
-		$query .= ' ORDER BY start_ts, ID ASC';
-		$stmt = $pdo->prepare($query);
-		$stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
-		$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
-
-		if (isset($_GET['startDate'])) {
-			$Ymd = explode('-', $_GET['startDate']);
-			$ts = mktime(0, 0, 0, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
-			$stmt->bindValue(':startDate', $ts, PDO::PARAM_INT);
-		}
-		if (isset($_GET['endDate'])) {
-			$Ymd = explode('-', $_GET['endDate']);
-			$ts = mktime(59, 59, 23, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
-			$stmt->bindValue(':endDate', $ts, PDO::PARAM_INT);
-		}
-
-		if (!$stmt->execute()) {
-			throw new PDOException($stmt->errorInfo()[2]);
-		}
-
-		$lectures = array();
-		$l = $stmt->fetch();
-		if(!$l){
-			$ret = array(
-				'courseId' => null,
-				'courseCode' => null,
-				'courseName' => null
-			);
-		}
-		else{
-			$ret = array(
-				'courseId' => intval($l['course_id']),
-				'courseCode' => $l['courseCode'],
-				'courseName' => $l['courseName'],
-			);
-			do{
-				$lecture = array(
-					'lectureId' => intval($l['0']),
-					'startTS' => intval($l['start_ts']),
-					'endTS' => intval($l['end_ts']),
-					'online' => boolval($l['settings'] & LECTURE_REMOTE),
-					'roomName' => $l['roomName']
-				);
-
-				array_push($lectures, $lecture);
-			} while ($l = $stmt->fetch());
-		}
-
-		// Send stuff
-		echo json_encode(array('success' => true, 'lectures' => $lectures) + $ret, JSON_INVALID_UTF8_SUBSTITUTE);
 	}
 }
 
@@ -855,7 +888,8 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 
 	/* courses routes */
 	$r->addRoute('GET', API_PATH . "/courses", "print_courses");
-	$r->addRoute('GET', API_PATH . "/courses/{courseId:\d+}/lectures", "list_lectures_by_course");
+	$r->addRoute('GET', API_PATH . "/courses/{courseId:\d+}/lectures", ["list_lectures_by_course", NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . "/courses/{courseId:\d+}/schedule", ["update_lectures_schedule_by_course", NEED_AUTH]);
 
 	/* users route */
 	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);

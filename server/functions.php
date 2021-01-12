@@ -274,3 +274,84 @@ if (!function_exists("get_user")) {
 		}
 	}
 }
+
+if(!function_exists("get_lectures_by_course")){
+	function get_lectures_by_course($courseId, $startTs = null, $endTs = null){
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		// Get type of user
+		$userData = get_myself();
+
+		if (!$userData) {
+			// User doesn't exist, but is logged in ❓❓❓
+			return;
+		}
+
+		$userType = intval($userData['type']);
+
+		if($userType != USER_TYPE_SPRT_OFCR){
+			throw new ErrorException("Wrong permissions");
+		}
+
+		$query = 'SELECT L.*, C.name AS courseName, C.code AS courseCode, R.name AS roomName FROM lectures AS L, rooms AS R, (SELECT name,code FROM courses WHERE ID = :courseId) AS C WHERE L.room_id = R.ID AND L.course_id = :courseId';
+
+		// Filter out cancelled lectures
+		$query .= ' AND settings & :cancelled = 0';
+
+		// Add optional ranges to query
+		if (null !== $startTs) {
+			$query .= ' AND start_ts >= :startDate';
+		}
+		if (null !== $endTs) {
+			$query .= ' AND start_ts <= :endDate';
+		}
+
+		// Get list of lectures, ordered
+		$query .= ' ORDER BY start_ts, ID ASC';
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
+		$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
+
+		if ($startTs !== null) {
+			$stmt->bindValue(':startDate', $startTs, PDO::PARAM_INT);
+		}
+		if ($endTs !== null) {
+			$stmt->bindValue(':endDate', $endTs, PDO::PARAM_INT);
+		}
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$lectures = array();
+		$l = $stmt->fetch();
+		if(!$l){
+			$ret = array(
+				'courseId' => null,
+				'courseCode' => null,
+				'courseName' => null
+			);
+		}
+		else{
+			$ret = array(
+				'courseId' => intval($l['course_id']),
+				'courseCode' => $l['courseCode'],
+				'courseName' => $l['courseName'],
+			);
+			do{
+				$lecture = array(
+					'lectureId' => intval($l['0']),
+					'startTS' => intval($l['start_ts']),
+					'endTS' => intval($l['end_ts']),
+					'online' => boolval($l['settings'] & LECTURE_REMOTE),
+					'roomName' => $l['roomName']
+				);
+
+				array_push($lectures, $lecture);
+			} while ($l = $stmt->fetch());
+		}
+
+		// Send stuff
+		return array('lectures' => $lectures) + $ret;
+	}
+}
