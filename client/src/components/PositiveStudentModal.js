@@ -9,7 +9,7 @@ const theme = createMuiTheme({
   typography: {
     fontSize: 13,
     allVariants: {
-      color: "#1e4f80",
+      // color: "#1e4f80",
     },
   },
 });
