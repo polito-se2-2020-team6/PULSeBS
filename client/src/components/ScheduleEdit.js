@@ -43,17 +43,17 @@ class ScheduleEdit extends Component {
           <>
             {context.authUser ? (
               <>
-                <h1 className="m-4">Edit Schedule of Courses</h1>
-                <Accordion>
+                <h1 id="title" className="m-4">Edit Schedule of Courses</h1>
+                <Accordion id="courses-list">
                   {/* <Tabs id="uncontrolled-tab-example"> */}
                   {this.state.courses.map((course) => {
                     return (
-                      <Card>
-                        <Accordion.Toggle className="courseTitle" as={Card.Header} eventKey={course.id}>
+                      <Card id="course-container">
+                        <Accordion.Toggle id="course-title" className="courseTitle" as={Card.Header} eventKey={course.id}>
                           Course Name : {course.name} , Course Code : {course.code}
                         </Accordion.Toggle>
-                        <Accordion.Collapse eventKey={course.id}>
-                          <Card.Body>
+                        <Accordion.Collapse id="course-container" eventKey={course.id}>
+                          <Card.Body id="lectures-container">
                           <EditLectures
                           courseId={course.id}
                           courseName={course.name}

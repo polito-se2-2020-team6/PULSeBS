@@ -29,7 +29,7 @@ class EditLectures extends Component {
   render() {
     return (
       <>
-        <Table className="mt-2" striped bordered hover>
+        <Table id="lectures-table" className="mt-2" striped bordered hover>
           <thead>
             <tr>
               <th>#</th>
@@ -65,13 +65,13 @@ function TableRow(props) {
       {props.lecture.online ? (
         <td>
           <h4>
-            <Badge variant="danger">{props.lecture.roomName}</Badge>
+            <Badge id="online-badge" variant="danger">{props.lecture.roomName}</Badge>
           </h4>
         </td>
       ) : (
         <td>
           <h4>
-            <Badge variant="success">{props.lecture.roomName}</Badge>
+            <Badge id="presence-badge" variant="success">{props.lecture.roomName}</Badge>
           </h4>
         </td>
       )}
@@ -90,19 +90,20 @@ function TableRow(props) {
 function ShowModal(props) {
   return (
     <>
-      <Button variant="primary" onClick={() => props.showDialog(true)}>
+      <Button id="edit-lecture" variant="primary" onClick={() => props.showDialog(true)}>
         Edit Lecture
       </Button>
 
       <Modal
+      id="edit-window"
         key={props.id}
         show={props.show}
         onHide={() => props.showDialog(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Edit Schedule</Modal.Title>
+          <Modal.Title id="edit-window-title" >Edit Schedule</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body id="edit-window-body">
           <Form.Group controlId="formGridState">
             <Form.Label>Day</Form.Label>
             <Form.Control as="select" defaultValue="Choose...">
@@ -129,10 +130,10 @@ function ShowModal(props) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => props.showDialog(false)}>
+          <Button variant="secondary" id="edit-window-close" onClick={() => props.showDialog(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => props.showDialog(false)}>
+          <Button variant="primary" id="edit-window-save" onClick={() => props.showDialog(false)}>
             Save Changes
           </Button>
         </Modal.Footer>
