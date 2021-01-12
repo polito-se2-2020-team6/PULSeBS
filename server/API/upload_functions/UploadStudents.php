@@ -11,7 +11,7 @@ define("SSN", "SSN");
 define('DEFAULT_STUDENT_PASSWORD', "abc123");
 
 if (!function_exists("upload_students")) {
-	function upload_students($vars) {
+	function upload_students() {
 		try {
 			$logged_user = get_myself();
 
@@ -19,28 +19,7 @@ if (!function_exists("upload_students")) {
 				throw new ErrorException("Wrong permissions");
 			}
 
-
-			// Undefined | Multiple Files | $_FILES Corruption Attack
-			// If this request falls under any of them, treat it invalid.
-			if (
-				!isset($_FILES['student_file']['error']) ||
-				is_array($_FILES['student_file']['error'])
-			) {
-				throw new RuntimeException('Invalid parameters.');
-			}
-
-			// Check $_FILES['student_file']['error'] value.
-			switch ($_FILES['student_file']['error']) {
-				case UPLOAD_ERR_OK:
-					break;
-				case UPLOAD_ERR_NO_FILE:
-					throw new RuntimeException('No file sent.');
-				case UPLOAD_ERR_INI_SIZE:
-				case UPLOAD_ERR_FORM_SIZE:
-					throw new RuntimeException('Exceeded filesize limit.');
-				default:
-					throw new RuntimeException('Unknown errors.');
-			}
+			check_file_uploaded('student_file');
 
 			$csv_file = array_map('str_getcsv', str_getcsv(file_get_contents($_FILES['student_file']['tmp_name']), "\n"));
 

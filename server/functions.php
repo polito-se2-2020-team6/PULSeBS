@@ -12,6 +12,8 @@ define("USER_TYPE_SPRT_OFCR", 3);
 
 define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
+
+define('DB_PATH', 'sqlite:../db.sqlite');
 /* Utilities */
 
 if (!function_exists("check_login")) {
@@ -21,7 +23,7 @@ if (!function_exists("check_login")) {
 	 * @return bool true if is logged, false otherwise
 	 */
 	function check_login() {
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		if (!isset($_SESSION["user_id"]) || !isset($_SESSION["nonce"])) {
 			return false;
@@ -44,7 +46,7 @@ if (!function_exists("check_login")) {
 
 if (!function_exists("get_seats_by_lecture")) {
 	function get_seats_by_lecture($lecture_id) {
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		//get the seats number
 		$stmt = $pdo->prepare("SELECT seats FROM lectures, rooms WHERE lectures.room_id = rooms.ID AND lectures.ID = :lectureId");
@@ -69,7 +71,7 @@ if (!function_exists("check_user_in_waiting_list")) {
 		$seats = get_seats_by_lecture($lecture_id);
 		$user_id = $user_id === null ? $_SESSION["user_id"] : $user_id;
 
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		$stmt = $pdo->prepare("SELECT user_id FROM (
 				SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT :seats
@@ -92,7 +94,7 @@ if (!function_exists("get_waiting_list_by_lecture")) {
 	function get_waiting_list_by_lecture($lecture_id, $limit = -1) {
 		$seats = get_seats_by_lecture($lecture_id);
 
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		$stmt = $pdo->prepare("SELECT user_id FROM bookings WHERE lecture_id = :lectureId AND cancellation_ts IS NULL ORDER BY booking_ts ASC LIMIT :limit OFFSET :seats");
 
@@ -106,15 +108,18 @@ if (!function_exists("get_waiting_list_by_lecture")) {
 
 		$waitlist = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
 
-		if ($waitlist === false) $waitlist = array();
-		else if (!is_array($waitlist)) $waitlist = array($waitlist);
+		if ($waitlist === false) {
+			$waitlist = array();
+		} else if (!is_array($waitlist)) {
+			$waitlist = array($waitlist);
+		}
 		return $waitlist;
 	}
 }
 
 if (!function_exists('get_list_of_teachers')) {
 	function get_list_of_teachers() {
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		$stmt = $pdo->prepare('SELECT ID FROM users WHERE type = :teacher');
 		$stmt->bindValue(':teacher', USER_TYPE_TEACHER, PDO::PARAM_INT);
@@ -137,7 +142,7 @@ if (!function_exists('get_list_of_teachers')) {
 
 if (!function_exists('get_list_of_students')) {
 	function get_list_of_students() {
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		$stmt = $pdo->prepare('SELECT ID FROM users WHERE type = :student');
 		$stmt->bindValue(':student', USER_TYPE_STUDENT, PDO::PARAM_INT);
@@ -160,7 +165,7 @@ if (!function_exists('get_list_of_students')) {
 
 if (!function_exists('get_list_of_course_codes')) {
 	function get_list_of_course_codes() {
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		$stmt = $pdo->prepare('SELECT ID, code FROM courses');
 
@@ -186,7 +191,7 @@ if (!function_exists('get_list_of_course_codes')) {
 
 if (!function_exists('get_list_of_rooms')) {
 	function get_list_of_rooms() {
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		$stmt = $pdo->prepare('SELECT ID FROM rooms');
 
@@ -213,7 +218,7 @@ if (!function_exists("get_myself")) {
 		}
 
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+			$pdo = new PDO(DB_PATH);
 
 			$stmt = $pdo->prepare("SELECT * FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $_SESSION["user_id"], PDO::PARAM_INT);
@@ -245,7 +250,7 @@ if (!function_exists("get_myself")) {
 if (!function_exists("get_user")) {
 	function get_user($id) {
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+			$pdo = new PDO(DB_PATH);
 
 			$stmt = $pdo->prepare("SELECT ID, type, username, email, firstname, lastname, city, birthday, SSN FROM users WHERE ID = :userId");
 			$stmt->bindValue(":userId", $id, PDO::PARAM_INT);
@@ -271,6 +276,33 @@ if (!function_exists("get_user")) {
 			);
 		} catch (Exception $e) {
 			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
+
+
+if (!function_exists('check_file_uploaded')) {
+	function check_file_uploaded($filename) {
+		// Undefined | Multiple Files | $_FILES Corruption Attack
+		// If this request falls under any of them, treat it invalid.
+		if (
+			!isset($_FILES[$filename]['error']) ||
+			is_array($_FILES[$filename]['error'])
+		) {
+			throw new RuntimeException('Invalid parameters.');
+		}
+
+		// Check $_FILES[$filename]['error'] value.
+		switch ($_FILES[$filename]['error']) {
+			case UPLOAD_ERR_OK:
+				break;
+			case UPLOAD_ERR_NO_FILE:
+				throw new RuntimeException('No file sent.');
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				throw new RuntimeException('Exceeded filesize limit.');
+			default:
+				throw new RuntimeException('Unknown errors.');
 		}
 	}
 }

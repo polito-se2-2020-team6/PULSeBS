@@ -2,26 +2,14 @@
 
 if (!function_exists('stats_bookings')) {
 
-	function stats_bookings($vars) {
+	function stats_bookings() {
 
 		// Get id of user
 		$userId = intval($_SESSION['user_id']);
 
 		try {
-			$pdo = new PDO('sqlite:../db.sqlite');
 
-			// Check user is a teacher
-			$stmt = $pdo->prepare('SELECT *
-								   FROM users
-								   WHERE ID = :userId');
-			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-			$userData = $stmt->fetch();
-			if (!$userData) {
-				throw new PDOException('User ' . $userId . ' not found.');
-			}
+			$userData = get_myself();
 
 			if (intval($userData['type']) !== USER_TYPE_TEACHER && intval($userData['type']) !== USER_TYPE_BOOK_MNGR) {
 				throw new Exception('Permission denied.');
@@ -42,7 +30,7 @@ if (!function_exists('stats_bookings')) {
 				construct_query_bookingmngr($lecture, $course, $period, $week, $month, $year);
 
 			// Retrieve data
-
+			$pdo = new PDO('sqlite:../db.sqlite');
 			$stmt = $pdo->prepare($query);
 
 			if (intval($userData['type']) === USER_TYPE_TEACHER) {
@@ -202,15 +190,15 @@ if (!function_exists('construct_query_bookingmngr')) {
 		$queryTop = '
 		SELECT
 			courseId as courseId,
-			AVG(totalBookings) as bookingsAvg,
+			SUM(totalBookings)/SUM(nLectures) as bookingsAvg,
 			SUM((totalBookings - bookingsAvg) * (totalBookings - bookingsAvg)) / (COUNT(totalBookings) - 1) as bookingsVar,
 			SUM(totalBookings) as totalBookings,
 			
-			AVG(totalCancellations) as cancellationsAvg,
+			SUM(totalCancellations)/SUM(nLectures) as cancellationsAvg,
 			SUM((totalCancellations - cancellationsAvg) * (totalCancellations - cancellationsAvg)) / (COUNT(totalCancellations) - 1) as cancellationsVar,
 			SUM(totalCancellations) as totalCancellations,
 			
-			AVG(totalAttendances) as attendancesAvg,
+			SUM(totalAttendances)/SUM(nLectures) as attendancesAvg,
 			SUM((totalAttendances - attendancesAvg) * (totalAttendances - attendancesAvg)) / (COUNT(totalAttendances) - 1) as attendancesVar,
 			SUM(totalAttendances) as totalAttendances,
 			
