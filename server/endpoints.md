@@ -78,24 +78,23 @@ Requires login
       - teacherEmail: string
         }
 
-# All courses
+# All lectures of a specific course
+Requires login as support officer
 
-- **GET** /api/courses
+- **GET** /api/courses/{courseId}/lectures
   - _request params_
-    - _optional_ ofLogged: no value
+    - empty
   - _response body_
     - success: bool
-    - courses: [object]{
-      - ID: int
-      - code: string
-      - name: string
-      - year: int _(is the academical year: for example 1 for the first year)_
-      - semester: int
-      - teacherId: int
-      - teacherFirstName: string
-      - teacherLastName: string
-      - teacherEmail: string
-        }
+    - lectures [array(object)]
+      - lectureId: int
+      - courseId: int
+      - courseName: string
+      - startTS: int _(GMT timezone)_
+      - endTS: int _(GMT timezone)_
+      - online: bool
+      - teacherName: string
+      - roomName: string
 
 # All lectures of a user
 
@@ -107,7 +106,7 @@ Requires login as student or teacher
   - _response body_
     - success: bool
     - lectures: [object]
-      - lectureId: in21MA0031119578t
+      - lectureId: int
       - courseId: int
       - courseName: string
       - startTS: int _(GMT timezone)_
@@ -275,7 +274,6 @@ Requiire login as support officer
     - endDay: string YYYY-mm-dd
   - *response body*
     - success: bool
-
 
 # Edit a course schedule
 Require login as support officer
