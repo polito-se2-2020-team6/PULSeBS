@@ -81,19 +81,20 @@ Requires login
 # All lectures of a specific course
 Requires login as support officer
 
-- **GET** /api/courses/{courseId}/lectures
+- **GET** /api/courses/{courseId}/lectures?[startDate=YYYY-mm-dd][endDate=yyyy-mm-dd]
   - _request params_
-    - empty
+    - startDate: ISO-8601 date *(optional: default, Big Bang)*
+    - endDate: ISO-8601 date *(optional: default, Big Crunch)*
   - _response body_
     - success: bool
+    - courseId: int
+    - courseCode: string
+    - courseName: string
     - lectures [array(object)]
       - lectureId: int
-      - courseId: int
-      - courseName: string
       - startTS: int _(GMT timezone)_
       - endTS: int _(GMT timezone)_
       - online: bool
-      - teacherName: string
       - roomName: string
 
 # All lectures of a user
