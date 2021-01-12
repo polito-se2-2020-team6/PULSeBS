@@ -263,6 +263,94 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
+if (!function_exists('list_lectures_by_course')) {
+
+	function list_lectures_by_course($vars) {
+
+		$courseId = intval($vars['courseId']);
+		$pdo = new PDO("sqlite:../db.sqlite");
+
+		// Get type of user
+		$userData = get_myself();
+
+		if (!$userData) {
+			// User doesn't exist, but is logged in ❓❓❓
+			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
+			return;
+		}
+
+		$userType = intval($userData['type']);
+
+		if($userType != USER_TYPE_SPRT_OFCR){
+			throw new ErrorException("Wrong permissions");
+		}
+
+		$query = 'SELECT L.*, C.name AS courseName, C.code AS courseCode, R.name AS roomName FROM lectures AS L, rooms AS R, (SELECT name,code FROM courses WHERE ID = :courseId) AS C WHERE L.room_id = R.ID AND L.course_id = :courseId';
+
+		// Filter out cancelled lectures
+		$query .= ' AND settings & :cancelled = 0';
+
+		// Add optional ranges to query
+		if (isset($_GET['startDate'])) {
+			$query .= ' AND start_ts >= :startDate';
+		}
+		if (isset($_GET['endDate'])) {
+			$query .= ' AND start_ts <= :endDate';
+		}
+
+		// Get list of lectures, ordered
+		$query .= ' ORDER BY start_ts, ID ASC';
+		$stmt = $pdo->prepare($query);
+		$stmt->bindValue(':courseId', $courseId, PDO::PARAM_INT);
+		$stmt->bindValue(':cancelled', LECTURE_CANCELLED, PDO::PARAM_INT);
+
+		if (isset($_GET['startDate'])) {
+			$Ymd = explode('-', $_GET['startDate']);
+			$ts = mktime(0, 0, 0, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
+			$stmt->bindValue(':startDate', $ts, PDO::PARAM_INT);
+		}
+		if (isset($_GET['endDate'])) {
+			$Ymd = explode('-', $_GET['endDate']);
+			$ts = mktime(59, 59, 23, intval($Ymd[1]), intval($Ymd[2]), intval($Ymd[0]));
+			$stmt->bindValue(':endDate', $ts, PDO::PARAM_INT);
+		}
+
+		if (!$stmt->execute()) {
+			throw new PDOException($stmt->errorInfo()[2]);
+		}
+
+		$lectures = array();
+		$l = $stmt->fetch();
+		if(!$l){
+			$ret = array(
+				'courseId' => null,
+				'courseCode' => null,
+				'courseName' => null
+			);
+		}
+		else{
+			$ret = array(
+				'courseId' => intval($l['course_id']),
+				'courseCode' => $l['courseCode'],
+				'courseName' => $l['courseName'],
+			);
+			do{
+				$lecture = array(
+					'lectureId' => intval($l['0']),
+					'startTS' => intval($l['start_ts']),
+					'endTS' => intval($l['end_ts']),
+					'online' => boolval($l['settings'] & LECTURE_REMOTE),
+					'roomName' => $l['roomName']
+				);
+
+				array_push($lectures, $lecture);
+			} while ($l = $stmt->fetch());
+		}
+
+		// Send stuff
+		echo json_encode(array('success' => true, 'lectures' => $lectures) + $ret, JSON_INVALID_UTF8_SUBSTITUTE);
+	}
+}
 
 if (!function_exists('print_types')) {
 	function print_types($vars) {
@@ -765,7 +853,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/logout', 'do_logout');
 	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
+	/* courses routes */
 	$r->addRoute('GET', API_PATH . "/courses", "print_courses");
+	$r->addRoute('GET', API_PATH . "/courses/{courseId:\d+}/lectures", "list_lectures_by_course");
+
 	/* users route */
 	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
 
