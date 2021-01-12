@@ -61,7 +61,33 @@ else if(props.dialog==="turn"){
     </>
   );
 }
-  }
+else if(props.dialog==="UpdateList"){
+  return(
+    <>
+    <Button variant="success"  size="lg" onClick={handleShow} id="but4">
+        Update
+      </Button>
+
+      <Modal show={show} onHide={handleClose} id="modId2"> 
+        <Modal.Header closeButton>
+          <Modal.Title>Update Lectures</Modal.Title>
+        </Modal.Header>
+  <Modal.Body>Are you sure you want to Update the lectures?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose} id="but5">
+            No
+          </Button>
+          <Button variant="primary" id="but6" onClick={()=>{handleClose();props.onConfirm();}}>
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+}
+
+
+}
 
   
   export default DialogAlert;

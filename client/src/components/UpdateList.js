@@ -5,11 +5,14 @@ import  { Redirect } from 'react-router-dom'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import DialogAlert from "./DialogAlert";
 import {
     Col,
     Button,
     Row,
     Dropdown,
+    OverlayTrigger,
+    Tooltip
     
   } from "react-bootstrap";
 class UpdateList extends Component {
@@ -24,29 +27,26 @@ class UpdateList extends Component {
         end_date:null,
         insertDate:false,
         online:true,
+        response:"",
+        today:null,
     };
   }
-
+  
   componentDidMount(){
         var vect_year=[];
         vect_year[0]="None"
         for(var i=1;i<=5; i++){
                 vect_year[i]=i;
         }
-        //console.log(vect_year);
         this.setState({years: vect_year});
   }
   setYear(year){
-        //console.log(year)
-        this.setState({year: year});
+        this.setState({year: year, response:""});
   }
   setSemester(sem){
-        //console.log(sem)
-        this.setState({semester: sem});
+        this.setState({semester: sem, response:""});
     }
-    UpdateFunction(){
-        //console.log("Updateeee")
-        //api call
+  UpdateFunction(){
         let y = this.state.year!=="None"? this.state.year: "";
         let s = this.state.semester!=="None"? this.state.semester: "";
         let start=null
@@ -55,41 +55,34 @@ class UpdateList extends Component {
             start = this.state.start_date? this.state.start_date.toISOString() : null 
             end = this.state.end_date? this.state.end_date.toISOString() : null
         }
-        
         API.UpdateLectureList(y,s,start,end,this.state.online)
         .then((res) => {
-          console.log("andata bene")
-          console.log(res)
+          this.setState({response:"Succesfully Update!"})
         })
         .catch((errorObj) => {
-          console.log("male")
           console.log(errorObj);
+          this.setState({response:"Problem with the Update"})
         });
-        //maybe add some window to confirm update
-    }
-    selectedDate(date,who){
-      console.log("selectedDate")
+  }
+  selectedDate(date,who){
       if(who==="start"){
-          this.setState({start_date: date})
-          console.log(date)
+          this.setState({start_date: date, response:""})
       }
       else {
-          this.setState({end_date: date})
-          console.log(date)
+          this.setState({end_date: date, response:""})
       }
 
-    }
-    changeInsertDate(bool){
-      this.setState({insertDate:bool})
+  }
+  changeInsertDate(bool){
+      this.setState({insertDate:bool, response:""})
       if(!bool){
           //caso in cui rimuovo la data
           this.setState({start_date:null,end_date:null})
       }
     }
     changeOnlineStatus(bool){
-      this.setState({online:bool})
+      this.setState({online:bool, response:""})
     }
-
   render() {
     return (
       <AuthContext.Consumer>
@@ -99,40 +92,35 @@ class UpdateList extends Component {
                <>
                     <h1 className="m-4">Update List of bookable lectures</h1>
                     <Row>
-                      <Col md={1}></Col>
-                      <h5>Legend :</h5>
-                      <Col md={3}> 
-                      <Row>-if you select the year you will update all the lectures of the specific year, if "None" is selected means "all the years"</Row>
-                      <Row>-if you select semester you will update all the lectures of the specific semester, if "None" is selected means "all the semesters"</Row>
-                      <Row>-if start date is selected you will update all the lectures after the specific date, if there is not a start date it automatically select the current date</Row>
-                      <Row>-if end date is selected you will update all the lectures before the specific date</Row>
-                      <Row>-you can combine the four parameters in order to obtain what ever you want</Row>
-                      
-                      
-                      
-                       
-                      
-                      </Col>
+                      <Col md={4}></Col>
                       </Row>
                    <br></br>
-                    <Row>
+                    <Row id="row1">
                           <Col md={1}></Col>
                           <Col md={1}>
-                            Status
+                            <Button size="sm" variant="outline-dark">Status</Button>
                             {this.state.online?
                             <Button variant="outline-success" onClick={() => this.changeOnlineStatus(false)}>Online</Button>
                             :
                             <Button variant="outline-danger" onClick={() => this.changeOnlineStatus(true)}>Presence</Button>
-                            
-                          }
-                            
+                            }
                           </Col>
                           <Col md={1}>
-                            Year
+                          <OverlayTrigger
+                            id="Over1"
+                            key="top"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                if you select the Year you will update all the lectures of the specific Academic Year, "None" means "all the years"
+                              </Tooltip>
+                            }
+                          >
+                            <Button size="sm" variant="outline-dark" className="cell">A.Year</Button>
+                          </OverlayTrigger>
                       <DropdownButton
-                        
                         key="secondary"
-                        
+                        id="DropD1"
                         variant="secondary"
                         title={this.state.year}
                         >   
@@ -147,9 +135,20 @@ class UpdateList extends Component {
                         </DropdownButton>
                         </Col>
                         <Col md={1}>
-                          Semester
+                        <OverlayTrigger
+                            key="top"
+                            id="Over2"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                if you select semester you will update all the lectures of the specific semester, "None" means "all the semesters"                              </Tooltip>
+                            }
+                          >
+                            <Button size="sm" variant="outline-dark" >Semester</Button>
+                          </OverlayTrigger>
                         <DropdownButton
                         key="secondary"
+                        id="Dropdw2"
                         variant="secondary"
                         title={this.state.semester}
                         >   
@@ -161,13 +160,25 @@ class UpdateList extends Component {
                               </Dropdown.Item>
                             ))
                         }
-                      
                         </DropdownButton>
                         </Col>
-                        {this.state.insertDate?
+                      {this.state.insertDate?
                         <>
                         <Col md={2}>
-                        <Row>Start date</Row>
+                        <Row>
+                        <OverlayTrigger
+                            key="top"
+                            id="OverL3"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                if start date is selected you will update all the lectures after the specific date, if there is not a Start date it automatically selects the current date
+                                </Tooltip>
+                            }
+                          >
+                            <Button size="sm" variant="outline-dark" >Start date</Button>
+                          </OverlayTrigger>
+                        </Row>
                         <Row>
                         <DatePicker
                           selected={this.state.start_date}
@@ -176,7 +187,20 @@ class UpdateList extends Component {
                         </Row>
                       </Col>
                       <Col md={2}>
-                        <Row>End date</Row>
+                        <Row>
+                        <OverlayTrigger
+                            key="top"
+                            id="OverL4"
+                            placement="top"
+                            overlay={
+                              <Tooltip id={`tooltip-top`}>
+                                if End date is selected you will update all the lectures before the specific date
+                                </Tooltip>
+                            }
+                          >
+                            <Button size="sm" variant="outline-dark" >End date</Button>
+                          </OverlayTrigger>
+                        </Row>
                         <Row>
                         <DatePicker
                           selected={this.state.end_date}
@@ -190,19 +214,23 @@ class UpdateList extends Component {
                       <>
                       <Button  onClick={(e) =>  this.changeInsertDate(true)} >Insert date</Button>
                       </>
-                        
                       }
-                        
-
-
                     </Row>
                         <br></br>
                             {(this.state.year!=="None" || this.state.semester!=="None" || (this.state.insertDate && (this.state.start_date || this.state.end_date)))?
                             <Row>
                             <Col md={1}></Col>
-                            <Col md={1}><Button variant="success"  size="lg"onClick= { () => this.UpdateFunction()}>Update</Button> </Col>
+                            <Col md={1}>
+                            <DialogAlert
+                                        id="UpL2"
+                                        dialog={"UpdateList"}
+                                        onConfirm={() => {
+                                          this.UpdateFunction();
+                                        }}
+                                      />
+                              </Col>
+                            <Col ><h2>{this.state.response}</h2></Col>
                             </Row>
-                            
                             :
                             <></>
                         }
@@ -216,5 +244,4 @@ class UpdateList extends Component {
     );
   }
 }
-
 export default UpdateList;
