@@ -311,10 +311,6 @@ if(!function_exists("get_lectures_by_course")){
 		// Get type of user
 		$userData = get_myself();
 
-		if (!$userData) {
-			// User doesn't exist, but is logged in ❓❓❓
-			return;
-		}
 
 		$userType = intval($userData['type']);
 
