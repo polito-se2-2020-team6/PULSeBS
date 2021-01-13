@@ -15,12 +15,19 @@ class EditLectures extends Component {
     startDate: "",
     endDate: "",
     newTime: "",
+    weekday: [],
   };
 
   componentDidMount() {
     API.getAllLecturesSO(this.props.courseId)
       .then((lectures) => {
-        this.setState({ lectures: lectures });
+        let weekdays = [];
+        weekdays = lectures.map((l) => {
+          return l.weekday;
+        });
+        let unique = [...new Set(weekdays)];
+        console.log(unique);
+        this.setState({ lectures: lectures, weekday: unique });
       })
       .catch((err) => console.log(err));
   }
@@ -72,27 +79,34 @@ class EditLectures extends Component {
   render() {
     return (
       <>
-        <Table id="lectures-table" className="mt-2 table" striped bordered hover>
+        <Table
+          id="lectures-table"
+          className="mt-2 table"
+          striped
+          bordered
+          hover
+        >
           <thead>
             <tr>
               <th>#</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Room</th>
+              <th>Day</th>
+              <th>--</th>
+              <th>--</th>
               <th>Edit</th>
             </tr>
           </thead>
           <tbody>
-            {this.state.lectures.map((lecture,index) => {
-              let count = index+1;
+            {this.state.weekday.map((w, index) => {
+              let count = index + 1;
               return (
                 <TableRow
                   show={this.state.show}
                   showDialog={this.showDialog}
-                  lecture={lecture}
+                  weekday={w}
                   changeHandler={this.changeHandler}
                   submitHandler={this.submitHandler}
                   count={count}
+                  courseId = {this.props.courseId}
                 />
               );
             })}
@@ -104,99 +118,103 @@ class EditLectures extends Component {
 }
 
 function TableRow(props) {
-  const modalId = props.lecture.lectureId;
+  console.log(props.weekday);
+  const modalId = props.count;
+  const uniqueId = `${props.courseId}-${props.count}` ;
+  console.log(uniqueId)
+  let weekday;
+   switch (props.weekday) {
+    case 0:
+      weekday="Monday";
+      break;
+    case 1:
+      weekday="Tuesday";
+      break;
+    case 2:
+      weekday="Wednesday";
+      break;
+    case 3:
+      weekday="Thursday";
+      break;
+    case 4:
+      weekday="Friday";
+      break;
+    default:
+  }
+
   return (
     <>
-      <tr key={props.lecture.lectureId}>
+      <tr key={modalId}>
         <td>{props.count}</td>
-        <td>{props.lecture.startTS}</td>
-        <td>{props.lecture.endTS}</td>
-        {props.lecture.online ? (
-          <td>
-            <h4>
-              <Badge id="online-badge" variant="danger">
-                {props.lecture.roomName}
-              </Badge>
-            </h4>
-          </td>
-        ) : (
-          <td>
-            <h4>
-              <Badge id="presence-badge" variant="success">
-                {props.lecture.roomName}
-              </Badge>
-            </h4>
-          </td>
-        )}
+        <td>{weekday}</td>
+        <td>----</td>
+        <td>----</td>
+        
         <td>
           <Button
             id="edit-lecture"
             variant="primary"
-            onClick={() => props.showDialog(modalId)}
+            onClick={() => props.showDialog(uniqueId)}
           >
             Edit Lecture
           </Button>
         </td>
       </tr>
 
-        <tr id={modalId} className="hide">
-          <td>
-            <Form.Group>
-              <Form.Label>Day</Form.Label>
-              <Form.Control
-                as="select"
-                defaultValue={props.lecture.weekday}
-                id="day"
-                onChange={props.changeHandler}
-              >
-                <option value="0">Monday</option>
-                <option value="1">Tuesday</option>
-                <option value="2">Wednesday</option>
-                <option value="3">Thursday</option>
-                <option value="4">Friday</option>
-              </Form.Control>
-            </Form.Group>
-          </td>
-          <td>
-            <Form.Group>
-              <Form.Label>Time</Form.Label>
-              <Form.Control
-                id="time"
-                type="time"
-                onChange={props.changeHandler}
-              />
-            </Form.Group>
-          </td>
-          <td>
-            <Form.Group>
-              <Form.Label>Start Date</Form.Label>
-              <Form.Control
-                id="startDate"
-                type="date"
-                onChange={props.changeHandler}
-              />
-            </Form.Group>
-          </td>
-          <td>
-            <Form.Group>
-              <Form.Label>End Date</Form.Label>
-              <Form.Control
-                id="endDate"
-                type="date"
-                onChange={props.changeHandler}
-              />
-            </Form.Group>
-          </td>
-          <td>
-            <Button
-              id={props.lecture.weekday}
-              variant="success"
-              onClick={props.submitHandler}
+      <tr id={uniqueId} className="hide">
+        <td>
+          <Form.Group>
+            <Form.Label>Day</Form.Label>
+            <Form.Control
+              as="select"
+              defaultValue="0"
+              id="day"
+              onChange={props.changeHandler}
             >
-              Save Changes
-            </Button>
-          </td>
-        </tr>
+              <option value="0">Monday</option>
+              <option value="1">Tuesday</option>
+              <option value="2">Wednesday</option>
+              <option value="3">Thursday</option>
+              <option value="4">Friday</option>
+            </Form.Control>
+          </Form.Group>
+        </td>
+        <td>
+          <Form.Group>
+            <Form.Label>Time</Form.Label>
+            <Form.Control
+              id="time"
+              type="time"
+              onChange={props.changeHandler}
+            />
+          </Form.Group>
+        </td>
+        <td>
+          <Form.Group>
+            <Form.Label>Start Date</Form.Label>
+            <Form.Control
+              id="startDate"
+              type="date"
+              onChange={props.changeHandler}
+            />
+          </Form.Group>
+        </td>
+        <td>
+          <Form.Group>
+            <Form.Label>End Date</Form.Label>
+            <Form.Control
+              id="endDate"
+              type="date"
+              onChange={props.changeHandler}
+            />
+          </Form.Group>
+        </td>
+        <td>
+          <Button id={modalId} variant="success" onClick={props.submitHandler}>
+            Save Changes
+          </Button>
+        </td>
+      </tr>
     </>
   );
 }
