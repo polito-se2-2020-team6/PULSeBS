@@ -17,6 +17,7 @@ import { ROLES } from "./data/consts";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SupportOfficer from "./components/SupportOfficer";
+import ScheduleEdit from './components/ScheduleEdit'
 
 class App extends React.Component {
   constructor(props) {
@@ -176,6 +177,9 @@ class App extends React.Component {
           </Route>
           <Route path="/support/update">
             <UpdateList user={this.state.authUser} />
+          </Route>
+          <Route path="/support/schedule">
+            <ScheduleEdit user={this.state.authUser} />
           </Route>
           <Route path="/booking-manager/home">
             <UsageMonitor

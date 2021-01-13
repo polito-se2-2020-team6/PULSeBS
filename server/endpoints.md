@@ -78,6 +78,26 @@ Requires login
       - teacherEmail: string
         }
 
+# All lectures of a specific course
+
+Requires login as support officer
+
+- **GET** /api/courses/{courseId}/lectures?[startDate=YYYY-mm-dd][enddate=yyyy-mm-dd]
+  - _request params_
+    - startDate: ISO-8601 date _(optional: default, Big Bang)_
+    - endDate: ISO-8601 date _(optional: default, Big Crunch)_
+  - _response body_
+    - success: bool
+    - courseId: int
+    - courseCode: string
+    - courseName: string
+    - lectures [array(object)]
+      - lectureId: int
+      - startTS: int _(GMT timezone)_
+      - endTS: int _(GMT timezone)_
+      - online: bool
+      - roomName: string
+
 # All lectures of a user
 
 Requires login as student or teacher
@@ -134,16 +154,16 @@ Requires login as teacher
 Requires login as teacher
 
 - **PATCH** /api/lectures/{lectureId}/students/{studentId}
-  - *params detail*
+  - _params detail_
     - lectureId: int
     - studentId: int
-  - *request params*
+  - _request params_
     - attended: bool
-  - *response body*
+  - _response body_
     - success: bool
 
 The endpoint will fail if trying to modify attendances of a lecture that took place on a previous day.
-*Example:*
+_Example:_
 The execution of `/api/lectures/3/students/1` called on 2021-01-06 15:30:00 will be allowed only if lecture 3 has a start time between 2021-01-06 00:00:00 and 2021-01-06 15:30:00 inclusive.
 
 # Set attendance
@@ -151,16 +171,16 @@ The execution of `/api/lectures/3/students/1` called on 2021-01-06 15:30:00 will
 Requires login as teacher
 
 - **PATCH** /api/lectures/{lectureId}/students/{studentId}
-  - *params detail*
+  - _params detail_
     - lectureId: int
     - studentId: int
-  - *request params*
+  - _request params_
     - attended: bool
-  - *response body*
+  - _response body_
     - success: bool
 
 The endpoint will fail if trying to modify attendances of a lecture that took place on a previous day.
-*Example:*
+_Example:_
 The execution of `/api/lectures/3/students/1` called on 2021-01-06 15:30:00 will be allowed only if lecture 3 has a start time between 2021-01-06 00:00:00 and 2021-01-06 15:30:00 inclusive.
 
 # Cancel a booking
@@ -202,8 +222,8 @@ Requires login as support officer
     - value: bool (true -> turn all to online, false -> turn all to presence)
     - year: array(int) _(optional, default: all the years)_
     - semester: array(int) _(optional, default: all the semesters)_
-    - start_date: ISO-8601 date _(optional, default: current date and time)_
-    - end_date: ISO-8601 date _(optional, default: last day of 35 ABY (if you don't know what is it, search star wars))_
+    - start*date: ISO-8601 date *(optional, default: current date and time)\_
+    - end*date: ISO-8601 date *(optional, default: last day of 35 ABY (if you don't know what is it, search star wars))\_
   - _response body_
     - success: bool
     - affectedRecords: int
@@ -247,7 +267,7 @@ Require login as support officer
 
 - **POST** /api/students/upload
   - _request params_
-    - student_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+    - student*file: file \_content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - _response body_
     - success: bool
 
@@ -257,7 +277,7 @@ Require login as support officer
 
 - **POST** /api/teachers/upload
   - _request params_
-    - teacher_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+    - teacher*file: file \_content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - _response body_
     - success: bool
 
@@ -267,7 +287,7 @@ Require login as support officer
 
 - **POST** /api/courses/upload
   - _request params_
-    - course_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+    - course*file: file \_content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - _response body_
     - success: bool
 
@@ -277,49 +297,72 @@ Require login as support officer
 
 - **POST** /api/enrollments/upload
   - _request params_
-    - enrollment_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
+    - enrollment*file: file \_content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
   - _response body_
     - success: bool
 
 # Upload schedule csv
+
 Require login as support officer
 
 - **POST** /api/schedules/upload
-  - *request params*
-    - schedule_file: file *content of the csv file correctly formatted as multipart/form-data (check out FormData object)*
+  - _request params_
+    - schedule_file: file _content of the csv file correctly formatted as multipart/form-data (check out FormData object)_
     - startDay: string YYYY-mm-dd
     - endDay: string YYYY-mm-dd
-  - *response body*
+  - _response body_
     - success: bool
 
 # Get student info
+
 Requires login as booking manager
 
 - **GET** /api/students/{code}/{field}
-  - *params details*
+  - _params details_
     - code: int|string (ID or SSN of student)
     - field: string (id|ssn)
-  - *response body*
-      - success: bool
-      - userId: int
-      - type: int
-      - username: string
-      - email: string
-      - firstname: string
-      - lastname: string
-      - city: string
-      - birthday: ISO-8601 string "-" separated
-      - SSN: string
+  - _response body_
+    - success: bool
+    - userId: int
+    - type: int
+    - username: string
+    - email: string
+    - firstname: string
+    - lastname: string
+    - city: string
+    - birthday: ISO-8601 string "-" separated
+    - SSN: string
 
 # Generate a contact tracing report
+
 Requires login as booking manager
 
 - **GET** /api/users/{studentId}/CTReport/{format}
-  - *params details*
+  - _params details_
     - studentId: int (ID of the student)
     - format: string (pdf|csv)
-  - *response body*
+  - _response body_
     - None. The client will start the download
+
+# Edit a course schedule
+
+Require login as support officer
+
+- **PATCH** /api/courses/{courseId}/schedule
+  - _request params_
+    - originalWeekday: int _(0 to 6, where 0 is Monday, 6 is Sunday)_
+    - newWeekday: int _(0 to 6, where 0 is Monday, 6 is Sunday)_
+    - newTime: string _(optional: default is to not change the time. Time should be formatted like this hh:mm)_
+    - startDateTime: ISO-8601 date and UTC time _(optional: default is the current date and time)_
+    - endDateTime: ISO-8601 date and time _(optional: default is to the infinite and beyond)_
+  - _response body_
+    - success: bool
+    - affectedRow: int
+
+The endpoint will change all the lectures of the `courseId` course that are held in `originalWeekday` during the specified period of time
+(using `startDateTime` and `endDateTime`) to `newWeekday` and `newTime`. For example, if originalWeekday is 0 and newWeekday is 4, all the
+lectures of course `courseId` that are held on Monday, will be moved to Friday. Notice that `startDateTime` cannot be for any reason in the
+past, since only not already held lectures can be affected.
 
 # Error
 
