@@ -270,7 +270,7 @@ if (!function_exists('list_lectures_by_course')) {
 
 	function list_lectures_by_course($vars) {
 		$courseId = intval($vars['courseId']);
-		try{
+		try {
 			$startDate = isset($_GET['startDate']) ? (new DateTime($_GET['startDate']))->getTimestamp() : null;
 			$endDate = isset($_GET['endDate']) ? (new DateTime($_GET['endDate']))->getTimestamp() : null;
 			echo json_encode(array('success' => true) + get_lectures_by_course($courseId, $startDate, $endDate), JSON_INVALID_UTF8_SUBSTITUTE);
@@ -280,8 +280,8 @@ if (!function_exists('list_lectures_by_course')) {
 	}
 }
 
-if (!function_exists("update_lectures_schedule_by_course")){
-	function update_lectures_schedule_by_course($vars){
+if (!function_exists("update_lectures_schedule_by_course")) {
+	function update_lectures_schedule_by_course($vars) {
 		global $_PATCH;
 
 		$weekdays = array(
@@ -295,7 +295,7 @@ if (!function_exists("update_lectures_schedule_by_course")){
 		);
 
 		$courseId = intval($vars['courseId']);
-		try{
+		try {
 			$pdo = new PDO("sqlite:../db.sqlite");
 
 			// Get type of user
@@ -304,7 +304,7 @@ if (!function_exists("update_lectures_schedule_by_course")){
 
 			$userType = intval($userData['type']);
 
-			if($userType != USER_TYPE_SPRT_OFCR){
+			if ($userType != USER_TYPE_SPRT_OFCR) {
 				throw new ErrorException("Wrong permissions");
 			}
 			//retrieve the weekdays, formatting as sqlite strftime expects it (0 = sunday, 6 = saturday)
@@ -317,33 +317,30 @@ if (!function_exists("update_lectures_schedule_by_course")){
 			// Add optional ranges to query
 			if (isset($_PATCH['startDateTime'])) {
 				$startDateTime = new DateTime($_PATCH["startDateTime"]);
-				if($startDateTime < new DateTime()){
+				if ($startDateTime < new DateTime()) {
 					throw new ErrorException("startDateTime cannot be in the past");
 				}
-			}
-			else{
+			} else {
 				$startDateTime = new DateTime();
 			}
 			$startDateString = $startDateTime->format("Y-m-d H:i");
-			$range_conditions .= ' AND start_ts >= '.$startDateTime->getTimestamp();
+			$range_conditions .= ' AND start_ts >= ' . $startDateTime->getTimestamp();
 			if (isset($_PATCH['endDateTime'])) {
 				$endDateTime = new DateTime($_PATCH["endDateTime"]);
-				$range_conditions .= ' AND start_ts <= '.$endDateTime->getTimestamp();
-				if($startDateTime >= $endDateTime){
+				$range_conditions .= ' AND start_ts <= ' . $endDateTime->getTimestamp();
+				if ($startDateTime >= $endDateTime) {
 					throw new ErrorException("endDateTime cannot be before startDateTime");
 				}
 				$endDateString = $endDateTime->format("Y-m-d H:i");
-			}
-			else{
+			} else {
 				$endDateTime = null;
 				$endDateString = null;
 			}
 
 			$lectures = get_lectures_by_course($courseId, $startDateString, $endDateString);
 
-			if(!isset($_PATCH["newTime"])){
-				$sql = "UPDATE lectures SET start_ts = strftime('%s', start_ts, 'unixepoch', '".$sign.$difference." days'),end_ts = strftime('%s', end_ts, 'unixepoch', '".$sign.$difference." days') WHERE strftime('%w', start_ts, 'unixepoch') = :originalWeekday AND course_id=:courseId ".$range_conditions;
-
+			if (!isset($_PATCH["newTime"])) {
+				$sql = "UPDATE lectures SET start_ts = strftime('%s', start_ts, 'unixepoch', '" . $sign . $difference . " days'),end_ts = strftime('%s', end_ts, 'unixepoch', '" . $sign . $difference . " days') WHERE strftime('%w', start_ts, 'unixepoch') = :originalWeekday AND course_id=:courseId " . $range_conditions;
 				$stmt = $pdo->prepare($sql);
 				$stmt->bindValue(":courseId", $courseId, PDO::PARAM_INT);
 				$stmt->bindValue(":originalWeekday", $original_weekday, PDO::PARAM_STR);
@@ -354,25 +351,24 @@ if (!function_exists("update_lectures_schedule_by_course")){
 
 				$affectedRows = $stmt->rowCount();
 				//retrieving students to which send the mails
-				if($affectedRows > 0){
+				if ($affectedRows > 0) {
 					$students = array();
-					foreach($lectures["lectures"] as $lecture){
+					foreach ($lectures["lectures"] as $lecture) {
 						$students = array_merge($students, get_students_booked_by_lecture($lecture["lectureId"]));
 					}
-					
-					foreach($students as $student){
-						$text_message = "Mr./Mrs. ".$student["studentName"].",\nThe lectures of the course ".$lecture["courseName"]."(".$lecture["courseCode"].") that were held on ".$weekdays[$original_weekday]." has been reschedule to ".$weekdays[$new_weekday].". The time has been unchanged and the changes will apply from ".$startDateString;
-						mail(
+
+					foreach ($students as $student) {
+						$text_message = "Mr./Mrs. " . $student["studentName"] . ",\nThe lectures of the course " . $lectures["courseName"] . "(" . $lectures["courseCode"] . ") that were held on " . $weekdays[$original_weekday] . " has been reschedule to " . $weekdays[$new_weekday] . ". The time has been unchanged and the changes will apply from " . $startDateString;
+						@mail(
 							$student["email"],
-							"Rescheduling of lectures for \"".$lectures["courseName"]."\"",
+							"Rescheduling of lectures for \"" . $lectures["courseName"] . "\"",
 							$text_message
 						);
 					}
 				}
-			}
-			else{
+			} else {
 				$timeDatas = explode(":", $_PATCH["newTime"]);
-				if(count($timeDatas) != 2 || !is_numeric($timeDatas[0]) || !is_numeric($timeDatas[1])){
+				if (count($timeDatas) != 2 || !is_numeric($timeDatas[0]) || !is_numeric($timeDatas[1])) {
 					throw new ErrorException("Wrong time format, should be hh:mm");
 				}
 				$hh = intval($timeDatas[0]);
@@ -382,26 +378,26 @@ if (!function_exists("update_lectures_schedule_by_course")){
 
 				$affectedRows = 0;
 				$students = array();
-				foreach($lectures["lectures"] as $lecture){
-					$cur_start_time = new DateTime('@'.$lecture["startTS"]);
-					if(intval($cur_start_time->format("w")) != $original_weekday) continue;
-					$cur_end_time = new DateTime('@'.$lecture["endTS"]);
+				foreach ($lectures["lectures"] as $lecture) {
+					$cur_start_time = new DateTime('@' . $lecture["startTS"]);
+					if (intval($cur_start_time->format("w")) != $original_weekday) continue;
+					$cur_end_time = new DateTime('@' . $lecture["endTS"]);
 					$lecture_duration = $cur_end_time->getTimestamp() - $cur_start_time->getTimestamp();
 
-					$cur_start_time->modify($sign.$difference." days");
+					$cur_start_time->modify($sign . $difference . " days");
 					$cur_start_time->setTime($hh, $mm);
-					$cur_end_time->modify($sign.$difference." days");
+					$cur_end_time->modify($sign . $difference . " days");
 					$cur_end_time->setTime($hh, $mm);
-					$cur_end_time->modify("+".$lecture_duration." seconds");
+					$cur_end_time->modify("+" . $lecture_duration . " seconds");
 
-					$stmt = $pdo->query("UPDATE lectures SET start_ts = ".$cur_start_time->getTimestamp().", end_ts = ".$cur_end_time->getTimestamp()." WHERE ID = ".$lecture["lectureId"].$range_conditions);
+					$stmt = $pdo->query("UPDATE lectures SET start_ts = " . $cur_start_time->getTimestamp() . ", end_ts = " . $cur_end_time->getTimestamp() . " WHERE ID = " . $lecture["lectureId"] . $range_conditions);
 
-					if(!$stmt){
+					if (!$stmt) {
 						$pdo->rollback();
 						throw new PDOException($pdo->errorInfo()[2]);
 					}
 					$thisLecturesAffecting = $stmt->rowCount();
-					if($thisLecturesAffecting > 0){
+					if ($thisLecturesAffecting > 0) {
 						$students = array_merge($students, get_students_booked_by_lecture($lecture["lectureId"]));
 					}
 					$affectedRows += $thisLecturesAffecting;
@@ -409,11 +405,11 @@ if (!function_exists("update_lectures_schedule_by_course")){
 
 				$pdo->commit();
 				//sending rescheduling email
-				foreach($students as $student){
-					$text_message = "Mr./Mrs. ".$student["studentName"].",\nThe lectures of the course ".$lecture["courseName"]."(".$lecture["courseCode"].") that were held on ".$weekdays[$original_weekday]." has been reschedule to ".$weekdays[$new_weekday]." at ".$_PATCH["newTime"].". The changes will apply from ".$startDateString;
-					mail(
+				foreach ($students as $student) {
+					$text_message = "Mr./Mrs. " . $student["studentName"] . ",\nThe lectures of the course " . $lecture["courseName"] . "(" . $lecture["courseCode"] . ") that were held on " . $weekdays[$original_weekday] . " has been reschedule to " . $weekdays[$new_weekday] . " at " . $_PATCH["newTime"] . ". The changes will apply from " . $startDateString;
+					@mail(
 						$student["email"],
-						"Rescheduling of lectures for \"".$lectures["courseName"]."\"",
+						"Rescheduling of lectures for \"" . $lectures["courseName"] . "\"",
 						$text_message
 					);
 				}
@@ -795,7 +791,7 @@ if (!function_exists('set_mass_lecture_online_status')) {
 
 			// Check user exists and is teacher
 			$user = get_myself();
-			if($user["type"] != USER_TYPE_SPRT_OFCR){
+			if ($user["type"] != USER_TYPE_SPRT_OFCR) {
 				throw new ErrorException('Wrong logged user type');
 			}
 
@@ -811,37 +807,36 @@ if (!function_exists('set_mass_lecture_online_status')) {
 
 			$sql .= " WHERE start_ts >= :startTime";
 
-			if(!empty($years) || !(empty($semesters))){
+			if (!empty($years) || !(empty($semesters))) {
 				$sql .= " AND course_id IN (SELECT ID FROM courses WHERE ";
 				//parse because i cannot bind value before prepare
 				//years
-				$conditions = array_map(function($el){
-					if(!is_numeric($el)) return false;
-					return "year = ".intval($el);
+				$conditions = array_map(function ($el) {
+					if (!is_numeric($el)) return false;
+					return "year = " . intval($el);
 				}, $years);
 				//remove some falses;
 				$conditions = array_filter($conditions);
 				$year_subsql = implode(" OR ", $conditions);
 				//semesters
-				$conditions2 = array_map(function($el){
-					if(!is_numeric($el)) return false;
-					return "semester = ".intval($el);
+				$conditions2 = array_map(function ($el) {
+					if (!is_numeric($el)) return false;
+					return "semester = " . intval($el);
 				}, $semesters);
 				$conditions2 = array_filter($conditions2);
 				$semester_subsql = implode(" OR ", $conditions2);
 
-				if($semester_subsql != "" && $year_subsql != ""){
-					$sql .= "(".$year_subsql.") AND (".$semester_subsql.")";
-				}
-				else{
-					$sql .= $year_subsql.$semester_subsql;
+				if ($semester_subsql != "" && $year_subsql != "") {
+					$sql .= "(" . $year_subsql . ") AND (" . $semester_subsql . ")";
+				} else {
+					$sql .= $year_subsql . $semester_subsql;
 				}
 
 				$sql .= ")";
 			}
 
-			if(null !== $end_time){
-				$sql .= " AND start_ts <= ".$end_time->getTimestamp();
+			if (null !== $end_time) {
+				$sql .= " AND start_ts <= " . $end_time->getTimestamp();
 			}
 			$stmt = $pdo->prepare($sql);
 			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
