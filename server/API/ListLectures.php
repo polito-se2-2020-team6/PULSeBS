@@ -164,7 +164,7 @@ if (!function_exists('list_lectures')) {
 
 			$userType = intval($userData['type']);
 
-			$pdo = new PDO("sqlite:../db.sqlite");
+			$pdo = new PDO(DB_PATH);
 			switch ($userType) {
 				case USER_TYPE_STUDENT:
 					$stmt = $pdo->prepare($studentQuery);
