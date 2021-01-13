@@ -284,7 +284,7 @@ Require login as support officer
     - originalWeekday: int *(0 to 6, where 0 is Monday, 6 is Sunday)*
     - newWeekday: int *(0 to 6, where 0 is Monday, 6 is Sunday)*
     - newTime: string *(optional: default is to not change the time. Time should be formatted like this hh:mm)*
-    - startDateTime: ISO-8601 date and time *(optional: default is the current date and time)*
+    - startDateTime: ISO-8601 date and UTC time *(optional: default is the current date and time)*
     - endDateTime: ISO-8601 date and time *(optional: default is to the infinite and beyond)*
   - *response body*
     - success: bool
