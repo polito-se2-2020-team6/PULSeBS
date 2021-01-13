@@ -2,7 +2,7 @@ version: "3.0"
 
 services:
     pbs-back:
-        image: "politosftengteam6/pulsebs:backv0.3"
+        image: "politosftengteam6/pulsebs:backv0.4"
         build: "./server"
         network_mode: "bridge"
         links:
@@ -10,7 +10,7 @@ services:
         depends_on:
             - "mailserver"
     pbs-front:
-        image: "politosftengteam6/pulsebs:frontv0.3"
+        image: "politosftengteam6/pulsebs:frontv0.4"
         build: "./client"
         network_mode: "bridge"
         ports:
