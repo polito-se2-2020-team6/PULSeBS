@@ -132,12 +132,13 @@ class UpdateList extends Component {
                       }
                     >
                       <Button
-                        size="sm"
+                        size="md"
                         variant="outline-dark"
                         className="cell"
                         id="ButU4"
+                        style={{cursor:"help"}}
                       >
-                        A.Year
+                        Academic Year
                       </Button>
                     </OverlayTrigger>
                     <DropdownButton
@@ -169,7 +170,7 @@ class UpdateList extends Component {
                         </Tooltip>
                       }
                     >
-                      <Button size="sm" variant="outline-dark" id="ButU5">
+                      <Button size="md" variant="outline-dark" id="ButU5" style={{cursor:"help"}}>
                         Semester
                       </Button>
                     </OverlayTrigger>
@@ -209,7 +210,7 @@ class UpdateList extends Component {
                               </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" id="ButU6">
+                            <Button size="md" variant="outline-dark" id="ButU6" style={{cursor:"help"}}>
                               Start date
                             </Button>
                           </OverlayTrigger>
@@ -237,7 +238,7 @@ class UpdateList extends Component {
                               </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" id="ButU7">
+                            <Button size="sm" variant="outline-dark" id="ButU7" style={{cursor:"help"}}>
                               End date
                             </Button>
                           </OverlayTrigger>
