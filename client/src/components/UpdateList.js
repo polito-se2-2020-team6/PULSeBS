@@ -269,10 +269,7 @@ class UpdateList extends Component {
                   )}
                 </Row>
                 <br></br>
-                {this.state.year !== "None" ||
-                this.state.semester !== "None" ||
-                (this.state.insertDate &&
-                  (this.state.start_date || this.state.end_date)) ? (
+                
                   <Row>
                     <Col md={1}></Col>
                     <Col md={1}>
@@ -288,9 +285,7 @@ class UpdateList extends Component {
                       <h2>{this.state.response}</h2>
                     </Col>
                   </Row>
-                ) : (
-                  <></>
-                )}
+                
               </>
             ) : (
               <>
