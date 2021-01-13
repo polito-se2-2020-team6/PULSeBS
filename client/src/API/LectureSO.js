@@ -17,7 +17,7 @@ class LectureSO {
       const unixTimestamp = ts;
       const milliseconds = unixTimestamp * 1000; // 1575909015000
       const dateObject = new Date(milliseconds);
-      const weekday = dateObject.getDay();
+      const weekday = dateObject.getDay() - 1;
       return weekday;
     };
 
