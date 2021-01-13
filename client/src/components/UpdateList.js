@@ -278,12 +278,12 @@ class UpdateList extends Component {
                         style={{ padding: "none", textAlign: "center" }}
                         className="mt-5"
                       >
-                        {/* {this.state.insertDate ? ( */}
-                        <Col md={12}>
-                          <Row>
-                            <Col md={3}></Col>
-                            <Col md={3}>
-                              {/* <OverlayTrigger
+                        {this.state.insertDate ? (
+                          <Col md={12}>
+                            <Row>
+                              <Col md={3}></Col>
+                              <Col md={3}>
+                                {/* <OverlayTrigger
                             key="top"
                             id="OverL3"
                             placement="top"
@@ -307,32 +307,32 @@ class UpdateList extends Component {
                               Start date
                             </Button>
                           </OverlayTrigger> */}
-                              <Tooltip
-                                title={
-                                  <h5 style={{}}>
-                                    if start date is selected you will update
-                                    all the lectures after the specific date, if
-                                    there is not a Start date it automatically
-                                    selects the current date
-                                  </h5>
-                                }
-                              >
-                                <ContactSupportIcon />
-                              </Tooltip>
-                              <Typography>Start Date</Typography>
-                              <DatePicker
-                                style={{ padding: "none" }}
-                                inline
-                                id="start"
-                                selected={this.state.start_date}
-                                onChange={(date) =>
-                                  this.selectedDate(date, "start")
-                                }
-                              />
-                            </Col>
+                                <Tooltip
+                                  title={
+                                    <h5 style={{}}>
+                                      if start date is selected you will update
+                                      all the lectures after the specific date,
+                                      if there is not a Start date it
+                                      automatically selects the current date
+                                    </h5>
+                                  }
+                                >
+                                  <ContactSupportIcon />
+                                </Tooltip>
+                                <Typography>Start Date</Typography>
+                                <DatePicker
+                                  style={{ padding: "none" }}
+                                  inline
+                                  id="start"
+                                  selected={this.state.start_date}
+                                  onChange={(date) =>
+                                    this.selectedDate(date, "start")
+                                  }
+                                />
+                              </Col>
 
-                            <Col md={3}>
-                              {/* <OverlayTrigger
+                              <Col md={3}>
+                                {/* <OverlayTrigger
                             key="top"
                             id="OverL4"
                             placement="top"
@@ -353,48 +353,67 @@ class UpdateList extends Component {
                             </Button>
                           </OverlayTrigger> */}
 
-                              <Tooltip
-                                title={
-                                  <h5 style={{}}>
-                                    if End date is selected you will update all
-                                    the lectures before the specific date
-                                  </h5>
-                                }
-                              >
-                                <ContactSupportIcon />
-                              </Tooltip>
-                              <Typography>End Date</Typography>
-                              <DatePicker
-                                style={{ padding: "none" }}
-                                inline
-                                id="end"
-                                selected={this.state.end_date}
-                                onChange={(date) =>
-                                  this.selectedDate(date, "end")
-                                }
-                              />
-                            </Col>
-                            <Col md={3}></Col>
-                            {/* <Col md={2}>
+                                <Tooltip
+                                  title={
+                                    <h5 style={{}}>
+                                      if End date is selected you will update
+                                      all the lectures before the specific date
+                                    </h5>
+                                  }
+                                >
+                                  <ContactSupportIcon />
+                                </Tooltip>
+                                <Typography>End Date</Typography>
+                                <DatePicker
+                                  style={{ padding: "none" }}
+                                  inline
+                                  id="end"
+                                  selected={this.state.end_date}
+                                  onChange={(date) =>
+                                    this.selectedDate(date, "end")
+                                  }
+                                />
+                              </Col>
+                              <Col md={3}></Col>
+                            </Row>
+                            <Row>
+                              <Col md={12}>
+                                <Row style={{ marginTop: "30px" }}>
+                                  <Col md={4}></Col>
+                                  <Col md={4}>
+                                    <Button
+                                      variant="outlined"
+                                      color="secondary"
+                                      fullWidth
+                                      id="ButU8"
+                                      onClick={(e) =>
+                                        this.changeInsertDate(false)
+                                      }
+                                    >
+                                      Disable Calendar
+                                    </Button>
+                                  </Col>
+                                  <Col md={4}></Col>
+                                </Row>
+                              </Col>
+                            </Row>
+                          </Col>
+                        ) : (
+                          <>
+                            <Col md={4}></Col>
+                            <Col md={4}>
                               <Button
-                                id="ButU8"
-                                onClick={(e) => this.changeInsertDate(false)}
+                                variant="outlined"
+                                color="primary"
+                                fullWidth
+                                id="ButU9"
+                                onClick={(e) => this.changeInsertDate(true)}
                               >
-                                Remove date
+                                Enable Calendar
                               </Button>
-                            </Col> */}
-                          </Row>
-                        </Col>
-                        {/* ) : (
-                        <Col md={12}>
-                          <Button
-                            id="ButU9"
-                            onClick={(e) => this.changeInsertDate(true)}
-                          >
-                            Insert date
-                          </Button>
-                        </Col>
-                      )} */}
+                            </Col>
+                          </>
+                        )}
                       </Row>
                       <Row>
                         <Col md={1}></Col>
