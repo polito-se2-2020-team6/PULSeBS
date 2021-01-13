@@ -287,11 +287,6 @@ if (!function_exists("update_lectures_schedule_by_course")){
 			// Get type of user
 			$userData = get_myself();
 
-			if (!$userData) {
-				// User doesn't exist, but is logged in ❓❓❓
-				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
-				return;
-			}
 
 			$userType = intval($userData['type']);
 
