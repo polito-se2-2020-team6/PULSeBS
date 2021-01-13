@@ -251,14 +251,13 @@ Requires login as teacher or booking manager
     - bookingsAvg: float
     - bookingsStdDev: float
     - totalBookings: int
-    - attendanceAvg: float
-    - attendanceStdDev: float
-    - totalAttendance: int
+    - attendancesAvg: float
+    - attendancesStdDev: float
+    - totalAttendances: int
     - cancellationsAvg: float
     - cancellationsStdDev: float
     - totalCancellations: int
     - nLectures: int
-      - attendance statistics are not present at the moment
       - cancellation statistics are present only for a booking manager
 
 # Upload students csv
