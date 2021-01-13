@@ -1,13 +1,9 @@
 import React, { Component } from "react";
-import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
 import Form from "react-bootstrap/Form";
-import Tabs from "react-bootstrap/Tabs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Tab from "react-bootstrap/Tab";
 import API from "../API/API";
-
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 
@@ -58,7 +54,6 @@ class EditLectures extends Component {
         this.state.endDate
       )
         .then((respond) => {
-          console.log(respond);
           if (respond.success) {
             toast.success("The Schedule has been updated!");
             this.componentDidMount();
@@ -144,7 +139,6 @@ function TableRow(props) {
         </td>
       </tr>
 
-      {/* <div id={modalId} className="hide">*/}
         <tr id={modalId} className="hide">
           <td>
             <Form.Group>
@@ -203,7 +197,6 @@ function TableRow(props) {
             </Button>
           </td>
         </tr>
-      {/*</div> */}
     </>
   );
 }

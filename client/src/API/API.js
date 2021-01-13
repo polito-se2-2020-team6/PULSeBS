@@ -500,7 +500,6 @@ async function UpdateSchedule(
 
     let url = baseURL + `/courses/${courseId}/schedule`;
     let data = allData;
-    console.log(data);
     const res = await fetch(url, {
       method: "PATCH",
       body: data,
@@ -514,50 +513,6 @@ async function UpdateSchedule(
   });
 }
 
-//Edit a course Schedule
-async function editSchedule(
-  courseId,
-  original,
-  newDay,
-  newTime,
-  startDate,
-  endDate
-) {
-  //console.log(courseId,original,newDay,newTime,startDate,endDate)
-  // // return a new promise.
-  //return new Promise(function (resolve, reject) {
-  // do the usual XHR stuff
-  //var req = new XMLHttpRequest();
-  // let url = baseURL + `/courses/${courseId}/schedule`;
-  // let data = `originalWeekday=${original}&newWeekday=${newDay}`
-  // if(newTime){
-  //   data+= `&newTime=${newTime}`
-  // }
-  // if(startDate){
-  //   data+= `&startDateTime=${startDate}`
-  // }
-  // if(endDate){
-  //   data+= `&endDateTime=${endDate}`
-  // }
-  // req.open("patch", url);
-  // //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
-  // req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-  // req.onload = function () {
-  //   if (req.status === 200) {
-  //     const response = req.response;
-  //     let obj = JSON.parse(response);
-  //     resolve(obj);
-  //   } else {
-  //     reject(Error(req.statusText));
-  //   }
-  // };
-  // // handle network errors
-  // req.onerror = function () {
-  //   reject(Error("Network Error"));
-  // }; // make the request
-  // req.send(data);
-  //});
-}
 
 //get all lectures of a specific course for support officer
 async function getAllLecturesSO(courseId) {
@@ -660,7 +615,6 @@ const API = {
   UpdateLectureList,
   getAllCoursesSO,
   getAllLecturesSO,
-  editSchedule,
   UpdateSchedule,
 };
 export default API;
