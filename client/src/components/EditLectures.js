@@ -13,19 +13,52 @@ class EditLectures extends Component {
   state = {
     show: false,
     lectures: [],
+    newDay:null,
+    startDate:'',
+    endDate:'',
+    newTime:''
   };
 
   componentDidMount() {
     API.getAllLecturesSO(this.props.courseId)
       .then((lectures) => {
         this.setState({ lectures: lectures });
-        console.log(this.state.lectures);
       })
       .catch((err) => console.log(err));
   }
-  showDialog = (type) => {
-    this.setState({ show: type });
+  showDialog = (id) => {
+    document.getElementById(id).classList.toggle('visible');
+    
   };
+
+  changeHandler=(event)=>{
+    if(event.target.id === 'day'){
+      this.setState({newDay : event.target.value})
+    }else if(event.target.id === 'time'){
+      this.setState({newTime : event.target.value})
+    }else if(event.target.id === 'endDate'){
+      console.log(event.target.value)
+      this.setState({endDate : event.target.value})
+    }else if(event.target.id === 'startDate'){
+      this.setState({startDate : event.target.value})
+    }
+  }
+
+  submitHandler = (event)=>{
+    console.log(event.target.id);
+    API.editSchedule(
+      this.props.courseId,
+      event.target.id,
+      this.state.newDay,
+      this.state.newTime,
+      this.state.startDate,
+      this.state.endDate)
+      .then((respond) => {
+       console.log(respond)
+      })
+      .catch((err) => console.log(err));
+  }
+
   render() {
     return (
       <>
@@ -46,6 +79,8 @@ class EditLectures extends Component {
                   show={this.state.show}
                   showDialog={this.showDialog}
                   lecture={lecture}
+                  changeHandler={this.changeHandler}
+                  submitHandler={this.submitHandler}
                 />
               );
             })}
@@ -57,7 +92,9 @@ class EditLectures extends Component {
 }
 
 function TableRow(props) {
+  const modalId =props.lecture.lectureId;
   return (
+    <>
     <tr key={props.lecture.lectureId}>
       <td>1</td>
       <td>{props.lecture.startTS}</td>
@@ -76,70 +113,47 @@ function TableRow(props) {
         </td>
       )}
       <td>
-        <ShowModal
-          show={props.show}
-          showDialog={props.showDialog}
-          id={props.lecture.lectureId}
-          lecture={props.lecture}
-        />
-      </td>
-    </tr>
-  );
-}
-
-function ShowModal(props) {
-  return (
-    <>
-      <Button id="edit-lecture" variant="primary" onClick={() => props.showDialog(true)}>
+      <Button id="edit-lecture" variant="primary" onClick={()=> props.showDialog(modalId)}>
         Edit Lecture
       </Button>
-
-      <Modal
-      id="edit-window"
-        key={props.id}
-        show={props.show}
-        onHide={() => props.showDialog(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="edit-window-title" >Edit Schedule</Modal.Title>
-        </Modal.Header>
-        <Modal.Body id="edit-window-body">
-          <Form.Group controlId="formGridState">
+        
+      </td>
+      
+    </tr>
+   
+    <div id={modalId}  className="hide">
+    <tr>
+        <td><Form.Group >
             <Form.Label>Day</Form.Label>
-            <Form.Control as="select" defaultValue="Choose...">
-              <option value='none'>Choose...</option>
+            <Form.Control as="select" defaultValue={props.lecture.weekday} id="day" onChange={props.changeHandler}>
               <option value='0'>Monday</option>
               <option value='1'>Tuesday</option>
               <option value='2'>Wednesday</option>
               <option value='3'>Thursday</option>
               <option value='4'>Friday</option>
             </Form.Control>
-          </Form.Group>
-
-          <Form.Group>
+          </Form.Group></td>
+        <td><Form.Group>
             <Form.Label>Time</Form.Label>
-            <Form.Control type="time" />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Start Time</Form.Label>
-            <Form.Control type="date" />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>End Time</Form.Label>
-            <Form.Control type="date" />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" id="edit-window-close" onClick={() => props.showDialog(false)}>
-            Close
-          </Button>
-          <Button variant="primary" id="edit-window-save" onClick={() => props.showDialog(false)}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+            <Form.Control id="time" type="time"  onChange={props.changeHandler}/>
+          </Form.Group></td>
+        <td><Form.Group>
+            <Form.Label>Start Date</Form.Label>
+            <Form.Control id="startDate" type="date"  onChange={props.changeHandler}/>
+          </Form.Group></td>
+        <td><Form.Group>
+            <Form.Label>End Date</Form.Label>
+            <Form.Control id="endDate" type="date" onChange={props.changeHandler} />
+          </Form.Group></td>
+        <td><Button id={props.lecture.weekday} variant="success" onClick={props.submitHandler}>
+        Save Changes
+      </Button></td>
+        </tr>
+        </div>
+      </>
+    
   );
 }
+
 
 export default EditLectures;
