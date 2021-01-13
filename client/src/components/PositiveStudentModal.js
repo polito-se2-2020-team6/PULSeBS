@@ -43,8 +43,41 @@ class PositiveStudentModal extends React.Component {
     // }
   };
 
-  generateReport = () => {
-    API.getCTReport(this.props.positiveSTD.userId, this.state.value.value);
+  generateReport = async () => {
+    let fnGetFileNameFromContentDispostionHeader = function (header) {
+      let contentDispostion = header.split(';');
+      const fileNameToken = `filename=`;
+
+      let fileName = 'downloaded.csv';
+      for (let thisValue of contentDispostion) {
+          if (thisValue.trim().indexOf(fileNameToken) === 0) {
+              fileName = decodeURIComponent(thisValue.trim().replace(fileNameToken, ''));
+              break;
+          }
+      }
+
+      return fileName;
+    };
+    const responseCsv = await API.getCTReport(this.props.positiveSTD.userId, this.state.value.value);
+    const filename = fnGetFileNameFromContentDispostionHeader(responseCsv.headers.get('content-disposition'));
+    const blob = await responseCsv.blob();
+    const newBlob = new Blob([blob], { type: responseCsv.headers.get('content-type') });
+
+    // MS Edge and IE don't allow using a blob object directly as link href, instead it is necessary to use msSaveOrOpenBlob
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveOrOpenBlob(newBlob);
+    } else {
+        // For other browsers: create a link pointing to the ObjectURL containing the blob.
+        const objUrl = window.URL.createObjectURL(newBlob);
+
+        let link = document.createElement('a');
+        link.href = objUrl;
+        link.download = filename;
+        link.click();
+
+        // For Firefox it is necessary to delay revoking the ObjectURL.
+        setTimeout(() => { window.URL.revokeObjectURL(objUrl); }, 250);
+    }
   };
 
   render() {
