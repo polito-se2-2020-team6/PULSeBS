@@ -36,36 +36,36 @@ class EditLectures extends Component {
   };
 
   changeHandler = (event) => {
-    if (event.target.id === "day") {
+    if(event.target.id === "day") {
       this.setState({ newDay: event.target.value });
-    } else if (event.target.id === "time") {
+    } else if(event.target.id === "time") {
       this.setState({ newTime: event.target.value });
-    } else if (event.target.id === "endDate") {
+    } else if(event.target.id === "endDate") {
       console.log(event.target.value);
       this.setState({ endDate: event.target.value });
-    } else if (event.target.id === "startDate") {
+    } else if(event.target.id === "startDate") {
       this.setState({ startDate: event.target.value });
     }
   };
 
   submitHandler = (event) => {
-    if (this.state.newDay === null) {
+    if(this.state.newDay === null) {
       toast.warn("Please Select A new Day");
     } else {
       API.UpdateSchedule(
         this.props.courseId,
-        event.target.id,
+        event.target.dataset.weekday,
         this.state.newDay,
         this.state.newTime,
         this.state.startDate,
         this.state.endDate
       )
         .then((respond) => {
-          if (respond.success) {
+          if(respond.success) {
             toast.success("The Schedule has been updated!");
             this.componentDidMount();
           } else {
-            if (respond.reason == "startDateTime cannot be in the past") {
+            if(respond.reason == "startDateTime cannot be in the past") {
               toast.error("Please Select Correct Start Date");
             } else {
               toast.error("There was an error please Try Again!");
@@ -106,7 +106,7 @@ class EditLectures extends Component {
                   changeHandler={this.changeHandler}
                   submitHandler={this.submitHandler}
                   count={count}
-                  courseId = {this.props.courseId}
+                  courseId={this.props.courseId}
                 />
               );
             })}
@@ -120,24 +120,24 @@ class EditLectures extends Component {
 function TableRow(props) {
   console.log(props.weekday);
   const modalId = props.count;
-  const uniqueId = `${props.courseId}-${props.count}` ;
+  const uniqueId = `${props.courseId}-${props.count}`;
   console.log(uniqueId)
   let weekday;
-   switch (props.weekday) {
+  switch(props.weekday) {
     case 0:
-      weekday="Monday";
+      weekday = "Monday";
       break;
     case 1:
-      weekday="Tuesday";
+      weekday = "Tuesday";
       break;
     case 2:
-      weekday="Wednesday";
+      weekday = "Wednesday";
       break;
     case 3:
-      weekday="Thursday";
+      weekday = "Thursday";
       break;
     case 4:
-      weekday="Friday";
+      weekday = "Friday";
       break;
     default:
   }
@@ -149,7 +149,7 @@ function TableRow(props) {
         <td>{weekday}</td>
         <td>----</td>
         <td>----</td>
-        
+
         <td>
           <Button
             id="edit-lecture"
@@ -210,7 +210,7 @@ function TableRow(props) {
           </Form.Group>
         </td>
         <td>
-          <Button id={modalId} variant="success" onClick={props.submitHandler}>
+          <Button id={modalId} variant="success" onClick={props.submitHandler} data-weekday={props.weekday}>
             Save Changes
           </Button>
         </td>
