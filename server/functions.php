@@ -12,6 +12,8 @@ define("USER_TYPE_SPRT_OFCR", 3);
 
 define('LECTURE_REMOTE', 0x1);
 define('LECTURE_CANCELLED', 0x2);
+
+define('DB_PATH', "sqlite:../db.sqlite");
 /* Utilities */
 
 if (!function_exists("check_login")) {
@@ -636,4 +638,31 @@ if(!function_exists("get_lectures_by_course")){
 		// Send stuff
 		return array('lectures' => $lectures) + $ret;
 	}
+}
+
+
+function get_students_booked_by_lecture($lectureId){
+	$pdo = new PDO(DB_PATH);
+	// Get students
+	$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
+							FROM users U, bookings B
+							WHERE U.ID = B.user_id 
+								AND lecture_id = :lectureId
+								AND type = :student 
+								AND booking_ts IS NOT NULL
+								AND cancellation_ts IS NULL');
+	$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
+	$stmt->bindValue(':student', intval(USER_TYPE_STUDENT), PDO::PARAM_INT);
+	if (!$stmt->execute()) {
+		throw new PDOException($stmt->errorInfo()[2]);
+	}
+	$students = array();
+	while ($s = $stmt->fetch()) {
+		$students[] = array(
+			'studentId' => intval($s['ID']),
+			'email' => $s['email'],
+			'studentName' => $s['lastname'] . ' ' . $s['firstname']
+		);
+	}
+	return $students;
 }
