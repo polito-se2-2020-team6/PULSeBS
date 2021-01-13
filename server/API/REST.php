@@ -354,18 +354,20 @@ if (!function_exists("update_lectures_schedule_by_course")){
 
 				$affectedRows = $stmt->rowCount();
 				//retrieving students to which send the mails
-				$students = array();
-				foreach($lectures["lectures"] as $lecture){
-					$students = array_merge($students, get_students_booked_by_lecture($lecture["lectureId"]));
-				}
-				
-				foreach($students as $student){
-					$text_message = "Mr./Mrs. ".$student["studentName"].",\nThe lectures of the course ".$lecture["courseName"]."(".$lecture["courseCode"].") that were held on ".$weekdays[$original_weekday]." has been reschedule to ".$weekdays[$new_weekday].". The time has been unchanged and the changes will apply from ".$startDateString;
-					mail(
-						$student["email"],
-						"Rescheduling of lectures for \"".$lectures["courseName"]."\"",
-						$text_message
-					);
+				if($affectedRows > 0){
+					$students = array();
+					foreach($lectures["lectures"] as $lecture){
+						$students = array_merge($students, get_students_booked_by_lecture($lecture["lectureId"]));
+					}
+					
+					foreach($students as $student){
+						$text_message = "Mr./Mrs. ".$student["studentName"].",\nThe lectures of the course ".$lecture["courseName"]."(".$lecture["courseCode"].") that were held on ".$weekdays[$original_weekday]." has been reschedule to ".$weekdays[$new_weekday].". The time has been unchanged and the changes will apply from ".$startDateString;
+						mail(
+							$student["email"],
+							"Rescheduling of lectures for \"".$lectures["courseName"]."\"",
+							$text_message
+						);
+					}
 				}
 			}
 			else{
