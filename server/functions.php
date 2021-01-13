@@ -407,5 +407,5 @@ function get_students_booked_by_lecture($lectureId){
 			'studentName' => $s['lastname'] . ' ' . $s['firstname']
 		);
 	}
-	return $students
+	return $students;
 }
