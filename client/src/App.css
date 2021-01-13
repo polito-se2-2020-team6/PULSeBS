@@ -52,3 +52,9 @@
   font-size: 18px;
   padding: 30px;
 }
+.hide{
+  display: none;
+}
+.visible{
+  display: block;
+}
