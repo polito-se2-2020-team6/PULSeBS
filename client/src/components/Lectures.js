@@ -16,12 +16,11 @@ class LectureList extends Component {
   }
 
   scroll = () => {
-      setTimeout(() => {
-        document.getElementById("booked").scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 1000);
-   
+    setTimeout(() => {
+      document.getElementById("booked").scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 1000);
   };
 
   render() {
@@ -31,15 +30,15 @@ class LectureList extends Component {
           role="main"
           className="main p-lg-4 p-xl-4 p-md-4 p-sm-4 col-md-12 ml-sm-auto col-lg-12 px-md-4"
         >
-            
           <Row xs={2} md={4} lg={6}>
             <Col>
               <DropdownButton
                 className="mb-4"
-                id="dropdown-basic-button"
+                id="dropdown-filter"
                 title="Filter Courses"
               >
                 <Dropdown.Item
+                  id="filter-items"
                   onClick={() => {
                     this.props.filterLectures("all");
                   }}
@@ -59,6 +58,7 @@ class LectureList extends Component {
             </Col>
             <Col>
               <Button
+                id="booked-lecture"
                 variant="info"
                 className="ml-n5"
                 onClick={() => this.scroll()}
@@ -69,7 +69,10 @@ class LectureList extends Component {
           </Row>
           <div className=" table-responsive">
             <h2 className="mt-5 ml-">Available Lectures</h2>
-            <table className="font-size: 22px; table table-striped table-hover text-center">
+            <table
+              id="avail-lecture"
+              className=" table table-striped table-hover text-center"
+            >
               <thead>
                 <tr className="">
                   <th>Course Name</th>
@@ -123,7 +126,7 @@ class LectureList extends Component {
             </table>
 
             <h2 className="mt-5 ml-">Booked Lectures</h2>
-            <table id="booked" className="table table-hover text-center">
+            <table id="booked"  className="table table-hover text-center ">
               <thead>
                 <tr className="">
                   <th>Course Name</th>
@@ -154,9 +157,7 @@ class LectureList extends Component {
                 )}
               </tbody>
             </table>
-            <AlertDismissibleExample
-              failedBooked={this.props.failedBooked}
-            />
+            <AlertDismissibleExample failedBooked={this.props.failedBooked} />
           </div>
         </main>
       </Fragment>
@@ -206,6 +207,7 @@ function LectureData(props) {
         <td>
           {props.lecture.bookedSelf === false ? (
             <Button
+              id="book-a-seat"
               variant="outline-success"
               onClick={() => {
                 props.bookSeat(props.lecture.lectureId);
@@ -260,16 +262,17 @@ function LectureData(props) {
 }
 
 function AlertDismissibleExample(props) {
-  if(props.failedBooked === 1)
-    {return (
+  if (props.failedBooked === 1) {
+    return (
       <Alert variant="danger">
         <Alert.Heading>Booking is Failed, Please Try Again!</Alert.Heading>
       </Alert>
-    );}else if (props.failedBooked ===0){
-      return('')
-    }else{
-      return('')
-    }
+    );
+  } else if (props.failedBooked === 0) {
+    return "";
+  } else {
+    return "";
+  }
 }
 
 export default LectureList;

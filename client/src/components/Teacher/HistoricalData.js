@@ -156,7 +156,6 @@ class HistoricalData extends React.Component {
         data.labels[i] = m || w || l;
         data.datasets[0].data[i] = this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendancesAvg;
         tableData[i] = { labels: m || w || l1, data: this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendancesAvg };
-
         if (
           this.state.detailLevel === "Week" ||
           this.state.detailLevel === "Month"
@@ -198,7 +197,7 @@ class HistoricalData extends React.Component {
       labels: [],
       datasets: [
         {
-          label: "AVG Bookings",
+          label: "AVG",
           backgroundColor: "rgb(22, 205, 254)",
           borderColor: "rgb(35, 126, 254)",
           borderWidth: 1,
