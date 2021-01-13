@@ -64,7 +64,7 @@ else if(props.dialog==="turn"){
 else if(props.dialog==="UpdateList"){
   return(
     <>
-    <Button variant="success"  size="lg" onClick={handleShow} id="but4">
+    <Button variant="success"  size="lg" onClick={handleShow} id="but4" style={{height:"70px"}}>
         Update
       </Button>
 

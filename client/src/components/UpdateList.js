@@ -97,7 +97,7 @@ class UpdateList extends Component {
                 <Row id="row1">
                   <Col md={1}></Col>
                   <Col md={1}>
-                    <Button size="sm" variant="outline-dark" id="ButU1">
+                    <Button variant="outline-dark" id="ButU1" style={{height:"55px"}}>
                       Status
                     </Button>
                     {this.state.online ? (
@@ -136,7 +136,7 @@ class UpdateList extends Component {
                         variant="outline-dark"
                         className="cell"
                         id="ButU4"
-                        style={{cursor:"help"}}
+                        style={{cursor:"help",height:"55px"}}
                       >
                         Academic Year
                       </Button>
@@ -170,7 +170,7 @@ class UpdateList extends Component {
                         </Tooltip>
                       }
                     >
-                      <Button size="md" variant="outline-dark" id="ButU5" style={{cursor:"help"}}>
+                      <Button size="md" variant="outline-dark" id="ButU5" style={{cursor:"help",height:"55px"}}>
                         Semester
                       </Button>
                     </OverlayTrigger>
@@ -210,7 +210,7 @@ class UpdateList extends Component {
                               </Tooltip>
                             }
                           >
-                            <Button size="md" variant="outline-dark" id="ButU6" style={{cursor:"help"}}>
+                            <Button size="md" variant="outline-dark" id="ButU6" style={{cursor:"help",height:"55px"}}>
                               Start date
                             </Button>
                           </OverlayTrigger>
@@ -238,7 +238,7 @@ class UpdateList extends Component {
                               </Tooltip>
                             }
                           >
-                            <Button size="sm" variant="outline-dark" id="ButU7" style={{cursor:"help"}}>
+                            <Button  variant="outline-dark" id="ButU7" style={{cursor:"help",height:"55px"}}>
                               End date
                             </Button>
                           </OverlayTrigger>
@@ -262,6 +262,7 @@ class UpdateList extends Component {
                     <>
                       <Button
                         id="ButU9"
+                        
                         onClick={(e) => this.changeInsertDate(true)}
                       >
                         Insert date
@@ -270,7 +271,6 @@ class UpdateList extends Component {
                   )}
                 </Row>
                 <br></br>
-                
                   <Row>
                     <Col md={1}></Col>
                     <Col md={1}>
@@ -283,10 +283,9 @@ class UpdateList extends Component {
                       />
                     </Col>
                     <Col>
-                      <h2>{this.state.response}</h2>
+                      <h2 className="mt-3">{this.state.response}</h2>
                     </Col>
                   </Row>
-                
               </>
             ) : (
               <>
