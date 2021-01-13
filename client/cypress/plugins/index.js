@@ -16,6 +16,7 @@
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
+  // config.ignoreTestFiles = "/client/src/reportWebVitals.js";
   require("@cypress/code-coverage/task")(on, config);
 
   // add other tasks to be registered here

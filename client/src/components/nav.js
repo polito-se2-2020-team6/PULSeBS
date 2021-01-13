@@ -45,13 +45,13 @@ class Navigation extends Component {
                         </NavItem>
                       )}
                       {context.authUser.type === ROLES.TEACHER && (
+                        <>
                         <NavItem>
                           <NavLink className="nav-link" to="/teacher/home">
                             Courses
                           </NavLink>
                         </NavItem>
-                      )}
-                      {context.authUser.type === ROLES.TEACHER && (
+                      
                         <NavItem>
                           <NavLink
                             id="historicaldata"
@@ -61,6 +61,17 @@ class Navigation extends Component {
                             Historical Data
                           </NavLink>
                         </NavItem>
+
+                        <NavItem>
+                          <NavLink
+                            id="recordPresence"
+                            className="nav-link"
+                            to="/teacher/recordPresence"
+                          >
+                            Record Presence
+                          </NavLink>
+                        </NavItem>
+                        </>
                       )}
                       {context.authUser.type === ROLES.BOOKING_MANAGER && (
                         <NavItem>
@@ -83,6 +94,21 @@ class Navigation extends Component {
                           </NavLink>
                         </NavItem>
                       )}
+                      {context.authUser.type === ROLES.SUPPORT_OFFICER && (
+                        <NavItem>
+                          <NavLink className="nav-link" id="supporthome" to="/support/home">
+                            Upload CSV
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      {context.authUser.type === ROLES.SUPPORT_OFFICER && (
+                        <NavItem>
+                          <NavLink className="nav-link" id="supportupdate" to="/support/update">
+                            Update List
+                          </NavLink>
+                        </NavItem>
+                      )}
+                      
 
                       <NavItem className="ml-auto">
                         <NavLink

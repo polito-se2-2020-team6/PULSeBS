@@ -363,6 +363,40 @@ async function turnLecture(lectureId, online) {
   });
 }
 
+async function UpdateLectureList(year, semester, start, end, online) {
+  let years=[]
+  /*years[0]=2021;
+  years[1]=2022;
+  */
+  years[0]=year
+  let semesters=[]
+  semesters[0]=semester
+  let y = year ? `&year[]=${years}` : "";
+  let s = semester ? `&semester[]=${semesters}` : "";
+  let st = start ? `&start_date=${start}` : "";
+  let en = end ? `&end_date=${end}` : "";
+
+  years[0]=year;
+  return new Promise(async function  (resolve, reject) {
+    // do the usual XHR stuff
+    let url = baseURL + `/lectures/online`;
+    let data = `value=${online}`+y+s+st+en;
+    const res= await fetch(url, {
+      method: 'PATCH',
+      body: data
+    })
+    const lectureJson = await res.json();
+    if (res.ok) {
+      
+      resolve(lectureJson);
+    }
+    else{
+      reject(Error("Network Error upload"));
+    }
+    
+  });
+}
+
 //Logout **POST** /api/logout
 async function userLogout() {
   return new Promise((resolve, reject) => {
@@ -442,6 +476,35 @@ async function getAllCourses() {
   }
 }
 
+//setAttendance
+async function setAttendance(lectureId, studentId, attended) {
+  console.log(attended);
+  return new Promise(function (resolve, reject) {
+    // do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    let url = baseURL + `/lectures/${lectureId}/students/${studentId}`;
+    let data = `attended=${attended}`;
+
+    req.open("PATCH", url);
+    //NOW WE TELL THE SERVER WHAT FORMAT OF POST REQUEST WE ARE MAKING
+    req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    req.onload = function () {
+      if (req.status === 200) {
+        const response = req.response;
+        let obj = JSON.parse(response);
+        resolve(obj);
+      } else {
+        reject(Error(req.statusText));
+      }
+    };
+    // handle network errors
+    req.onerror = function () {
+      reject(Error("Network Error"));
+    }; // make the request
+    req.send(data);
+  });
+}
+
 async function uploadCsv(file, section, start, end) {
   return new Promise(async function (resolve, reject) {
     //the received file will be formatted
@@ -468,10 +531,6 @@ async function uploadCsv(file, section, start, end) {
         data.append("teacher_file", file, "teacher_file.csv");
         break;
       case "Enrollments":
-        url = baseURL + `/enrollments/upload`;
-        data.append("enrollment_file", file, "enrollment_file.csv");
-        break;
-      case "Classes":
         url = baseURL + `/enrollments/upload`;
         data.append("enrollment_file", file, "enrollment_file.csv");
         break;
@@ -536,5 +595,7 @@ const API = {
   getStatesMonthly,
   uploadCsv,
   getAllCourses,
+  setAttendance,
+  UpdateLectureList,
 };
 export default API;

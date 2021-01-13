@@ -126,7 +126,42 @@ Requires login as teacher
       - studentId: int
       - studentName: string
       - email: string
-      - inWaitingList : bool
+      - inWaitingList: bool
+      - attended: bools
+
+# Set attendance
+
+Requires login as teacher
+
+- **PATCH** /api/lectures/{lectureId}/students/{studentId}
+  - *params detail*
+    - lectureId: int
+    - studentId: int
+  - *request params*
+    - attended: bool
+  - *response body*
+    - success: bool
+
+The endpoint will fail if trying to modify attendances of a lecture that took place on a previous day.
+*Example:*
+The execution of `/api/lectures/3/students/1` called on 2021-01-06 15:30:00 will be allowed only if lecture 3 has a start time between 2021-01-06 00:00:00 and 2021-01-06 15:30:00 inclusive.
+
+# Set attendance
+
+Requires login as teacher
+
+- **PATCH** /api/lectures/{lectureId}/students/{studentId}
+  - *params detail*
+    - lectureId: int
+    - studentId: int
+  - *request params*
+    - attended: bool
+  - *response body*
+    - success: bool
+
+The endpoint will fail if trying to modify attendances of a lecture that took place on a previous day.
+*Example:*
+The execution of `/api/lectures/3/students/1` called on 2021-01-06 15:30:00 will be allowed only if lecture 3 has a start time between 2021-01-06 00:00:00 and 2021-01-06 15:30:00 inclusive.
 
 # Cancel a booking
 
@@ -157,6 +192,21 @@ Requires login as teacher
     - value: bool
   - _response body_
     - success: bool
+
+# Edit a block of lecture online status
+
+Requires login as support officer
+
+- **PATCH** /api/lectures/online
+  - _request params_
+    - value: bool (true -> turn all to online, false -> turn all to presence)
+    - year: array(int) _(optional, default: all the years)_
+    - semester: array(int) _(optional, default: all the semesters)_
+    - start_date: ISO-8601 date _(optional, default: current date and time)_
+    - end_date: ISO-8601 date _(optional, default: last day of 35 ABY (if you don't know what is it, search star wars))_
+  - _response body_
+    - success: bool
+    - affectedRecords: int
 
 # Booking statistics
 
