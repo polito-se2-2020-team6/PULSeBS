@@ -50,7 +50,7 @@ class ScheduleEdit extends Component {
                     return (
                       <Card id="course-container">
                         <Accordion.Toggle id="course-title" className="courseTitle" as={Card.Header} eventKey={course.id}>
-                          Course Name : {course.name} , Course Code : {course.code}
+                          Course Name :<span> {course.name} </span>, Course Code :<span> {course.code}</span>
                         </Accordion.Toggle>
                         <Accordion.Collapse id="course-container" eventKey={course.id}>
                           <Card.Body id="lectures-container">
