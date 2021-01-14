@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import Teacher from './../Teacher';
 import '@testing-library/jest-dom'
 
-import { render } from '@testing-library/react'
 
 //this test check if Teacher render correctly
 it("renders without crashing", ()=>{

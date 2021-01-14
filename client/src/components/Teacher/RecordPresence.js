@@ -43,11 +43,6 @@ import {
             this.setState({
               lectures: lectures.filter((l) => new Date(l.startTS) < new Date()) || [] 
             });
-            
-            if (this.state.lectures.lenght){
-                this.getStudentsBooked(this.state.lectures[0].lectureId)
-            }
-            
           })
           .catch((errorObj) => {
             console.log(errorObj);
@@ -61,7 +56,7 @@ import {
             this.setState({
               students: students.students || [],
             });
-            console.log(students.students)
+            
           })
           .catch((errorObj) => {
             console.log(errorObj);
@@ -72,7 +67,8 @@ import {
         API.setAttendance(lectureId, studentId, attended)
           .then((response) => {
             //bo guarda se è true
-            console.log(response)
+            
+            this.getStudentsBooked(lectureId)
           })
           .catch((errorObj) => {
             console.log(errorObj);
@@ -85,8 +81,9 @@ import {
             {(context) => (
               <>
                 {context.authUser === null && <Redirect to="/login"></Redirect>}
+                
                 <Container className = "mt-3">
-                <Row className="justify-content-md-center mb-3"><h5>Click on the lectures to record the presences</h5></Row>
+                <Row className="justify-content-md-center mb-3"><h5>Click on the lectures to record the presence</h5></Row>
                 <Accordion defaultActiveKey="0" id="acc">
                 
                 {this.state.lectures?.map((l) => (
@@ -98,9 +95,10 @@ import {
                     <Accordion.Collapse eventKey={l.lectureId} id="acc2">
                     <Card.Body id="cab">
                         {this.state.students?.map((s) =>(
-                            //qua in realta devi fare vedere il bottone presente solo se non lhai gia segnato presente
+                            
                         <Row className="mt-1" key={s.studentId}>
-                        <Col>{s.studentName}  
+                        <Col md={3}>{s.studentName}</Col>
+                        <Col>
                         {!s.attended?<Button variant="success" className="ml-2" id="but" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, 1)}>Present</Button>
                         :<Button variant="danger" className="ml-2" id="but" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, 0)}>Not Present</Button>}
                         </Col></Row>
