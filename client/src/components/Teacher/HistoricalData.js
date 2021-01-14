@@ -49,7 +49,6 @@ class HistoricalData extends React.Component {
       progress: 0,
       maxOffset: 0,
       authUser: {},
-
     };
     this.wrapper = React.createRef();
   }
@@ -152,10 +151,26 @@ class HistoricalData extends React.Component {
           week || week === 0
             ? moment(this.getDateOfWeek(week, year)).format("DD/MM/YYYY")
             : "";
-        let l1=l? l+"  -  "+ moment(this.state.totalLectures.find((x) => x.lectureId === idLecture).startTS).format("DD/MM/YYYY HH:mm"):"";
+        let l1 = l
+          ? l +
+            "  -  " +
+            moment(
+              this.state.totalLectures.find((x) => x.lectureId === idLecture)
+                .startTS
+            ).format("DD/MM/YYYY HH:mm")
+          : "";
         data.labels[i] = m || w || l;
-        data.datasets[0].data[i] = this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendancesAvg;
-        tableData[i] = { labels: m || w || l1, data: this.state.BookedAttendance==="Bookings"? s.bookingsAvg : s.attendancesAvg };
+        data.datasets[0].data[i] =
+          this.state.BookedAttendance === "Bookings"
+            ? s.bookingsAvg
+            : s.attendancesAvg;
+        tableData[i] = {
+          labels: m || w || l1,
+          data:
+            this.state.BookedAttendance === "Bookings"
+              ? s.bookingsAvg
+              : s.attendancesAvg,
+        };
         if (
           this.state.detailLevel === "Week" ||
           this.state.detailLevel === "Month"
@@ -294,11 +309,10 @@ class HistoricalData extends React.Component {
   async setAvgBooked(detail) {
     await this.setState({ BookedAttendance: detail });
     //solo se è stato selezionato un detail level chiamo la api per vedere i dati
-    if(this.state.detailLevel!=="Select detail"){
+    if (this.state.detailLevel !== "Select detail") {
       await this.setState({ offset: 1 });
       this.changeValue(this.state.detailLevel);
     }
-    
   }
 
   render() {
@@ -356,10 +370,10 @@ class HistoricalData extends React.Component {
                             </Dropdown>
                           </Col>
                           <Col>
-                          <Dropdown>
+                            <Dropdown>
                               <Dropdown.Toggle
                                 variant="success"
-                                id="dropdown-basic"
+                                id="dropdown-basic3"
                               >
                                 {this.state.BookedAttendance}
                               </Dropdown.Toggle>

@@ -156,6 +156,14 @@ context("Teacher Page", () => {
     cy.get("tbody>tr").eq(0);
     cy.get("tr>td").eq(0).should("be.visible").contains("Information");
     // cy.get("tr>td").eq(1).should("be.visible").contains("");
+
+    //DD bookings
+    cy.get("#dropdown-basic3").click();
+    cy.get("#d1").click();
+    cy.get("#dropdown-basic3").click();
+    cy.get("#d2").click();
+
+    // DD
     cy.get("#dropdown-basic").click();
     cy.get("#d2").click();
     cy.get("#dropdown-basic1")
@@ -185,7 +193,7 @@ context("Support Officer Page", () => {
 
     const fileName = "Students.csv";
     cy.readFile(
-      "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Students.csv"
+      "C:\\Users\\ASUS\\Desktop\\NewNewSE2\\PULSeBS\\client\\src\\data\\csv-files\\Students.csv"
     ).then(function (fileContent) {
       cy.get('input[type="file"]').attachFile({
         fileContent,
@@ -230,21 +238,6 @@ context("Support Officer Page", () => {
     cy.get("#startDate").type("2021-03-15");
     cy.get("#endDate").type("2021-03-25");
     cy.get("#1").click();
-    // Test UpdateList COmponeTuesdaynt ---------------------------------------
-
-    // cy.readFile(
-    //   "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Professors.csv"
-    // ).then(function (fileContent) {
-    //   cy.get('input[type="file"]').attachFile({
-    //     fileContent,
-    //     fileName,
-    //     mimeType: "application/csv",
-    //   });
-    //   cy.get("#uploadBTN").click();
-    //   cy.get("#uploadSucc").should("be.visible");
-    //   cy.get("#uploadBTN").click();
-    //   cy.get("#uploadFail").should("be.visible");
-    // });
   });
 });
 
@@ -258,13 +251,7 @@ context("Booking Manager Page", () => {
     cy.get("#welcomeText")
       .should("be.visible")
       .should("have.text", "Welcome Mr.");
-    // .select("ALL Courses").should("have.value", "0");
-    // cy.get("#course").click();
-    // cy.get("li")
-    //   .first()
-    //   .should("have.value", 0)
-    //   .should("have.text", "ALL Courses")
-    //   .click();
+
     cy.get("#teachersTable").should("be.visible");
     cy.get("#course").click();
     cy.get("li")
