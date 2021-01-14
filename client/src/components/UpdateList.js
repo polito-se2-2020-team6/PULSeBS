@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import DialogAlert from "./DialogAlert";
 // import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 // import InfoIcon from "@material-ui/icons/Info";
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ContactSupportIcon from "@material-ui/icons/ContactSupport";
 import Tooltip from "@material-ui/core/Tooltip";
 import { Col, Row, Dropdown, OverlayTrigger } from "react-bootstrap";
@@ -28,6 +29,8 @@ class UpdateList extends Component {
       online: true,
       response: "",
       today: null,
+      showend:false,
+      showstart:false,
     };
   }
 
@@ -56,7 +59,7 @@ class UpdateList extends Component {
         : null;
       end = this.state.end_date ? this.state.end_date.toISOString() : null;
     }
-    API.UpdateLectureList(y, s, start, end, this.state.online)
+    API.UpdateLectureList(y, s, start, end, !this.state.online)
       .then((res) => {
         this.setState({ response: "Succesfully Update!" });
       })
@@ -77,6 +80,14 @@ class UpdateList extends Component {
     if (!bool) {
       //caso in cui rimuovo la data
       this.setState({ start_date: null, end_date: null });
+    }
+  }
+  showDate(value){
+    if(value==="end"){
+      this.setState({showend: !this.state.showend, end_date: null})
+    }
+    else{
+      this.setState({showstart: !this.state.showstart, start_date: null})
     }
   }
   changeOnlineStatus = () => {
@@ -320,15 +331,19 @@ class UpdateList extends Component {
                                   <ContactSupportIcon />
                                 </Tooltip>
                                 <Typography>Start Date</Typography>
-                                <DatePicker
+                                <ArrowDropDownIcon style={{cursor:"pointer"}} onClick={ ()=> this.showDate("start")}/>
+                                {this.state.showstart?<DatePicker
                                   style={{ padding: "none" }}
                                   inline
                                   id="start"
                                   selected={this.state.start_date}
+                                  minDate={new Date()}
                                   onChange={(date) =>
                                     this.selectedDate(date, "start")
                                   }
                                 />
+                              :<></> }
+                                
                               </Col>
 
                               <Col md={3}>
@@ -364,15 +379,20 @@ class UpdateList extends Component {
                                   <ContactSupportIcon />
                                 </Tooltip>
                                 <Typography>End Date</Typography>
-                                <DatePicker
+                                <ArrowDropDownIcon style={{cursor:"pointer"}} onClick={ ()=> this.showDate("end")}/>
+                                {this.state.showend?<DatePicker
                                   style={{ padding: "none" }}
                                   inline
                                   id="end"
+                                  defaultDate={""}
                                   selected={this.state.end_date}
+                                  minDate={new Date()}
                                   onChange={(date) =>
                                     this.selectedDate(date, "end")
                                   }
                                 />
+                                : <></>}
+                                
                               </Col>
                               <Col md={3}></Col>
                             </Row>
