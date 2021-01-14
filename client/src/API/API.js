@@ -5,33 +5,36 @@ const baseURL = "/API/REST.php/api";
 
 // ---------------------- Return the detail info of positive studen
 async function getPositiveStudentDetail(stID, SSN, idField, ssnField) {
-  // console.log("dadsfadf", /^\d+$/.test(SSN));
-  let url = "";
-  if (stID !== null && idField !== null) {
-    url = `/students/${stID}/${idField}`;
-  } else if (SSN !== null && ssnField !== null) {
-    url = `/students/${SSN}/${ssnField}`;
-  }
-  const response = await fetch(baseURL + url);
-  const positiveSTD = await response.json();
-  if (response.ok) {
-    return positiveSTD;
-  } else {
-    let err = { status: response.status, errObj: positiveSTD };
-    throw err;
+  try {
+    let url = "";
+    if (stID !== null && idField !== null) {
+      url = `/students/${stID}/${idField}`;
+    } else if (SSN !== null && ssnField !== null) {
+      url = `/students/${SSN}/${ssnField}`;
+    }
+    const response = await fetch(baseURL + url);
+    const positiveSTD = await response.json();
+    if (response.ok) {
+      return positiveSTD;
+    }
+  } catch (error) {
+    // let err = { status: response.status, errObj: positiveSTD };
+    throw error;
   }
 }
+// console.log("dadsfadf", /^\d+$/.test(SSN));
 
 async function getCTReport(STID, format) {
-  let url = `/users/${STID}/CTReport/${format}`;
-  const response = await fetch(baseURL + url);
-  // const CTReportJSON = await response.json();
-  // console.log(CTReportJSON);
-  if (response.ok) {
-    return response;
-  } else {
-    let err = { status: response.status, errObj: response };
-    throw err;
+  try {
+    let url = `/users/${STID}/CTReport/${format}`;
+    const response = await fetch(baseURL + url);
+    // const CTReportJSON = await response.json();
+    // console.log(CTReportJSON);
+    if (response.ok) {
+      return response;
+    }
+  } catch (error) {
+    throw error;
   }
 }
 // --------------------------------------------------------------------
