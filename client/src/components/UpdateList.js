@@ -53,12 +53,10 @@ class UpdateList extends Component {
     let s = this.state.semester !== "None" ? this.state.semester : "";
     let start = null;
     let end = null;
-    if (this.state.insertDate) {
       start = this.state.start_date
         ? this.state.start_date.toISOString()
         : null;
       end = this.state.end_date ? this.state.end_date.toISOString() : null;
-    }
     API.UpdateLectureList(y, s, start, end, !this.state.online)
       .then((res) => {
         this.setState({ response: "Succesfully Update!" });
@@ -70,16 +68,9 @@ class UpdateList extends Component {
   }
   selectedDate(date, who) {
     if (who === "start") {
-      this.setState({ start_date: date, response: "" });
+       this.setState({ start_date: date, response: "" });
     } else {
-      this.setState({ end_date: date, response: "" });
-    }
-  }
-  changeInsertDate(bool) {
-    this.setState({ insertDate: bool, response: "" });
-    if (!bool) {
-      //caso in cui rimuovo la data
-      this.setState({ start_date: null, end_date: null });
+       this.setState({ end_date: date, response: "" });
     }
   }
   showDate(value){
@@ -289,7 +280,7 @@ class UpdateList extends Component {
                         style={{ padding: "none", textAlign: "center" }}
                         className="mt-5"
                       >
-                        {this.state.insertDate ? (
+                       
                           <Col md={12}>
                             <Row>
                               <Col md={3}></Col>
@@ -401,39 +392,13 @@ class UpdateList extends Component {
                                 <Row style={{ marginTop: "30px" }}>
                                   <Col md={4}></Col>
                                   <Col md={4}>
-                                    <Button
-                                      variant="outlined"
-                                      color="secondary"
-                                      fullWidth
-                                      id="ButU8"
-                                      onClick={(e) =>
-                                        this.changeInsertDate(false)
-                                      }
-                                    >
-                                      Disable Calendar
-                                    </Button>
                                   </Col>
                                   <Col md={4}></Col>
                                 </Row>
                               </Col>
                             </Row>
                           </Col>
-                        ) : (
-                          <>
-                            <Col md={4}></Col>
-                            <Col md={4}>
-                              <Button
-                                variant="outlined"
-                                color="primary"
-                                fullWidth
-                                id="ButU9"
-                                onClick={(e) => this.changeInsertDate(true)}
-                              >
-                                Enable Calendar
-                              </Button>
-                            </Col>
-                          </>
-                        )}
+                       
                       </Row>
                       <Row>
                         <Col md={1}></Col>

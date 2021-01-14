@@ -78,7 +78,7 @@ function DialogAlert(props) {
     return (
       <>
         <Button
-          style={{ marginTop: "30px", width: "100%" }}
+          style={{ marginTop: "30px", marginBottom:"20px", width: "100%" }}
           variant="success"
           // size="md"
 
