@@ -144,7 +144,7 @@ context("Teacher Page", () => {
       .should("have.text", "Yes, I am")
       .should("be.visible")
       .click();
-
+    // Test historicaldata Component------------------------------------
     cy.get(".tab-content").should("be.visible");
     cy.get("#historicaldata").click();
     cy.url().should("include", "/teacher/historicaldata");
@@ -152,8 +152,18 @@ context("Teacher Page", () => {
     cy.get("#dropdown-basic").click();
     cy.get("#d1").click();
     cy.get("#tabIdd");
-    cy.get("thead>tr").eq(0).should("have.text", "LectureAverage bookings");
+    cy.get("thead>tr").eq(0).should("have.text", "LectureBookings");
     cy.get("tbody>tr").eq(0);
+    cy.get("tr>td").eq(0).should("be.visible").contains("Information");
+    // cy.get("tr>td").eq(1).should("be.visible").contains("");
+
+    //DD bookings
+    cy.get("#dropdown-basic3").click();
+    cy.get("#d1").click();
+    cy.get("#dropdown-basic3").click();
+    cy.get("#d2").click();
+
+    // DD
     cy.get("tr>td").eq(0).should("be.visible").contains("Human");
     cy.get("tr>td").eq(1).should("be.visible").contains("0");
     cy.get("#dropdown-basic").click();
@@ -161,6 +171,11 @@ context("Teacher Page", () => {
     cy.get("#dropdown-basic1")
       .should("be.visible")
       .should("have.text", "Information Systems Security");
+    // Test RecordPresence Component------------------------------------
+    cy.get("#recordPresence").click();
+    cy.url().should("include", "/teacher/recordPresence");
+    cy.get("#acc").should("be.visible");
+    cy.get("#acc1").click();
     cy.get("#logout").click();
   });
 });
@@ -176,9 +191,11 @@ context("Support Officer Page", () => {
     cy.get("#uploadBTN").click();
     cy.get("#selectError").should("be.visible");
 
+    // TEST UPLOAD FILES STUDENTS --------------------------
+
     const fileName = "Students.csv";
     cy.readFile(
-      "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Students.csv"
+      "C:\\Users\\ASUS\\Desktop\\NewNewSE2\\PULSeBS\\client\\src\\data\\csv-files\\Students.csv"
     ).then(function (fileContent) {
       cy.get('input[type="file"]').attachFile({
         fileContent,
@@ -192,21 +209,37 @@ context("Support Officer Page", () => {
     });
 
     cy.get("#uncontrolled-tab-example-tab-teachers", { force: true }).click();
-    // cy.get("#uploadBTN").should("have.text", "Upload").click({ force: true });
+    cy.get("#uploadBTN").should("have.text", "Upload").click({ force: true });
 
-    // cy.readFile(
-    //   "/home/asus/myWork/PULSeBS/client/src/data/csv-files/Professors.csv"
-    // ).then(function (fileContent) {
-    //   cy.get('input[type="file"]').attachFile({
-    //     fileContent,
-    //     fileName,
-    //     mimeType: "application/csv",
-    //   });
-    //   cy.get("#uploadBTN").click();
-    //   cy.get("#uploadSucc").should("be.visible");
-    //   cy.get("#uploadBTN").click();
-    //   cy.get("#uploadFail").should("be.visible");
-    // });
+    // Test UpdateList COmponent ---------------------------------------
+    cy.get("#supportupdate").click();
+    cy.url().should("include", "/support/update");
+    cy.get("#DropD1").click(); // year DD
+    cy.get(".dropdown-item").eq(1).should("have.text", "1").click();
+    cy.get("#Dropdw2").click(); // year DD
+    cy.get(".dropdown-item")
+      .last()
+
+      .click();
+    cy.get("#ButU9").click(); // btn insert date
+    // cy.get("#start").should("be.visible");
+    // cy.get("#end").should("be.visible");
+
+    cy.get("#but4").click(); // update BTN
+    cy.get("#modId2").should("be.visible");
+
+    cy.get("#but6").should("be.visible").click(); // yes modal
+
+    // Test EditLecture COmponent ---------------------------------------
+    cy.get("#supportschedule").click();
+    cy.url().should("include", "/support/schedule");
+    cy.get("#course-title").should("be.visible").click();
+    cy.get("#edit-lecture").click();
+    cy.get("#day").select("Tuesday");
+    cy.get("#time").type("11:30");
+    cy.get("#startDate").type("2021-03-15");
+    cy.get("#endDate").type("2021-03-25");
+    cy.get("#1").click();
   });
 });
 
@@ -220,7 +253,7 @@ context("Booking Manager Page", () => {
     cy.get("#welcomeText")
       .should("be.visible")
       .should("have.text", "Welcome Mr.");
-    // cy.get("#course").select("ALL Courses").should("have.value", "0");
+
     cy.get("#teachersTable").should("be.visible");
     cy.get("#course").click();
     cy.get("li")
@@ -251,5 +284,54 @@ context("Booking Manager Page", () => {
     cy.get(".react-datepicker").should("be.visible");
     cy.get(".react-datepicker__month-11").click();
     cy.get("#monthlyChart").should("be.visible");
+    // ************************************ Test Contact Tracing and Positive Student Modal Components **********************************
+    cy.get("#CT").click();
+    cy.url().should("include", "/booking-manager/contact-tracing");
+    cy.get("#JT")
+      .should("be.visible")
+      .should(
+        "have.text",
+        "Contact Tracing ReportA page for reporting the positive students to comply with safety regulations."
+      );
+    cy.get('[title="Clear"]').click({ force: true });
+    cy.get("#btnSEND").should("have.value", "").should("be.disabled");
+    cy.get("#number").should("have.value", "").should("be.disabled");
+    cy.get("#search-by").should("be.visible").click({ force: true });
+    cy.get("li")
+      .first()
+      .should("have.value", 0)
+      .should("have.text", "Student Number - (SN)")
+      .click();
+    cy.get("#number").type(5);
+    cy.get("#btnSEND").click();
+    cy.get("#modalPOS").should("be.visible");
+    cy.get("#typeCombo").should("be.visible").click();
+    cy.get("li")
+      .first()
+      .should("have.value", 0)
+      .should("have.text", "PDF")
+      .click();
+    cy.get("#generate").click();
+    cy.get("#typeCombo").click();
+    cy.get("li")
+      .eq(1)
+      .should("have.value", 0)
+      .should("have.text", "CSV")
+      .click();
+    cy.get("#generate").click();
+    cy.get("#cancel").click();
+    cy.get("#search-by").click();
+    cy.get("li")
+      .eq(1)
+      .should("have.value", 0)
+      .should("have.text", "Social Security Number - (SSN)")
+      .click();
+    cy.get("#number").clear();
+    cy.get("#number").type("AB123456789");
+    cy.get("#btnSEND").click();
+    cy.get("#modalPOS").should("be.visible");
+    cy.get("#cancel").click();
+    cy.get("#number").clear();
+    cy.get("#btnSEND").click();
   });
 });

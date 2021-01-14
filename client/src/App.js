@@ -4,16 +4,20 @@ import API from "./API/API";
 import LoginPage from "./components/LoginPage";
 import Teacher from "./components/Teacher";
 import HistoricalData from "./components/Teacher/HistoricalData";
+import RecordPresence from "./components/Teacher/RecordPresence";
+import UpdateList from "./components/UpdateList";
 import Calendar from "./components/Calendar";
 import Navigation from "./components/nav";
 import Student from "./components/Student";
 import UsageMonitor from "./components/UsageMonitor";
+import ContactTracing from "./components/ContactTracing";
 import { AuthContext } from "./auth/AuthContext";
 import { Route, Switch, withRouter, Redirect } from "react-router-dom";
 import { ROLES } from "./data/consts";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SupportOfficer from "./components/SupportOfficer";
+import ScheduleEdit from './components/ScheduleEdit'
 
 class App extends React.Component {
   constructor(props) {
@@ -85,10 +89,9 @@ class App extends React.Component {
             this.props.history.push("/student/home?userId=" + user.userId);
             break;
           case ROLES.BOOKING_MANAGER:
-            {
-              this.setState({ authUser: user, authErr: null });
-              this.props.history.push("/booking-manager/home");
-            }
+            this.setState({ authUser: user, authErr: null });
+            this.props.history.push("/booking-manager/home");
+
             // this.getCalendar(this.state.authUser.userId);
             // this.props.history.push("/booking-manager/home?userId="+user.userId);
             break;
@@ -139,7 +142,7 @@ class App extends React.Component {
         <Switch>
           <Route path="/teacher/home">
             <Teacher
-              studentsList={this.state.studentsList}
+              studentsList={this.state.studentsList} //all this stuff need to be deleted
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
               getLectures={this.getLectures}
@@ -149,18 +152,18 @@ class App extends React.Component {
           <Route path="/teacher/historicaldata">
             <HistoricalData
               key={123435}
-              studentsList={this.state.studentsList}
+              studentsList={this.state.studentsList} //all this stuff need to be deleted
               studentsBooked={this.studentsBooked}
               deleteLecture={this.deleteLecture}
               getLectures={this.getLectures}
             />
           </Route>
-          <Route path="/student/calendar/">
-            <Calendar
-              getCalendar={this.getCalendar}
-              // calendar={this.state.calendar}
-              // user={this.state.authUser}
+          <Route path="/teacher/recordPresence">
+            <RecordPresence
             />
+          </Route>
+          <Route path="/student/calendar/">
+            <Calendar getCalendar={this.getCalendar} />
           </Route>
           <Route path="/student/home">
             <Student
@@ -172,17 +175,25 @@ class App extends React.Component {
           <Route path="/support/home">
             <SupportOfficer user={this.state.authUser} />
           </Route>
+          <Route path="/support/update">
+            <UpdateList user={this.state.authUser} />
+          </Route>
+          <Route path="/support/schedule">
+            <ScheduleEdit user={this.state.authUser} />
+          </Route>
           <Route path="/booking-manager/home">
             <UsageMonitor
               isLogged={this.isLogged}
               isStillLogged={this.state.isStillLogged}
-              // user={this.state.authUser}
             />
+          </Route>
+          <Route path="/booking-manager/contact-tracing">
+            <ContactTracing />
           </Route>
           <Route path="/logout"></Route>
           <Redirect from="/" exact to="login" />
         </Switch>
-        <ToastContainer autoClose={3500} />
+        <ToastContainer id="ToastContainer" autoClose={3500} />
       </AuthContext.Provider>
     );
   }

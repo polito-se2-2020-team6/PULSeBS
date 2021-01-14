@@ -36,8 +36,6 @@ class Student extends Component {
     let lectures = [...this.state.lectures];
     if (courseId === "all") {
       this.setState({ filtered: [] });
-      console.log(this.state.filtered);
-      console.log(this.state.lectures);
       this.componentDidMount();
     } else {
       let filtered = lectures.filter((cur) => {

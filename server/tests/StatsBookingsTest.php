@@ -45,20 +45,23 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('bookingsAvg', $data);
 		$this->assertArrayHasKey('bookingsStdDev', $data);
 		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
 		$this->assertEquals(1, $data['courseId']);
 		$this->assertEquals(1, $data['bookingsAvg']);
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(1, $data['totalBookings']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
 		$this->assertEquals(1, $data['nLectures']);
 
 		$this->assertArrayNotHasKey('cancellationsAvg', $data);
 		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
 		$this->assertArrayNotHasKey('totalCancellations', $data);
-		$this->assertArrayNotHasKey('attendancesAvg', $data);
-		$this->assertArrayNotHasKey('attendancesStdDev', $data);
-		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 
@@ -85,20 +88,23 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('bookingsAvg', $data);
 		$this->assertArrayHasKey('bookingsStdDev', $data);
 		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
 		$this->assertEquals(0, $data['courseId']);
 		$this->assertEquals(0, $data['bookingsAvg']);
 		$this->assertEquals(0, $data['bookingsStdDev']);
 		$this->assertEquals(0, $data['totalBookings']);
+		$this->assertEquals(0, $data['attendancesAvg']);
+		$this->assertEquals(0, $data['attendancesStdDev']);
+		$this->assertEquals(0, $data['totalAttendances']);
 		$this->assertEquals(0, $data['nLectures']);
 
 		$this->assertArrayNotHasKey('cancellationsAvg', $data);
 		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
 		$this->assertArrayNotHasKey('totalCancellations', $data);
-		$this->assertArrayNotHasKey('attendancesAvg', $data);
-		$this->assertArrayNotHasKey('attendancesStdDev', $data);
-		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets month stats
@@ -124,6 +130,9 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('bookingsAvg', $data);
 		$this->assertArrayHasKey('bookingsStdDev', $data);
 		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
 		$this->assertEquals(0, $data['courseId']);
@@ -135,9 +144,6 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayNotHasKey('cancellationsAvg', $data);
 		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
 		$this->assertArrayNotHasKey('totalCancellations', $data);
-		$this->assertArrayNotHasKey('attendancesAvg', $data);
-		$this->assertArrayNotHasKey('attendancesStdDev', $data);
-		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets overall stats
@@ -163,6 +169,9 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('bookingsAvg', $data);
 		$this->assertArrayHasKey('bookingsStdDev', $data);
 		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
 		$this->assertEquals(0, $data['courseId']);
@@ -174,9 +183,6 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayNotHasKey('cancellationsAvg', $data);
 		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
 		$this->assertArrayNotHasKey('totalCancellations', $data);
-		$this->assertArrayNotHasKey('attendancesAvg', $data);
-		$this->assertArrayNotHasKey('attendancesStdDev', $data);
-		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets wrong lecture stats
@@ -202,6 +208,9 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('bookingsAvg', $data);
 		$this->assertArrayHasKey('bookingsStdDev', $data);
 		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
 		$this->assertEquals(0, $data['courseId']);
@@ -213,9 +222,6 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayNotHasKey('cancellationsAvg', $data);
 		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
 		$this->assertArrayNotHasKey('totalCancellations', $data);
-		$this->assertArrayNotHasKey('attendancesAvg', $data);
-		$this->assertArrayNotHasKey('attendancesStdDev', $data);
-		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Teacher gets wrong course stats
@@ -241,6 +247,9 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayHasKey('bookingsAvg', $data);
 		$this->assertArrayHasKey('bookingsStdDev', $data);
 		$this->assertArrayHasKey('totalBookings', $data);
+		$this->assertArrayHasKey('attendancesAvg', $data);
+		$this->assertArrayHasKey('attendancesStdDev', $data);
+		$this->assertArrayHasKey('totalAttendances', $data);
 		$this->assertArrayHasKey('nLectures', $data);
 
 		$this->assertEquals(0, $data['courseId']);
@@ -252,9 +261,6 @@ class StatsBookingsTest extends TestCase {
 		$this->assertArrayNotHasKey('cancellationsAvg', $data);
 		$this->assertArrayNotHasKey('cancellationsStdDev', $data);
 		$this->assertArrayNotHasKey('totalCancellations', $data);
-		$this->assertArrayNotHasKey('attendancesAvg', $data);
-		$this->assertArrayNotHasKey('attendancesStdDev', $data);
-		$this->assertArrayNotHasKey('totalAttendances', $data);
 	}
 
 	// Student gets stats

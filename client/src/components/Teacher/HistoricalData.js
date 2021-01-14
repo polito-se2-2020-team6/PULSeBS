@@ -41,6 +41,7 @@ class HistoricalData extends React.Component {
       detailLevel: "Select detail",
       detailLevelCourse: "Select Course",
       detailLevelPeriod: "Select Period",
+      BookedAttendance: "Bookings",
       dataState: {},
       totalLectures: [],
       allCourses: [],
@@ -150,10 +151,26 @@ class HistoricalData extends React.Component {
           week || week === 0
             ? moment(this.getDateOfWeek(week, year)).format("DD/MM/YYYY")
             : "";
+        let l1 = l
+          ? l +
+            "  -  " +
+            moment(
+              this.state.totalLectures.find((x) => x.lectureId === idLecture)
+                .startTS
+            ).format("DD/MM/YYYY HH:mm")
+          : "";
         data.labels[i] = m || w || l;
-        data.datasets[0].data[i] = s.bookingsAvg;
-        tableData[i] = { labels: m || w || l, data: s.bookingsAvg };
-
+        data.datasets[0].data[i] =
+          this.state.BookedAttendance === "Bookings"
+            ? s.bookingsAvg
+            : s.attendancesAvg;
+        tableData[i] = {
+          labels: m || w || l1,
+          data:
+            this.state.BookedAttendance === "Bookings"
+              ? s.bookingsAvg
+              : s.attendancesAvg,
+        };
         if (
           this.state.detailLevel === "Week" ||
           this.state.detailLevel === "Month"
@@ -195,7 +212,7 @@ class HistoricalData extends React.Component {
       labels: [],
       datasets: [
         {
-          label: "AVG Bookings",
+          label: "AVG",
           backgroundColor: "rgb(22, 205, 254)",
           borderColor: "rgb(35, 126, 254)",
           borderWidth: 1,
@@ -289,6 +306,14 @@ class HistoricalData extends React.Component {
     await this.setState({ offset: 1 });
     this.changeValue(detail);
   }
+  async setAvgBooked(detail) {
+    await this.setState({ BookedAttendance: detail });
+    //solo se è stato selezionato un detail level chiamo la api per vedere i dati
+    if (this.state.detailLevel !== "Select detail") {
+      await this.setState({ offset: 1 });
+      this.changeValue(this.state.detailLevel);
+    }
+  }
 
   render() {
     return (
@@ -340,6 +365,35 @@ class HistoricalData extends React.Component {
                                   }
                                 >
                                   Month
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </Col>
+                          <Col>
+                            <Dropdown>
+                              <Dropdown.Toggle
+                                variant="success"
+                                id="dropdown-basic3"
+                              >
+                                {this.state.BookedAttendance}
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                <Dropdown.Item
+                                  id="d1"
+                                  onClick={(e) =>
+                                    this.setAvgBooked(e.target.textContent)
+                                  }
+                                >
+                                  Bookings
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                  id="d2"
+                                  onClick={(e) =>
+                                    this.setAvgBooked(e.target.textContent)
+                                  }
+                                >
+                                  Attendances
                                 </Dropdown.Item>
                               </Dropdown.Menu>
                             </Dropdown>
@@ -422,7 +476,7 @@ class HistoricalData extends React.Component {
                           <thead>
                             <tr>
                               <th>{this.state.detailLevel}</th>
-                              <th>Average bookings</th>
+                              <th>{this.state.BookedAttendance}</th>
                             </tr>
                           </thead>
                           <tbody>
