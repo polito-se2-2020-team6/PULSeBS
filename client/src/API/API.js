@@ -480,7 +480,7 @@ async function getAllCourses() {
 
 //setAttendance
 async function setAttendance(lectureId, studentId, attended) {
-  console.log(attended);
+  
   return new Promise(function (resolve, reject) {
     // do the usual XHR stuff
     var req = new XMLHttpRequest();

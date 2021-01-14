@@ -97,7 +97,8 @@ import {
                         {this.state.students?.map((s) =>(
                             
                         <Row className="mt-1" key={s.studentId}>
-                        <Col>{s.studentName}  
+                        <Col md={3}>{s.studentName}</Col>
+                        <Col>
                         {!s.attended?<Button variant="success" className="ml-2" id="but" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, 1)}>Present</Button>
                         :<Button variant="danger" className="ml-2" id="but" size="sm" onClick={() => this.setAttendance(l.lectureId, s.studentId, 0)}>Not Present</Button>}
                         </Col></Row>
