@@ -34,9 +34,9 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
 /* Functions that implements endpoints */
 
 if (!function_exists("do_login")) {
-	function do_login($vars) {
+	function do_login() {
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+			$pdo = new PDO(DB_PATH);
 
 			$stmt = $pdo->prepare("SELECT ID, username, password, type FROM users WHERE username = :username");
 			$stmt->bindValue(":username", $_POST["username"]);
@@ -74,13 +74,14 @@ if (!function_exists('am_i_logged')) {
 		if (!check_login()) {
 			http_response_code(403);
 			echo json_encode(array('success' => true, 'loggedIn' => false), JSON_INVALID_UTF8_SUBSTITUTE);
-		} else
+		} else {
 			echo json_encode(array('success' => true, 'loggedIn' => true), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
 	}
 }
 
 if (!function_exists('do_logout')) {
-	function do_logout($vars) {
+	function do_logout() {
 		unset($_SESSION['nonce']);
 		unset($_SESSION['user_id']);
 
@@ -93,22 +94,10 @@ if (!function_exists('list_lectures')) {
 	function list_lectures($vars) {
 
 		$userId = intval($vars['userId']);
-		$pdo = new PDO("sqlite:../db.sqlite");
+		$pdo = new PDO(DB_PATH);
 
 		// Get type of user
-		$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId');
-		$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
-
-		if (!$stmt->execute()) {
-			throw new PDOException($stmt->errorInfo()[2]);
-		}
-		$userData = $stmt->fetch();
-
-		if (!$userData) {
-			// User doesn't exist, but is logged in ❓❓❓
-			echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
-			return;
-		}
+		$userData = get_myself();
 
 		$userType = intval($userData['type']);
 
@@ -423,7 +412,7 @@ if (!function_exists("update_lectures_schedule_by_course")) {
 }
 
 if (!function_exists('print_types')) {
-	function print_types($vars) {
+	function print_types() {
 		echo json_encode(array('success' => true, 'list' => array(
 			array("typeId" => USER_TYPE_STUDENT, 'typeDesc' => 'student'),
 			array("typeId" => USER_TYPE_TEACHER, 'typeDesc' => 'teacher')
@@ -432,7 +421,7 @@ if (!function_exists('print_types')) {
 }
 
 if (!function_exists('print_myself')) {
-	function print_myself($vars) {
+	function print_myself() {
 		try {
 			echo json_encode(get_myself(), JSON_INVALID_UTF8_SUBSTITUTE);
 		} catch (Exception $e) {
@@ -452,7 +441,7 @@ if (!function_exists('cancel_lecture')) {
 			}
 
 			$userId = intval($_SESSION['user_id']);
-			$pdo = new PDO('sqlite:../db.sqlite');
+			$pdo = new PDO(DB_PATH);
 
 			// Check user exists and is teacher
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
@@ -521,7 +510,7 @@ if (!function_exists('booked_students')) {
 		$userId = intval($_SESSION['user_id']);
 
 		try {
-			$pdo = new PDO("sqlite:../db.sqlite");
+			$pdo = new PDO(DB_PATH);
 
 			// Check user is indeed a teacher
 			$stmt = $pdo->prepare('SELECT type FROM users WHERE ID = :userId');
@@ -598,7 +587,7 @@ if (!function_exists('book_lecture')) {
 			}
 
 			$lectureId = intval($_POST['lectureId']);
-			$pdo = new PDO("sqlite:../db.sqlite");
+			$pdo = new PDO(DB_PATH);
 
 			// Check user exists and is student
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :student');
@@ -713,7 +702,7 @@ if (!function_exists('cancel_booking')) {
 			$next_waiting_student = get_waiting_list_by_lecture($lectureId, 1);
 			$is_cancelling_user_in_waiting_list = check_user_in_waiting_list($lectureId, $userId);
 
-			$pdo = new PDO('sqlite:../db.sqlite');
+			$pdo = new PDO(DB_PATH);
 
 			// Check user exists and is student
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :student');
@@ -864,7 +853,7 @@ if (!function_exists('set_lecture_online_status')) {
 			}
 
 			$userId = intval($_SESSION['user_id']);
-			$pdo = new PDO('sqlite:../db.sqlite');
+			$pdo = new PDO(DB_PATH);
 
 			// Check user exists and is teacher
 			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId AND type = :teacher');
@@ -920,9 +909,9 @@ if (!function_exists('set_lecture_online_status')) {
 }
 
 if (!function_exists('print_courses')) {
-	function print_courses($vars) {
+	function print_courses() {
 		try {
-			$pdo = new PDO('sqlite:../db.sqlite');
+			$pdo = new PDO(DB_PATH);
 
 			if (isset($_GET["ofLogged"])) {
 				$logged_user = get_myself();
@@ -1051,9 +1040,13 @@ switch ($routeInfo[0]) {
 					default:
 						break;
 				}
-				if (!$ok) break;
+				if (!$ok) {
+					break;
+				}
 			}
-			if (!$ok) break;
+			if (!$ok) {
+				break;
+			}
 
 			if ($httpMethod == 'DELETE') {
 				parse_str(file_get_contents("php://input"), $_DELETE);

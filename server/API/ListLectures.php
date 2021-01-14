@@ -155,31 +155,16 @@ if (!function_exists('list_lectures')) {
 
 
 		try {
+			$userData = get_myself();
 
 			$userId = intval($vars['userId']);
-			if ($userId != $_SESSION['user_id']) {
+			if ($userId != $userData['userId']) {
 				throw new Exception("Trying to see another person's data.");
-			}
-
-			$pdo = new PDO("sqlite:../db.sqlite");
-
-			// Get type of user
-			$stmt = $pdo->prepare('SELECT * FROM users WHERE ID = :userId');
-			$stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
-
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-			$userData = $stmt->fetch();
-
-			if (!$userData) {
-				// User doesn't exist, but is logged in ❓❓❓
-				echo json_encode(array('success' => false), JSON_INVALID_UTF8_SUBSTITUTE);
-				return;
 			}
 
 			$userType = intval($userData['type']);
 
+			$pdo = new PDO(DB_PATH);
 			switch ($userType) {
 				case USER_TYPE_STUDENT:
 					$stmt = $pdo->prepare($studentQuery);
@@ -235,7 +220,6 @@ if (!function_exists('list_lectures')) {
 							'year' => intval($e['year']),
 							'semester' => intval($e['semester']),
 							'startTS' => intval($e["startTS"]),
-
 							'endTS' => intval($e["endTS"]),
 							'online' => boolval($e["online"]),
 							'teacherName' => $e["teacherName"],
@@ -266,7 +250,7 @@ if (!function_exists('bindTimeConstraints')) {
 
 	function bindTimeConstraints($pdoStmt, $startISODate, $endISODate) {
 		$startTS = 0;
-		$endTS = 9e9;
+		$endTS = PHP_INT_MAX;
 
 		if ($startISODate) {
 			$Ymd = explode('-', $startISODate);

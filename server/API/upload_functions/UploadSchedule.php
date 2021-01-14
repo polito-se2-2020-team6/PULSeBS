@@ -8,7 +8,7 @@ define("SCHEDULE_TIME", 'Time');
 
 if (!function_exists("upload_schedules")) {
 
-	function upload_schedules($vars) {
+	function upload_schedules() {
 
 		try {
 			$logged_user = get_myself();
@@ -21,27 +21,7 @@ if (!function_exists("upload_schedules")) {
 				throw new Exception('Expected startDay and endDay parameters.');
 			}
 
-			// Undefined | Multiple Files | $_FILES Corruption Attack
-			// If this request falls under any of them, treat it invalid.
-			if (
-				!isset($_FILES['schedule_file']['error']) ||
-				is_array($_FILES['schedule_file']['error'])
-			) {
-				throw new RuntimeException('Invalid parameters.');
-			}
-
-			// Check $_FILES['schedule_file']['error'] value.
-			switch ($_FILES['schedule_file']['error']) {
-				case UPLOAD_ERR_OK:
-					break;
-				case UPLOAD_ERR_NO_FILE:
-					throw new RuntimeException('No file sent.');
-				case UPLOAD_ERR_INI_SIZE:
-				case UPLOAD_ERR_FORM_SIZE:
-					throw new RuntimeException('Exceeded filesize limit.');
-				default:
-					throw new RuntimeException('Unknown errors.');
-			}
+			check_file_uploaded('schedule_file');
 
 			$csv_file = array_map('str_getcsv', str_getcsv(file_get_contents($_FILES['schedule_file']['tmp_name']), "\n"));
 
