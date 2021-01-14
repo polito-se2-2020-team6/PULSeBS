@@ -232,10 +232,8 @@ if (!function_exists('list_lectures')) {
 							'lectureId' => intval($e["lectureId"]),
 							'courseId' => intval($e["courseId"]),
 							'courseName' => $e["courseName"],
-							/*'year' => intval($e['year']),
-							 TODO: reactivate in master
+							'year' => intval($e['year']),
 							'semester' => intval($e['semester']),
-							*/
 							'startTS' => intval($e["startTS"]),
 
 							'endTS' => intval($e["endTS"]),

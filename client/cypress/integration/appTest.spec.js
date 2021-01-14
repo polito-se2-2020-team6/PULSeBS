@@ -164,6 +164,8 @@ context("Teacher Page", () => {
     cy.get("#d2").click();
 
     // DD
+    cy.get("tr>td").eq(0).should("be.visible").contains("Human");
+    cy.get("tr>td").eq(1).should("be.visible").contains("0");
     cy.get("#dropdown-basic").click();
     cy.get("#d2").click();
     cy.get("#dropdown-basic1")
