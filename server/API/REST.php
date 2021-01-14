@@ -8,6 +8,9 @@ require_once "upload_functions/UploadEnrollements.php";
 require_once "upload_functions/UploadStudents.php";
 require_once "upload_functions/UploadTeachers.php";
 require_once "upload_functions/UploadSchedule.php";
+require_once "./GetStudentInfo.php";
+require_once "./GetContactTracingReport.php";
+require_once "./RecordAttendace.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
@@ -252,6 +255,161 @@ if (!function_exists('list_lectures')) {
 	}
 }
 
+if (!function_exists('list_lectures_by_course')) {
+
+	function list_lectures_by_course($vars) {
+		$courseId = intval($vars['courseId']);
+		try {
+			$startDate = isset($_GET['startDate']) ? (new DateTime($_GET['startDate']))->getTimestamp() : null;
+			$endDate = isset($_GET['endDate']) ? (new DateTime($_GET['endDate']))->getTimestamp() : null;
+			echo json_encode(array('success' => true) + get_lectures_by_course($courseId, $startDate, $endDate), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
+
+if (!function_exists("update_lectures_schedule_by_course")) {
+	function update_lectures_schedule_by_course($vars) {
+		global $_PATCH;
+
+		$weekdays = array(
+			0 => "Sunday",
+			1 => "Monday",
+			2 => "Tuesday",
+			3 => "Wednesday",
+			4 => "Thursday",
+			5 => "Friday",
+			6 => "Saturday",
+		);
+
+		$courseId = intval($vars['courseId']);
+		try {
+			$pdo = new PDO("sqlite:../db.sqlite");
+
+			// Get type of user
+			$userData = get_myself();
+
+
+			$userType = intval($userData['type']);
+
+			if ($userType != USER_TYPE_SPRT_OFCR) {
+				throw new ErrorException("Wrong permissions");
+			}
+			//retrieve the weekdays, formatting as sqlite strftime expects it (0 = sunday, 6 = saturday)
+			$original_weekday = (intval($_PATCH["originalWeekday"]) + 1) % 7;
+			$new_weekday = (intval($_PATCH["newWeekday"]) + 1) % 7;
+			$difference = $new_weekday - $original_weekday;
+			$sign = $difference >= 0 ? "+" : "";
+
+			$range_conditions = "";
+			// Add optional ranges to query
+			if (isset($_PATCH['startDateTime'])) {
+				$startDateTime = new DateTime($_PATCH["startDateTime"]);
+				if ($startDateTime < new DateTime()) {
+					throw new ErrorException("startDateTime cannot be in the past");
+				}
+			} else {
+				$startDateTime = new DateTime();
+			}
+			$startDateString = $startDateTime->format("Y-m-d H:i");
+			$range_conditions .= ' AND start_ts >= ' . $startDateTime->getTimestamp();
+			if (isset($_PATCH['endDateTime'])) {
+				$endDateTime = new DateTime($_PATCH["endDateTime"]);
+				$range_conditions .= ' AND start_ts <= ' . $endDateTime->getTimestamp();
+				if ($startDateTime >= $endDateTime) {
+					throw new ErrorException("endDateTime cannot be before startDateTime");
+				}
+				$endDateString = $endDateTime->format("Y-m-d H:i");
+			} else {
+				$endDateTime = null;
+				$endDateString = null;
+			}
+
+			$lectures = get_lectures_by_course($courseId, $startDateString, $endDateString);
+
+			if (!isset($_PATCH["newTime"])) {
+				$sql = "UPDATE lectures SET start_ts = strftime('%s', start_ts, 'unixepoch', '" . $sign . $difference . " days'),end_ts = strftime('%s', end_ts, 'unixepoch', '" . $sign . $difference . " days') WHERE strftime('%w', start_ts, 'unixepoch') = :originalWeekday AND course_id=:courseId " . $range_conditions;
+				$stmt = $pdo->prepare($sql);
+				$stmt->bindValue(":courseId", $courseId, PDO::PARAM_INT);
+				$stmt->bindValue(":originalWeekday", $original_weekday, PDO::PARAM_STR);
+
+				if (!$stmt->execute()) {
+					throw new PDOException($stmt->errorInfo()[2]);
+				}
+
+				$affectedRows = $stmt->rowCount();
+				//retrieving students to which send the mails
+				if ($affectedRows > 0) {
+					$students = array();
+					foreach ($lectures["lectures"] as $lecture) {
+						$students = array_merge($students, get_students_booked_by_lecture($lecture["lectureId"]));
+					}
+
+					foreach ($students as $student) {
+						$text_message = "Mr./Mrs. " . $student["studentName"] . ",\nThe lectures of the course " . $lectures["courseName"] . "(" . $lectures["courseCode"] . ") that were held on " . $weekdays[$original_weekday] . " has been reschedule to " . $weekdays[$new_weekday] . ". The time has been unchanged and the changes will apply from " . $startDateString;
+						@mail(
+							$student["email"],
+							"Rescheduling of lectures for \"" . $lectures["courseName"] . "\"",
+							$text_message
+						);
+					}
+				}
+			} else {
+				$timeDatas = explode(":", $_PATCH["newTime"]);
+				if (count($timeDatas) != 2 || !is_numeric($timeDatas[0]) || !is_numeric($timeDatas[1])) {
+					throw new ErrorException("Wrong time format, should be hh:mm");
+				}
+				$hh = intval($timeDatas[0]);
+				$mm = intval($timeDatas[1]);
+
+				$pdo->beginTransaction();
+
+				$affectedRows = 0;
+				$students = array();
+				foreach ($lectures["lectures"] as $lecture) {
+					$cur_start_time = new DateTime('@' . $lecture["startTS"]);
+					if (intval($cur_start_time->format("w")) != $original_weekday) continue;
+					$cur_end_time = new DateTime('@' . $lecture["endTS"]);
+					$lecture_duration = $cur_end_time->getTimestamp() - $cur_start_time->getTimestamp();
+
+					$cur_start_time->modify($sign . $difference . " days");
+					$cur_start_time->setTime($hh, $mm);
+					$cur_end_time->modify($sign . $difference . " days");
+					$cur_end_time->setTime($hh, $mm);
+					$cur_end_time->modify("+" . $lecture_duration . " seconds");
+
+					$stmt = $pdo->query("UPDATE lectures SET start_ts = " . $cur_start_time->getTimestamp() . ", end_ts = " . $cur_end_time->getTimestamp() . " WHERE ID = " . $lecture["lectureId"] . $range_conditions);
+
+					if (!$stmt) {
+						$pdo->rollback();
+						throw new PDOException($pdo->errorInfo()[2]);
+					}
+					$thisLecturesAffecting = $stmt->rowCount();
+					if ($thisLecturesAffecting > 0) {
+						$students = array_merge($students, get_students_booked_by_lecture($lecture["lectureId"]));
+					}
+					$affectedRows += $thisLecturesAffecting;
+				}
+
+				$pdo->commit();
+				//sending rescheduling email
+				foreach ($students as $student) {
+					$text_message = "Mr./Mrs. " . $student["studentName"] . ",\nThe lectures of the course " . $lectures["courseName"] . "(" . $lectures["courseCode"] . ") that were held on " . $weekdays[$original_weekday] . " has been reschedule to " . $weekdays[$new_weekday] . " at " . $_PATCH["newTime"] . ". The changes will apply from " . $startDateString;
+					@mail(
+						$student["email"],
+						"Rescheduling of lectures for \"" . $lectures["courseName"] . "\"",
+						$text_message
+					);
+				}
+			}
+
+			echo json_encode(array('success' => true, 'affectedRow' => $affectedRows), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage(), 'line' => $e->getLine()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
 
 if (!function_exists('print_types')) {
 	function print_types() {
@@ -319,26 +477,7 @@ if (!function_exists('cancel_lecture')) {
 			}
 
 			// Get students
-			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
-								   FROM users U, bookings B
-								   WHERE U.ID = B.user_id 
-								   		AND lecture_id = :lectureId
-								   		AND type = :student 
-										AND booking_ts IS NOT NULL
-										AND cancellation_ts IS NULL');
-			$stmt->bindValue(':lectureId', $lectureId, PDO::PARAM_INT);
-			$stmt->bindValue(':student', intval(USER_TYPE_STUDENT), PDO::PARAM_INT);
-			if (!$stmt->execute()) {
-				throw new PDOException($stmt->errorInfo()[2]);
-			}
-			$students = array();
-			while ($s = $stmt->fetch()) {
-				$students[] = array(
-					'studentId' => intval($s['ID']),
-					'email' => $s['email'],
-					'studentName' => $s['lastname'] . ' ' . $s['firstname']
-				);
-			}
+			$students = get_students_booked_by_lecture($lectureId);
 
 			// Cancel lecture
 			$stmt = $pdo->prepare('UPDATE lectures
@@ -401,7 +540,7 @@ if (!function_exists('booked_students')) {
 
 
 			// Get students
-			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname
+			$stmt = $pdo->prepare('SELECT ID, email, firstname, lastname, attended
 								   FROM users U, bookings B
 								   WHERE U.ID = B.user_id 
 								   		AND lecture_id = :lectureId
@@ -423,7 +562,8 @@ if (!function_exists('booked_students')) {
 					'studentId' => $studentId,
 					'email' => $s['email'],
 					'studentName' => $s['lastname'] . ' ' . $s['firstname'],
-					'inWaitingList' => in_array($studentId, $waiting_list)
+					'inWaitingList' => in_array($studentId, $waiting_list),
+					'attended' => boolval($s['attended'])
 				);
 
 				array_push($students, $student);
@@ -623,6 +763,84 @@ if (!function_exists('cancel_booking')) {
 	}
 }
 
+if (!function_exists('set_mass_lecture_online_status')) {
+	function set_mass_lecture_online_status() {
+		global $_PATCH, $server_default_timezone;
+		$status = $_PATCH['value'] == 'true' ? LECTURE_REMOTE : ~LECTURE_REMOTE;
+		$years = isset($_PATCH["year"]) ? $_PATCH["year"] : array();
+		$semesters = isset($_PATCH["semester"]) ? $_PATCH["semester"] : array();
+		$start_time = isset($_PATCH["start_date"]) ? new DateTime($_PATCH["start_date"], new DateTimeZone($server_default_timezone)) : new DateTime();
+		$end_time = isset($_PATCH["end_date"]) ? new DateTime($_PATCH["end_date"], new DateTimeZone($server_default_timezone)) : null;
+		try {
+			if (!isset($_SESSION['user_id'])) {
+				throw new ErrorException('Auth Needed');
+			}
+
+			$pdo = new PDO('sqlite:../db.sqlite');
+
+			// Check user exists and is teacher
+			$user = get_myself();
+			if ($user["type"] != USER_TYPE_SPRT_OFCR) {
+				throw new ErrorException('Wrong logged user type');
+			}
+
+			//Prepare the query
+			$sql = "UPDATE lectures ";
+
+			// Set lecture status
+			if ($status == LECTURE_REMOTE) {
+				$sql .= "SET settings = settings | :online ";
+			} else {
+				$sql .= "SET settings = settings & :online ";
+			}
+
+			$sql .= " WHERE start_ts >= :startTime";
+
+			if (!empty($years) || !(empty($semesters))) {
+				$sql .= " AND course_id IN (SELECT ID FROM courses WHERE ";
+				//parse because i cannot bind value before prepare
+				//years
+				$conditions = array_map(function ($el) {
+					if (!is_numeric($el)) return false;
+					return "year = " . intval($el);
+				}, $years);
+				//remove some falses;
+				$conditions = array_filter($conditions);
+				$year_subsql = implode(" OR ", $conditions);
+				//semesters
+				$conditions2 = array_map(function ($el) {
+					if (!is_numeric($el)) return false;
+					return "semester = " . intval($el);
+				}, $semesters);
+				$conditions2 = array_filter($conditions2);
+				$semester_subsql = implode(" OR ", $conditions2);
+
+				if ($semester_subsql != "" && $year_subsql != "") {
+					$sql .= "(" . $year_subsql . ") AND (" . $semester_subsql . ")";
+				} else {
+					$sql .= $year_subsql . $semester_subsql;
+				}
+
+				$sql .= ")";
+			}
+
+			if (null !== $end_time) {
+				$sql .= " AND start_ts <= " . $end_time->getTimestamp();
+			}
+			$stmt = $pdo->prepare($sql);
+			$stmt->bindValue(':online', $status, PDO::PARAM_INT);
+			$stmt->bindValue(':startTime', $start_time->getTimestamp(), PDO::PARAM_INT);
+			if (!$stmt->execute()) {
+				throw new PDOException($stmt->errorInfo()[2]);
+			}
+			// Success
+			echo json_encode(array('success' => true, "affectedRecords" => $stmt->rowCount()), JSON_INVALID_UTF8_SUBSTITUTE);
+		} catch (Exception $e) {
+			echo json_encode(array('success' => false, 'reason' => $e->getMessage()), JSON_INVALID_UTF8_SUBSTITUTE);
+		}
+	}
+}
+
 if (!function_exists('set_lecture_online_status')) {
 	function set_lecture_online_status($vars) {
 		global $_PATCH;
@@ -754,7 +972,11 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/logout', 'do_logout');
 	$r->addRoute('GET', API_PATH . "/types", "print_types");
 
+	/* courses routes */
 	$r->addRoute('GET', API_PATH . "/courses", "print_courses");
+	$r->addRoute('GET', API_PATH . "/courses/{courseId:\d+}/lectures", ["list_lectures_by_course", NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . "/courses/{courseId:\d+}/schedule", ["update_lectures_schedule_by_course", NEED_AUTH]);
+
 	/* users route */
 	$r->addRoute('GET', API_PATH . '/user/me', ['print_myself', NEED_AUTH]);
 
@@ -762,6 +984,7 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('DELETE', API_PATH . '/lectures/{lectureId:\d+}', ['cancel_lecture', NEED_AUTH]);
 	$r->addRoute('GET', API_PATH . '/lectures/{lectureId:\d+}/students', ['booked_students', NEED_AUTH]);
 	$r->addRoute('PATCH', API_PATH . '/lectures/{lectureId:\d+}/online', ['set_lecture_online_status', NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . '/lectures/online', ['set_mass_lecture_online_status', NEED_AUTH]);
 	$r->addRoute('DELETE', API_PATH . '/users/{userId:\d+}/book', ['cancel_booking', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/users/{userId:\d+}/book', ['book_lecture', NEED_AUTH]);
 
@@ -772,6 +995,10 @@ $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) 
 	$r->addRoute('POST', API_PATH . '/students/upload', ['upload_students', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/teachers/upload', ['upload_teachers', NEED_AUTH]);
 	$r->addRoute('POST', API_PATH . '/schedules/upload', ['upload_schedules', NEED_AUTH]);
+
+	$r->addRoute('GET', API_PATH . '/students/{code:.+}/{field:id|ssn}', ['get_student_info', NEED_AUTH]);
+	$r->addRoute('GET', API_PATH . '/users/{userId:\d+}/CTReport/{format:...}', ['get_contact_report', NEED_AUTH]);
+	$r->addRoute('PATCH', API_PATH . '/lectures/{lectureId:\d+}/students/{studentId:\d+}', ['record_attendance', NEED_AUTH]);
 });
 
 // Fetch method and URI from somewhere

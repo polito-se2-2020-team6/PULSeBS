@@ -1,4 +1,4 @@
-class Lecture {
+class LectureSO {
   constructor(
     lectureId,
     courseId,
@@ -13,6 +13,14 @@ class Lecture {
     teacherName,
     inWaitingList
   ) {
+    const getWeekDay = (ts)=>{
+      const unixTimestamp = ts;
+      const milliseconds = unixTimestamp * 1000; // 1575909015000
+      const dateObject = new Date(milliseconds);
+      const weekday = dateObject.getDay() - 1;
+      return weekday;
+    };
+
     const convertTS = (ts) => {
       const unixTimestamp = ts;
       const milliseconds = unixTimestamp * 1000; // 1575909015000
@@ -33,6 +41,7 @@ class Lecture {
     this.courseName = courseName;
     this.startTS = convertTS(startTS);
     this.endTS = convertTS(endTS);
+    this.weekday = getWeekDay(startTS);
     this.online = online;
     this.teacherName = teacherName;
     this.roomName = roomName;
@@ -48,9 +57,9 @@ class Lecture {
    * @return  lecture} the newly created lecture object
    */
   static from(json) {
-    const l = Object.assign(new Lecture(), json);
+    const l = Object.assign(new LectureSO(), json);
     return l;
   }
 }
 
-export default Lecture;
+export default LectureSO;
