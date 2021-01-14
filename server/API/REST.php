@@ -406,7 +406,7 @@ if (!function_exists("update_lectures_schedule_by_course")) {
 				$pdo->commit();
 				//sending rescheduling email
 				foreach ($students as $student) {
-					$text_message = "Mr./Mrs. " . $student["studentName"] . ",\nThe lectures of the course " . $lecture["courseName"] . "(" . $lecture["courseCode"] . ") that were held on " . $weekdays[$original_weekday] . " has been reschedule to " . $weekdays[$new_weekday] . " at " . $_PATCH["newTime"] . ". The changes will apply from " . $startDateString;
+					$text_message = "Mr./Mrs. " . $student["studentName"] . ",\nThe lectures of the course " . $lectures["courseName"] . "(" . $lectures["courseCode"] . ") that were held on " . $weekdays[$original_weekday] . " has been reschedule to " . $weekdays[$new_weekday] . " at " . $_PATCH["newTime"] . ". The changes will apply from " . $startDateString;
 					@mail(
 						$student["email"],
 						"Rescheduling of lectures for \"" . $lectures["courseName"] . "\"",
