@@ -36,7 +36,7 @@ class EditLectures extends Component {
   };
 
   changeHandler = (event) => {
-    if(event.target.id === "day") {
+    if (event.target.id === "day" && event.target.value !== "choose") {
       this.setState({ newDay: event.target.value });
     } else if(event.target.id === "time") {
       this.setState({ newTime: event.target.value });
@@ -167,10 +167,11 @@ function TableRow(props) {
             <Form.Label>Day</Form.Label>
             <Form.Control
               as="select"
-              defaultValue="0"
+              defaultValue="choose"
               id="day"
               onChange={props.changeHandler}
             >
+              <option value="choose">Choose A new Day</option>
               <option value="0">Monday</option>
               <option value="1">Tuesday</option>
               <option value="2">Wednesday</option>
