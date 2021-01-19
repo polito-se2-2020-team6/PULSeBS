@@ -77,4 +77,4 @@
 
 - One thing you are proud of as a Team!!
   - We didn't fight between each other, and we think it's a good goal.
-  - We learned from the mistakes from the previoous sprints.
+  - We learned from the mistakes from the previous sprints.
